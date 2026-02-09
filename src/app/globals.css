@@ -24,3 +24,8 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Fix for Leaflet interactive elements focus outline */
+.leaflet-interactive:focus {
+  outline: none;
+}

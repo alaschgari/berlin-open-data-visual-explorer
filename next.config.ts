@@ -1,7 +1,11 @@
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    useCache: true, // Enable "use cache" directive
+
+  },
 };
 
 export default nextConfig;
