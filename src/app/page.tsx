@@ -7,11 +7,12 @@ import Link from 'next/link';
 import BicycleTheftMap from '@/components/BicycleTheftMapWrapper';
 import { getPopulation } from '@/lib/demographics';
 import BudgetChapters from '@/components/BudgetChapters';
+import PopulationMapWrapper from '@/components/PopulationMapWrapper';
 
 export default async function Dashboard({ searchParams }: { searchParams: Promise<any> }) {
   const resolvedSearchParams = await searchParams;
   const district = resolvedSearchParams.district || 'Berlin';
-  const activeTab = (resolvedSearchParams.tab || 'subsidies') as 'budget' | 'subsidies' | 'theft';
+  const activeTab = (resolvedSearchParams.tab || 'subsidies') as 'budget' | 'subsidies' | 'theft' | 'demographics';
 
   // Data for budget tab
   const data = await getDistrictMetrics(district);
@@ -46,7 +47,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-2xl">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
-              <svg className="w-7 h-7 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-7 h-7 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
               </svg>
@@ -89,6 +90,12 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'budget' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
               >
                 Haushalt
+              </Link>
+              <Link
+                href={`/?tab=demographics&district=${district}`}
+                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'demographics' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
+              >
+                Demografie
               </Link>
             </div>
 
@@ -201,8 +208,12 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
               initialList={initialSubsidiesList}
               district={district}
             />
-          ) : (
+          ) : activeTab === 'theft' ? (
             <BicycleTheftMap district={district} />
+          ) : (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <PopulationMapWrapper district={district} />
+            </div>
           )
         }
       </div >
