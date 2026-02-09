@@ -8,11 +8,12 @@ import BicycleTheftMap from '@/components/BicycleTheftMapWrapper';
 import { getPopulation } from '@/lib/demographics';
 import BudgetChapters from '@/components/BudgetChapters';
 import PopulationMapWrapper from '@/components/PopulationMapWrapper';
+import BusinessMapWrapper from '@/components/BusinessMapWrapper';
 
 export default async function Dashboard({ searchParams }: { searchParams: Promise<any> }) {
   const resolvedSearchParams = await searchParams;
   const district = resolvedSearchParams.district || 'Berlin';
-  const activeTab = (resolvedSearchParams.tab || 'subsidies') as 'budget' | 'subsidies' | 'theft' | 'demographics';
+  const activeTab = (resolvedSearchParams.tab || 'subsidies') as 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business';
 
   // Data for budget tab
   const data = await getDistrictMetrics(district);
@@ -96,6 +97,12 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'demographics' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
               >
                 Demografie
+              </Link>
+              <Link
+                href={`/?tab=business&district=${district}`}
+                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'business' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
+              >
+                Gewerbe
               </Link>
             </div>
 
@@ -210,9 +217,13 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             />
           ) : activeTab === 'theft' ? (
             <BicycleTheftMap district={district} />
-          ) : (
+          ) : activeTab === 'demographics' ? (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
               <PopulationMapWrapper district={district} />
+            </div>
+          ) : (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <BusinessMapWrapper district={district} />
             </div>
           )
         }
