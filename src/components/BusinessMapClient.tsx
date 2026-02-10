@@ -168,8 +168,8 @@ export default function BusinessMapClient({ district }: { district: string }) {
     }, [globalBranchSearch]);
 
     const processedBusinesses = useMemo(() => {
-        let listData = businessDetails;
-        if (listData.length === 0 && searchResult && searchResult.points) {
+        let listData = Array.isArray(businessDetails) ? businessDetails : [];
+        if (listData.length === 0 && searchResult && Array.isArray(searchResult.points)) {
             let points = searchResult.points;
 
             // Filter by district if one is selected
@@ -260,7 +260,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
     }, [businessDetails, searchTerm, sortConfig, filterType, chartFilter, globalBranchSearch, selectedTheme, district, searchResult]);
 
     const stats = useMemo(() => {
-        if (!businessDetails.length) return null;
+        if (!Array.isArray(businessDetails) || !businessDetails.length) return null;
 
         const ages = businessDetails.map(b => b.age).filter(a => a !== null);
         const avgAge = ages.reduce((a, b) => a + b, 0) / ages.length;

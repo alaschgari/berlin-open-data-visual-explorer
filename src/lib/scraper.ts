@@ -82,6 +82,10 @@ export async function fetchBerlinData() {
     // Also fetch the subsidies database
     await fetchSubsidies();
 
+    // Fetch latest vehicle theft data
+    await fetchBicycleTheftData();
+    await fetchCarTheftData();
+
     return { success: true, count: totalDownloadCount };
 
   } catch (error) {
@@ -138,3 +142,42 @@ export async function fetchSubsidies() {
     return false;
   }
 }
+
+export async function fetchBicycleTheftData() {
+  const THEFT_URL = 'https://www.polizei-berlin.eu/Fahrraddiebstahl/Fahrraddiebstahl.csv';
+  const TARGET_PATH = path.join(DATA_DIR, 'Fahrraddiebstahl.csv');
+
+  console.log('Fetching Latest Bicycle Theft Data...');
+  try {
+    const response = await fetch(THEFT_URL);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const buffer = await response.arrayBuffer();
+    fs.writeFileSync(TARGET_PATH, Buffer.from(buffer));
+    console.log(`Saved latest bicycle theft data to ${TARGET_PATH}`);
+    return true;
+  } catch (error) {
+    console.error('Error fetching bicycle theft data:', error);
+    return false;
+  }
+}
+
+export async function fetchCarTheftData() {
+  const THEFT_URL = 'https://www.polizei-berlin.eu/Kfzdiebstahl/Kfzdiebstahl.csv';
+  const TARGET_PATH = path.join(DATA_DIR, 'Kfzdiebstahl.csv');
+
+  console.log('Fetching Latest Car Theft Data...');
+  try {
+    const response = await fetch(THEFT_URL);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const buffer = await response.arrayBuffer();
+    fs.writeFileSync(TARGET_PATH, Buffer.from(buffer));
+    console.log(`Saved latest car theft data to ${TARGET_PATH}`);
+    return true;
+  } catch (error) {
+    console.error('Error fetching car theft data:', error);
+    return false;
+  }
+}
+
