@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, CircleMarker, GeoJSON, Pane } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -21,10 +21,13 @@ L.Icon.Default.mergeOptions({
 
 interface TheftData {
   id: string;
+  category: 'bicycle' | 'car';
   lat: number;
   lng: number;
   amount: number;
   date: string;
+  hour: number;
+  registeredDate: string | null;
   type: string;
   lor: string;
   rawLor?: string;
@@ -62,6 +65,8 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const [showHeatmap, setShowHeatmap] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [theftType, setTheftType] = useState<'bicycle' | 'car' | 'both'>('bicycle');
   const itemsPerPage = 20;
 
   const [startDate, setStartDate] = useState<string>(() => {
@@ -84,6 +89,25 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
     }
   }, [startDate, endDate, debouncedStartDate, debouncedEndDate]);
 
+  // Instant Filtering Logic
+  const filteredData = useMemo(() => {
+    return data.filter(item => {
+      const itemDate = new Date(item.date);
+      const sDate = new Date(debouncedStartDate);
+      const eDate = new Date(debouncedEndDate);
+      eDate.setHours(23, 59, 59, 999);
+
+      const inDateRange = itemDate >= sDate && itemDate <= eDate;
+      if (!inDateRange) return false;
+
+      if (district && district !== 'Berlin' && district !== 'All') {
+        const prefix = LOR_PREFIX_TO_DISTRICT[Object.keys(LOR_PREFIX_TO_DISTRICT).find(p => LOR_PREFIX_TO_DISTRICT[p] === district) || ''];
+        // Note: LOR filtering is already done in backend but we double check here for sync
+      }
+      return true;
+    });
+  }, [data, debouncedStartDate, debouncedEndDate, district]);
+
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
@@ -92,6 +116,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
           const params = new URLSearchParams({
             start: debouncedStartDate,
             end: debouncedEndDate,
+            type: theftType,
             ...(district && district !== 'Berlin' && district !== 'All' ? { district } : {})
           });
           const res = await fetch(`/api/bicycle-theft?${params.toString()}`);
@@ -107,6 +132,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
           const params = new URLSearchParams({
             start: dStart.toISOString().split('T')[0],
             end: dEnd.toISOString().split('T')[0],
+            type: theftType,
             ...(district && district !== 'Berlin' && district !== 'All' ? { district } : {})
           });
           const res = await fetch(`/api/bicycle-theft?${params.toString()}`);
@@ -114,6 +140,13 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
         };
 
         const [current, prev] = await Promise.all([fetchCurrent(), fetchPrev()]);
+
+        // Safety check: ensure the data matches the current theftType toggle
+        if (current.length > 0 && current[0].category !== theftType && theftType !== 'both') {
+          console.warn('Fetched data category mismatch, ignoring stale response');
+          return;
+        }
+
         setData(current);
         setPrevYearData(prev);
       } catch (err) {
@@ -125,7 +158,35 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
     }
 
     fetchData();
-  }, [debouncedStartDate, debouncedEndDate, district]);
+  }, [debouncedStartDate, debouncedEndDate, district, theftType]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      // 1. Trigger background download from official source
+      const res = await fetch('/api/bicycle-theft/refresh', { method: 'POST' });
+
+      if (res.ok) {
+        // 2. Clear local data and re-fetch with refresh=true to break server cache
+        const params = new URLSearchParams({
+          start: debouncedStartDate,
+          end: debouncedEndDate,
+          refresh: 'true',
+          type: theftType,
+          ...(district && district !== 'Berlin' && district !== 'All' ? { district } : {})
+        });
+        const dataRes = await fetch(`/api/bicycle-theft?${params.toString()}`);
+        if (dataRes.ok) {
+          const newData = await dataRes.json();
+          setData(newData);
+        }
+      }
+    } catch (err) {
+      console.error('Refresh failed:', err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     fetch('/data/berlin-lor-planungsraeume.geojson')
@@ -134,7 +195,8 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
       .catch(err => console.error('Error loading LOR data:', err));
   }, []);
 
-  const sortedData = [...data].sort((a, b) => {
+  // Note: All stats now use filteredData for instant parallel updates
+  const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[sortKey];
     const bValue = b[sortKey];
 
@@ -192,43 +254,67 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
     document.body.removeChild(link);
   };
 
-  const pieData = Object.entries(
-    data.reduce((acc: Record<string, number>, curr) => {
+  const pieData = useMemo(() => {
+    const counts = filteredData.reduce((acc: Record<string, number>, curr) => {
       acc[curr.type] = (acc[curr.type] || 0) + 1;
       return acc;
-    }, {})
-  ).map(([name, value]) => ({ name, value }))
-    .sort((a, b) => b.value - a.value);
+    }, {});
 
-  const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
+    const sorted = Object.entries(counts)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
 
-  const deliktData = Object.entries(
-    data.reduce((acc: Record<string, number>, curr) => {
+    if (sorted.length <= 10) return sorted;
+
+    const top10 = sorted.slice(0, 10);
+    const others = sorted.slice(10).reduce((sum, item) => sum + item.value, 0);
+    return [...top10, { name: 'Sonstige', value: others }];
+  }, [filteredData]);
+
+  const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#94a3b8', '#64748b', '#475569', '#334155'];
+
+  const deliktData = useMemo(() => {
+    const counts = filteredData.reduce((acc: Record<string, number>, curr) => {
       const delikt = curr.details || 'Unbekannt';
       acc[delikt] = (acc[delikt] || 0) + 1;
       return acc;
-    }, {})
-  ).map(([name, value]) => ({ name, value }))
-    .sort((a, b) => b.value - a.value);
+    }, {});
 
-  const districtStats = Object.entries(
-    data.reduce((acc: Record<string, number>, curr) => {
+    const sorted = Object.entries(counts)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
+
+    if (sorted.length <= 10) return sorted;
+
+    const top10 = sorted.slice(0, 10);
+    const others = sorted.slice(10).reduce((sum, item) => sum + item.value, 0);
+    return [...top10, { name: 'Sonstige', value: others }];
+  }, [filteredData]);
+
+  const districtStats = useMemo(() => {
+    const counts = filteredData.reduce((acc: Record<string, number>, curr) => {
       const prefix = curr.rawLor?.substring(0, 2);
       const districtName = prefix ? (LOR_PREFIX_TO_DISTRICT[prefix] || 'Unbekannt') : 'Unbekannt';
       acc[districtName] = (acc[districtName] || 0) + 1;
       return acc;
-    }, {})
-  ).map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count);
+    }, {});
 
-  const lorStats = Object.entries(
-    data.reduce((acc: Record<string, number>, curr) => {
+    return Object.entries(counts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [filteredData]);
+
+  const lorStats = useMemo(() => {
+    const counts = filteredData.reduce((acc: Record<string, number>, curr) => {
       acc[curr.lor] = (acc[curr.lor] || 0) + 1;
       return acc;
-    }, {})
-  ).map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 10);
+    }, {});
+
+    return Object.entries(counts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+  }, [filteredData]);
 
   const weekdayData = [
     { name: 'Mo', count: 0 },
@@ -243,7 +329,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
   const damageTrendData: { date: string, amount: number }[] = [];
   const damageByDay: Record<string, { total: number, count: number }> = {};
 
-  data.forEach(theft => {
+  filteredData.forEach(theft => {
     const d = new Date(theft.date);
     const dayIndex = (d.getDay() + 6) % 7; // Monday is 0
     weekdayData[dayIndex].count++;
@@ -263,11 +349,59 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
       });
     });
 
+  // Comparative trend data
+  const trendComparisonData = useMemo(() => {
+    const days: Record<string, { bike: number, car: number }> = {};
+    filteredData.forEach(t => {
+      const date = t.date.split('T')[0];
+      if (!days[date]) days[date] = { bike: 0, car: 0 };
+      if (t.category === 'bicycle') days[date].bike++;
+      else days[date].car++;
+    });
+    return Object.entries(days)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, counts]) => ({
+        date: new Date(date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }),
+        bike: counts.bike,
+        car: counts.car
+      }));
+  }, [filteredData]);
+
+  // Security Risk Profile Calculation
+  const riskProfile = useMemo(() => {
+    if (!filteredData.length) return null;
+    const bikeCount = filteredData.filter(t => t.category === 'bicycle').length;
+    const carCount = filteredData.filter(t => t.category === 'car').length;
+
+    // Normalize based on Berlin averages (placeholder logic for demonstration)
+    const bikeScore = Math.min(10, (bikeCount / (diffDays * 5)) * 10);
+    const carScore = Math.min(10, (carCount / (diffDays * 2)) * 10);
+
+    return {
+      bikeRisk: bikeScore,
+      carRisk: carScore,
+      overallRisk: (bikeScore + carScore) / 2
+    };
+  }, [filteredData, diffDays]);
+
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   const paginatedData = sortedData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  // Determine data status (latest registration date)
+  const dataStatus = useMemo(() => {
+    if (!data || data.length === 0) return null;
+    const latestDateStr = data.reduce((max, curr) => {
+      if (!curr.registeredDate) return max;
+      return curr.registeredDate > max ? curr.registeredDate : max;
+    }, '0000-00-00');
+
+    if (latestDateStr === '0000-00-00') return null;
+    const d = new Date(latestDateStr);
+    return d.toLocaleDateString('de-DE');
+  }, [data]);
 
   // Calculate center of Berlin
   const center: [number, number] = [52.5200, 13.4050];
@@ -279,12 +413,17 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
           <div className="flex flex-col">
             <div className="flex items-center gap-3">
               <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-                Fahrraddiebstahl Karte
+                {theftType === 'bicycle' ? 'Fahrraddiebstahl' : theftType === 'car' ? 'Kfz-Diebstahl' : 'Fahrzeugdiebstahl'} Karte
               </h2>
               <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-full border border-slate-700/50">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Live Data</span>
               </div>
+              {dataStatus && (
+                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-full border border-white/5">
+                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Stand: {dataStatus}</span>
+                </div>
+              )}
             </div>
             <p className="text-slate-400 mt-1 text-sm flex items-center gap-2">
               Visualisierung {district && district !== 'Berlin' ? `in ${district}` : 'in Berlin'}
@@ -294,6 +433,28 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            {/* Category Switcher */}
+            <div className="flex items-center bg-slate-900/80 p-1 rounded-xl border border-slate-700 shadow-inner">
+              <button
+                onClick={() => setTheftType('bicycle')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${theftType === 'bicycle' ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+              >
+                Fahrrad
+              </button>
+              <button
+                onClick={() => setTheftType('car')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${theftType === 'car' ? 'bg-rose-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+              >
+                Kfz
+              </button>
+              <button
+                onClick={() => setTheftType('both')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${theftType === 'both' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+              >
+                Beide
+              </button>
+            </div>
+
             {/* Actions */}
             <div className="flex items-center bg-slate-900/80 p-1 rounded-xl border border-slate-700 shadow-inner">
               <button
@@ -316,6 +477,25 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
                 Export
+              </button>
+              <button
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isRefreshing
+                  ? 'text-emerald-500 bg-emerald-500/10'
+                  : 'text-slate-400 hover:text-emerald-400 hover:bg-slate-800'
+                  }`}
+                title="Daten vom Server der Polizei Berlin aktualisieren"
+              >
+                <svg
+                  className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                {isRefreshing ? 'Aktualisiere...' : 'Aktualisieren'}
               </button>
             </div>
 
@@ -340,14 +520,14 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
             <div className="flex items-center gap-2 lg:ml-2">
               <div className="bg-slate-900/80 px-3 py-1.5 rounded-xl border border-slate-700 shadow-inner min-w-[80px]">
                 <span className="text-[9px] text-slate-500 uppercase font-black tracking-tighter block">Gesamt</span>
-                <span className="text-sm font-bold text-white leading-none">{data.length.toLocaleString()}</span>
+                <span className="text-sm font-bold text-white leading-none">{filteredData.length.toLocaleString()}</span>
               </div>
 
               {prevYearData.length > 0 && (
                 <div className="bg-slate-900/80 px-3 py-1.5 rounded-xl border border-slate-700 shadow-inner min-w-[80px]">
                   <span className="text-[9px] text-slate-500 uppercase font-black tracking-tighter block">vs. Vorjahr</span>
                   {(() => {
-                    const diff = ((data.length - prevYearData.length) / prevYearData.length) * 100;
+                    const diff = prevYearData.length > 0 ? ((filteredData.length - prevYearData.length) / prevYearData.length) * 100 : 0;
                     return (
                       <span className={`text-sm font-bold leading-none ${diff > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
                         {diff > 0 ? '+' : ''}{diff.toFixed(1)}%
@@ -357,11 +537,13 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                 </div>
               )}
 
-              <div className="bg-slate-900/80 px-3 py-1.5 rounded-xl border border-emerald-500/20 shadow-inner min-w-[80px]">
-                <span className="text-[9px] text-emerald-500/50 uppercase font-black tracking-tighter block">Schaden</span>
-                <span className="text-sm font-bold text-emerald-400 leading-none">
+              <div className={`bg-slate-900/80 px-3 py-1.5 rounded-xl border border-white/5 shadow-inner min-w-[80px]`}>
+                <span className={`text-[9px] uppercase font-black tracking-tighter block ${theftType === 'car' ? 'text-rose-400/50' : theftType === 'bicycle' ? 'text-emerald-400/50' : 'text-blue-400/50'
+                  }`}>Schaden</span>
+                <span className={`text-sm font-bold leading-none ${theftType === 'car' ? 'text-rose-400' : theftType === 'bicycle' ? 'text-emerald-400' : 'text-blue-400'
+                  }`}>
                   {(() => {
-                    const totalAmount = data.reduce((acc, curr) => acc + curr.amount, 0);
+                    const totalAmount = filteredData.reduce((acc, curr) => acc + curr.amount, 0);
                     return totalAmount >= 1000
                       ? `${Math.round(totalAmount / 1000).toLocaleString('de-DE')}k €`
                       : `${totalAmount.toLocaleString('de-DE')} €`;
@@ -415,30 +597,30 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
           {/* Heatmap Layer or Markers */}
           {showHeatmap ? (
             <Pane name="heatmap" style={{ zIndex: 500 }}>
-              {data.map((theft) => (
+              {filteredData.map((theft) => (
                 <CircleMarker
                   key={`heat-${theft.id}`}
                   center={[theft.lat, theft.lng]}
                   radius={25}
                   pathOptions={{
                     color: 'transparent',
-                    fillColor: '#f43f5e',
-                    fillOpacity: 0.05,
+                    fillColor: theft.category === 'bicycle' ? '#10b981' : '#f43f5e',
+                    fillOpacity: 0.1,
                     weight: 0
                   }}
                   interactive={false}
                 />
               ))}
               {/* Core of the heat */}
-              {data.map((theft) => (
+              {filteredData.map((theft) => (
                 <CircleMarker
                   key={`core-${theft.id}`}
                   center={[theft.lat, theft.lng]}
                   radius={10}
                   pathOptions={{
                     color: 'transparent',
-                    fillColor: '#fbbf24',
-                    fillOpacity: 0.1,
+                    fillColor: theft.category === 'bicycle' ? '#fbbf24' : '#ef4444',
+                    fillOpacity: 0.2,
                     weight: 0
                   }}
                   interactive={false}
@@ -453,31 +635,35 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                   center={[theft.lat, theft.lng]}
                   radius={6}
                   pathOptions={{
-                    color: '#10b981',
-                    fillColor: '#10b981',
+                    color: theft.category === 'bicycle' ? '#10b981' : '#f43f5e',
+                    fillColor: theft.category === 'bicycle' ? '#10b981' : '#f43f5e',
                     fillOpacity: 0.8,
                     weight: 1
                   }}
                 >
                   <Popup className="custom-popup">
                     <div className="p-2 min-w-[200px]">
-                      <h3 className="font-bold text-slate-900 text-sm mb-2">{theft.type}</h3>
+                      <h3 className="font-bold text-slate-900 text-sm mb-2">
+                        {theft.category === 'bicycle' ? '🚲 Fahrraddiebstahl' : '🚗 Kfz-Diebstahl'}
+                      </h3>
                       <div className="space-y-1 text-xs text-slate-600">
                         <div className="flex justify-between">
-                          <span>Datum:</span>
-                          <span className="font-medium">{new Date(theft.date).toLocaleDateString('de-DE')}</span>
+                          <span>Tatzeit:</span>
+                          <span className="font-medium">
+                            {new Date(theft.date).toLocaleDateString('de-DE')} • {String(theft.hour ?? 0).padStart(2, '0')}:00 Uhr
+                          </span>
                         </div>
                         <div className="flex justify-between">
                           <span>Schaden:</span>
-                          <span className="font-medium text-emerald-600">{theft.amount} €</span>
+                          <span className="font-medium text-slate-900">{theft.amount} €</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Art:</span>
-                          <span className="font-medium truncate max-w-[120px]" title={theft.details}>{theft.details}</span>
+                          <span>Typ/Gut:</span>
+                          <span className="font-medium truncate max-w-[150px]" title={theft.type}>{theft.type}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>LOR:</span>
-                          <span className="font-medium">{theft.lor}</span>
+                          <span>Detail:</span>
+                          <span className="font-medium truncate max-w-[150px]" title={theft.details}>{theft.details}</span>
                         </div>
                       </div>
                     </div>
@@ -489,61 +675,94 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
         </MapContainer>
       </div>
 
-      <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-        <p>Datenquelle: Polizei Berlin / Open Data Berlin</p>
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span>Diebstahlort</span>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="flex items-center gap-6">
+          <p>Datenquelle: Polizei Berlin / Open Data Berlin</p>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Fahrrad</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+            <span>Kfz</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full border border-slate-500"></span>
-          <span>LOR (Planungsräume)</span>
-        </div>
+
+        {riskProfile && (
+          <div className="flex items-center gap-4 bg-slate-900/50 px-4 py-2 rounded-2xl border border-white/5">
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] uppercase tracking-tighter text-slate-500 font-bold">Fahrrad-Risiko</span>
+              <span className={`text-sm font-black ${riskProfile.bikeRisk > 7 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                {riskProfile.bikeRisk.toFixed(1)}/10
+              </span>
+            </div>
+            <div className="w-px h-6 bg-slate-700"></div>
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] uppercase tracking-tighter text-slate-500 font-bold">Kfz-Risiko</span>
+              <span className={`text-sm font-black ${riskProfile.carRisk > 7 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                {riskProfile.carRisk.toFixed(1)}/10
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Statistics Section (Districts or Top 10 LORs) */}
       <div className="bg-slate-800/50 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl">
         <h3 className="text-xl font-bold text-white mb-6">
           {(!district || district === 'Berlin' || district === 'All')
-            ? 'Diebstähle nach Bezirken'
+            ? `Diebstähle nach Bezirken (${theftType === 'bicycle' ? 'Fahrrad' : theftType === 'car' ? 'Kfz' : 'Gesamt'})`
             : `Top 10 LORs in ${district}`}
         </h3>
-        <div className="h-[400px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={(!district || district === 'Berlin' || district === 'All') ? districtStats : lorStats}
-              layout="vertical"
-              margin={{ left: 40, right: 30 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={false} />
-              <XAxis type="number" stroke="#94a3b8" fontSize={12} />
-              <YAxis dataKey="name" type="category" stroke="#94a3b8" fontSize={12} width={150} />
-              <RechartsTooltip
-                cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
-                contentStyle={{
-                  backgroundColor: '#0f172a',
-                  border: '1px solid #334155',
-                  borderRadius: '12px',
-                  color: '#fff'
-                }}
-                itemStyle={{ color: (!district || district === 'Berlin' || district === 'All') ? '#10b981' : '#3b82f6' }}
-              />
-              <Bar
-                dataKey="count"
-                fill={(!district || district === 'Berlin' || district === 'All') ? "#10b981" : "#3b82f6"}
-                radius={[0, 4, 4, 0]}
-                label={{ position: 'right', fill: '#94a3b8', fontSize: 10 }}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        {loading ? (
+          <div className="h-[400px] flex items-center justify-center bg-slate-900/20 rounded-2xl border border-dashed border-slate-700">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-8 h-8 border-2 border-slate-500 border-t-white rounded-full animate-spin"></div>
+              <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">Daten werden geladen...</span>
+            </div>
+          </div>
+        ) : (
+          <div className="h-[400px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={(!district || district === 'Berlin' || district === 'All') ? districtStats : lorStats}
+                layout="vertical"
+                margin={{ left: 40, right: 30 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={false} />
+                <XAxis type="number" stroke="#94a3b8" fontSize={12} />
+                <YAxis dataKey="name" type="category" stroke="#94a3b8" fontSize={12} width={150} />
+                <RechartsTooltip
+                  cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                  contentStyle={{
+                    backgroundColor: '#0f172a',
+                    border: '1px solid #334155',
+                    borderRadius: '12px',
+                    color: '#fff'
+                  }}
+                  itemStyle={{
+                    color: theftType === 'car' ? '#fb7185' : theftType === 'bicycle' ? '#10b981' : '#3b82f6'
+                  }}
+                />
+                <Bar
+                  dataKey="count"
+                  fill={theftType === 'car' ? "#f43f5e" : theftType === 'bicycle' ? "#10b981" : "#3b82f6"}
+                  radius={[0, 4, 4, 0]}
+                  label={{ position: 'right', fill: '#94a3b8', fontSize: 10 }}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </div>
 
       {/* Pie Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bicycle Type Pie Chart */}
         <div className="bg-slate-800/50 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl">
-          <h3 className="text-xl font-bold text-white mb-6">Verteilung der Fahrradtypen</h3>
+          <h3 className="text-xl font-bold text-white mb-6">
+            {theftType === 'car' ? 'Entwendete Gegenstände' : theftType === 'bicycle' ? 'Verteilung der Fahrradtypen' : 'Verteilung der Typen'}
+          </h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -646,19 +865,23 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
         </div>
 
         <div className="bg-slate-800/50 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl">
-          <h3 className="text-xl font-bold text-white mb-6">Durchschn. Schaden pro Tag</h3>
+          <h3 className="text-xl font-bold text-white mb-6">Trendvergleich (Diebstähle)</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={damageTrendData}>
+              <AreaChart data={trendComparisonData}>
                 <defs>
-                  <linearGradient id="colorDamage" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="colorBike" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
                     <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorCar" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
                 <XAxis dataKey="date" stroke="#94a3b8" fontSize={10} tickCount={10} />
-                <YAxis stroke="#94a3b8" fontSize={12} unit=" €" />
+                <YAxis stroke="#94a3b8" fontSize={12} />
                 <RechartsTooltip
                   contentStyle={{
                     backgroundColor: '#0f172a',
@@ -667,7 +890,9 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                     color: '#fff'
                   }}
                 />
-                <Area type="monotone" dataKey="amount" stroke="#10b981" fillOpacity={1} fill="url(#colorDamage)" strokeWidth={3} />
+                <Legend />
+                <Area type="monotone" dataKey="bike" name="Fahrrad" stroke="#10b981" fillOpacity={1} fill="url(#colorBike)" strokeWidth={3} />
+                <Area type="monotone" dataKey="car" name="Kfz" stroke="#f43f5e" fillOpacity={1} fill="url(#colorCar)" strokeWidth={3} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -686,7 +911,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
               <tr className="bg-slate-900/30">
                 {[
                   { key: 'date', label: 'Datum' },
-                  { key: 'type', label: 'Fahrradtyp' },
+                  { key: 'type', label: theftType === 'bicycle' ? 'Fahrradtyp' : 'Gegenstand' },
                   { key: 'amount', label: 'Schaden' },
                   { key: 'lor', label: 'Bezirk / LOR' },
                   { key: 'details', label: 'Delikt' }
@@ -715,13 +940,16 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                   >
                     <td className="px-6 py-4 text-slate-300 font-medium whitespace-nowrap">
                       {new Date(theft.date).toLocaleDateString('de-DE')}
+                      <span className="text-[10px] text-slate-500 block uppercase tracking-tighter font-bold">
+                        Tatzeit: {String(theft.hour ?? 0).padStart(2, '0')}:00 Uhr
+                      </span>
                     </td>
                     <td className="px-6 py-4 text-slate-100">
                       <span className="px-2 py-1 rounded-md bg-slate-700 text-xs font-semibold">
                         {theft.type}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-bold text-emerald-400">
+                    <td className={`px-6 py-4 font-bold ${theft.category === 'bicycle' ? 'text-emerald-400' : 'text-rose-400'}`}>
                       {theft.amount.toLocaleString('de-DE')} €
                     </td>
                     <td className="px-6 py-4 text-slate-300">

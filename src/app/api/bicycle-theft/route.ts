@@ -12,9 +12,18 @@ interface TheftRecord {
     LOR: string;
     SCHADENSHOEHE: string;
     VERSUCH: string;
+}
+
+interface BikeTheftRecord extends TheftRecord {
     ART_DES_FAHRRADS: string;
     DELIKT: string;
     ERFASSUNGSGRUND: string;
+}
+
+interface CarTheftRecord extends TheftRecord {
+    DELIKT: string;
+    EINDRINGEN_IN_KFZ: string;
+    ERLANGTES_GUT: string;
 }
 
 interface LorCentroid {
@@ -48,110 +57,114 @@ function addJitter(lat: number, lng: number, radiusDeg: number = 0.002) {
     };
 }
 
-const globalForCache = global as unknown as { bicycleTheftCache: any[] | null };
+const globalForCache = global as unknown as {
+    bicycleTheftCacheV2: any[] | null;
+    carTheftCacheV2: any[] | null;
+};
 
-if (globalForCache.bicycleTheftCache === undefined) {
-    globalForCache.bicycleTheftCache = null;
-}
+if (globalForCache.bicycleTheftCacheV2 === undefined) globalForCache.bicycleTheftCacheV2 = null;
+if (globalForCache.carTheftCacheV2 === undefined) globalForCache.carTheftCacheV2 = null;
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const startDateStr = searchParams.get('start');
     const endDateStr = searchParams.get('end');
     const district = searchParams.get('district');
+    const refresh = searchParams.get('refresh') === 'true';
+    const type = searchParams.get('type') || 'bicycle'; // bicycle, car, both
 
     try {
-        let mappedData: any[] = [];
+        const lorPath = path.join(process.cwd(), 'src', 'lib', 'lor-centroids.json');
+        if (!fs.existsSync(lorPath)) throw new Error(`LOR centroids file not found at ${lorPath}`);
+        const lorText = fs.readFileSync(lorPath, 'utf-8');
+        const lorCentroids: Record<string, LorCentroid> = JSON.parse(lorText);
 
-        if (globalForCache.bicycleTheftCache) {
-            mappedData = globalForCache.bicycleTheftCache;
-        } else {
-            console.log('Reading bicycle theft data from local CSV...');
+        const fetchAndMap = (theftType: string) => {
+            const isBike = theftType === 'bicycle';
+            const cacheKey = (isBike ? 'bicycleTheftCacheV2' : 'carTheftCacheV2') as keyof typeof globalForCache;
 
-            const csvPath = path.join(process.cwd(), 'data', 'raw', 'Fahrraddiebstahl.csv');
-            const lorPath = path.join(process.cwd(), 'src', 'lib', 'lor-centroids.json');
-
-            if (!fs.existsSync(csvPath)) {
-                throw new Error(`CSV file not found at ${csvPath}`);
-            }
-            if (!fs.existsSync(lorPath)) {
-                throw new Error(`LOR centroids file not found at ${lorPath}`);
+            if (globalForCache[cacheKey] && !refresh) {
+                return globalForCache[cacheKey];
             }
 
+            const fileName = isBike ? 'Fahrraddiebstahl.csv' : 'Kfzdiebstahl.csv';
+            const csvPath = path.join(process.cwd(), 'data', 'raw', fileName);
+            if (!fs.existsSync(csvPath)) return [];
+
+            // Both datasets from Polizei Berlin typically use latin1 encoding
             const csvText = fs.readFileSync(csvPath, 'latin1');
-            const lorText = fs.readFileSync(lorPath, 'utf-8');
-            const lorCentroids: Record<string, LorCentroid> = JSON.parse(lorText);
-
             const parseResult = Papa.parse(csvText, {
                 header: true,
                 skipEmptyLines: true,
+                delimiter: isBike ? ',' : '|'
             });
 
-            const rawData = parseResult.data as TheftRecord[];
-
-            mappedData = rawData.reduce((acc: any[], record, index) => {
-                if (!record.TATZEIT_ANFANG_DATUM) return acc;
+            const rawData = parseResult.data as any[];
+            const mapped = rawData.reduce((acc: any[], record, index) => {
+                if (!record.TATZEIT_ANFANG_DATUM || !record.LOR) return acc;
 
                 const dateParts = record.TATZEIT_ANFANG_DATUM.split('.');
                 if (dateParts.length !== 3) return acc;
-
                 const theftDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
-
                 if (isNaN(theftDate.getTime())) return acc;
-                if (!record.LOR) return acc;
 
                 let lorData = lorCentroids[record.LOR];
-
                 if (lorData) {
                     const coords = addJitter(lorData.lat, lorData.lng, 0.003);
 
+                    // Parse registered date
+                    const regDateParts = (record.ANGELEGT_AM || '').split('.');
+                    const registeredDate = regDateParts.length === 3
+                        ? `${regDateParts[2]}-${regDateParts[1]}-${regDateParts[0]}`
+                        : null;
+
                     acc.push({
-                        id: `theft-${index}-${record.LOR}`,
+                        id: `${theftType}-${index}-${record.LOR}`,
+                        category: theftType,
                         lat: coords.lat,
                         lng: coords.lng,
                         amount: parseInt(record.SCHADENSHOEHE) || 0,
                         date: theftDate.toISOString(),
-                        type: record.ART_DES_FAHRRADS,
+                        hour: parseInt((record.TATZEIT_ANFANG_STUNDE || '0').split(':')[0]) || 0,
+                        registeredDate,
+                        type: isBike ? record.ART_DES_FAHRRADS : (record.ERLANGTES_GUT || 'KFZ'),
                         lor: lorData.name,
                         rawLor: record.LOR,
-                        details: record.DELIKT
+                        details: isBike ? record.DELIKT : (record.EINDRINGEN_IN_KFZ || record.DELIKT)
                     });
                 }
-
                 return acc;
             }, []);
 
-            globalForCache.bicycleTheftCache = mappedData;
+            globalForCache[cacheKey] = mapped;
+            return mapped;
+        };
+
+        let allData: any[] = [];
+        if (type === 'bicycle' || type === 'both') {
+            allData = [...allData, ...fetchAndMap('bicycle')];
+        }
+        if (type === 'car' || type === 'both') {
+            allData = [...allData, ...fetchAndMap('car')];
         }
 
         const startDate = startDateStr ? new Date(startDateStr) : new Date(0);
         const endDate = endDateStr ? new Date(endDateStr) : new Date();
-
         endDate.setHours(23, 59, 59, 999);
 
-        const filteredData = mappedData.filter(item => {
+        const filteredData = allData.filter(item => {
             const itemDate = new Date(item.date);
             const inDateRange = itemDate >= startDate && itemDate <= endDate;
-
             if (!inDateRange) return false;
 
             if (district && district !== 'Berlin' && district !== 'All') {
-                const prefix = DISTRICT_TO_LOR_PREFIX[district];
-                if (prefix) {
-                    if (item.rawLor && item.rawLor.startsWith(prefix)) {
-                        return true;
-                    }
-                    return false;
-                }
+                return item.lor === district;
             }
-
             return true;
         });
 
         return NextResponse.json(filteredData, {
-            headers: {
-                'Cache-Control': 'public, max-age=3600, s-maxage=3600',
-            },
+            headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=3600' },
         });
 
     } catch (error) {
