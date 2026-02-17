@@ -75,7 +75,7 @@ export default function BudgetExplorerView() {
                     <div className="bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/20 flex items-center gap-3">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                         <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest">
-                            Gesamtvolumen: {(currentData?.value / 1e9).toFixed(2)} Mrd. €
+                            Gesamtvolumen: {((currentData?.value || 0) / 1e9).toFixed(2)} Mrd. €
                         </span>
                     </div>
                 )}
