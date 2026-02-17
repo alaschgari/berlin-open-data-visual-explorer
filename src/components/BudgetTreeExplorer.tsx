@@ -103,7 +103,7 @@ export default function BudgetTreeExplorer({ data, onSelect }: BudgetTreeExplore
         return cleaned.trim();
     };
 
-    const renderNode = (node: TreeNode, depth: number, parentTotal: number, parentName?: string) => {
+    const renderNode = (node: TreeNode, depth: number, parentTotal: number, parentName?: string): JSX.Element => {
         const isExpanded = expandedKeys.has(node.name);
         const hasChildren = node.children && node.children.length > 0;
         const percentage = (node.value / parentTotal) * 100;
@@ -121,8 +121,8 @@ export default function BudgetTreeExplorer({ data, onSelect }: BudgetTreeExplore
                     onClick={() => onSelect(node)}
                     title={node.name}
                     className={`group flex items-center py-2 px-3 rounded-xl cursor-pointer transition-all border ${isMatch
-                            ? 'bg-emerald-500/20 border-emerald-500/30'
-                            : 'border-transparent hover:bg-slate-700/30'
+                        ? 'bg-emerald-500/20 border-emerald-500/30'
+                        : 'border-transparent hover:bg-slate-700/30'
                         }`}
                     style={{ marginLeft: `${depth * 1.5}rem` }}
                 >
