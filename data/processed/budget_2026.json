@@ -1,0 +1,1665 @@
+{
+  "name": "Berlin 2026",
+  "children": [
+    {
+      "name": "Bildung, Jugend und Familie",
+      "code": "10",
+      "value": 5180099800,
+      "children": [
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Politisch-Administrativer Bereich und Service -",
+          "code": "1000",
+          "value": 106264600
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Personalüberhang -",
+          "code": "1009",
+          "value": 1395100
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Schulträgerschaft und operative Schulaufsicht der beruflichen und zentral verwalteten Schulen",
+          "code": "1011",
+          "value": 49256000
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Operative Schulaufsicht der allgemeinbildenden Schulen -",
+          "code": "1012",
+          "value": 238225500
+        },
+        {
+          "name": "Berliner Landesinstitut für Qualifizierung und Qualitätsentwicklung an Schulen (BLiQ)",
+          "code": "1013",
+          "value": 30503000
+        },
+        {
+          "name": "Berliner Landeszentrale für politische Bildung",
+          "code": "1014",
+          "value": 5195200
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Grundschulen -",
+          "code": "1015",
+          "value": 1715035000
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Gemeinschaftsschulen -",
+          "code": "1016",
+          "value": 273985700
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Gymnasien -",
+          "code": "1018",
+          "value": 653110000
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Integrierte Sekundarschulen -",
+          "code": "1019",
+          "value": 674892000
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Sonderpädagogische Förderzentren -",
+          "code": "1020",
+          "value": 361483000
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Berufsbildende Schulen -",
+          "code": "1021",
+          "value": 516272700
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Staatliche Technikerschule -",
+          "code": "1022",
+          "value": 6530800
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Staatliche Ballett- und Artistikschule Berlin -",
+          "code": "1023",
+          "value": 9467500
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Zentral verwaltete Schulen -",
+          "code": "1024",
+          "value": 86725700
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Startchancen-Programm -",
+          "code": "1031",
+          "value": 46282000
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Familie und frühkindliche Bildung -",
+          "code": "1040",
+          "value": 125060800
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Familienpolitik und Familienförderung -",
+          "code": "1041",
+          "value": 31785600
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Jugend und Kinderschutz -",
+          "code": "1042",
+          "value": 114879600
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Berliner Notdienst Kinderschutz -",
+          "code": "1043",
+          "value": 15716700
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Sonstige Aufgaben nach und Leistungen außerhalb SGB VIII -",
+          "code": "1045",
+          "value": 34636000
+        },
+        {
+          "name": "Sozialpädagogisches Fortbildungsinstitut Berlin-Brandenburg",
+          "code": "1051",
+          "value": 10301200
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Schulentwicklungsplanung und Schulinfrastruktur im Land Berlin -",
+          "code": "1061",
+          "value": 18065400
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie - Schule in der digitalen Welt -",
+          "code": "1080",
+          "value": 55030700
+        }
+      ]
+    },
+    {
+      "name": "Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung",
+      "code": "11",
+      "value": 2249618100,
+      "children": [
+        {
+          "name": "Senatsverwaltung für Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung - Politisch-Administrativer Bereich und Service -",
+          "code": "1100",
+          "value": 11745700
+        },
+        {
+          "name": "Senatsverwaltung für Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung - Personalüberhang -",
+          "code": "1109",
+          "value": 147000
+        },
+        {
+          "name": "Senatsverwaltung für Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung - Beauftragte/Beauftragter für Partizipation, Integration und Migration -",
+          "code": "1120",
+          "value": 58202200
+        },
+        {
+          "name": "Senatsverwaltung für Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung - Landesstelle für Gleichbehandlung gegen Diskriminierung (Landesantidiskriminierungsstelle) -",
+          "code": "1130",
+          "value": 37331500
+        },
+        {
+          "name": "Senatsverwaltung für Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung - Arbeit und Berufliche Bildung -",
+          "code": "1140",
+          "value": 154628700
+        },
+        {
+          "name": "Landesarbeitsgericht Berlin-Brandenburg",
+          "code": "1141",
+          "value": 8647000
+        },
+        {
+          "name": "Arbeitsgericht",
+          "code": "1142",
+          "value": 17772100
+        },
+        {
+          "name": "Landesamt für Arbeitsschutz, Gesundheitsschutz und technische Sicherheit",
+          "code": "1145",
+          "value": 15906800
+        },
+        {
+          "name": "Senatsverwaltung für Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung - Soziales -",
+          "code": "1150",
+          "value": 342030800
+        },
+        {
+          "name": "Landesamt für Gesundheit und Soziales - Leitung der Behörde und Service -",
+          "code": "1160",
+          "value": 21102400
+        },
+        {
+          "name": "Landesamt für Gesundheit und Soziales - Gesundheits- und Verbraucherschutz -",
+          "code": "1162",
+          "value": 26077300
+        },
+        {
+          "name": "Landesamt für Gesundheit und Soziales - Versorgung -",
+          "code": "1164",
+          "value": 154423100
+        },
+        {
+          "name": "Landesamt für Gesundheit und Soziales - Soziales -",
+          "code": "1166",
+          "value": 527760800
+        },
+        {
+          "name": "Landesamt für Gesundheit und Soziales - Öffentlicher Gesundheitsdienst und ärztliche Begutachtungen -",
+          "code": "1167",
+          "value": 16444600
+        },
+        {
+          "name": "Landesamt für Flüchtlingsangelegenheiten - Leitung der Behörde und Service -",
+          "code": "1170",
+          "value": 29431500
+        },
+        {
+          "name": "Landesamt für Flüchtlingsangelegenheiten - Zentrale Aufnahmeeinrichtung und Leistungsstelle für Asylberwerberinnen/ Asylbewerber",
+          "code": "1171",
+          "value": 259124200
+        },
+        {
+          "name": "Landesamt für Flüchtlingsangelegenheiten - Berliner Unterbringungsleitstelle -",
+          "code": "1172",
+          "value": 505424400
+        },
+        {
+          "name": "Senatsverwaltung für Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung - Frauen und Gleichstellung -",
+          "code": "1180",
+          "value": 63418000
+        }
+      ]
+    },
+    {
+      "name": "Stadtentwicklung, Bauen und Wohnen",
+      "code": "12",
+      "value": 2551861200,
+      "children": [
+        {
+          "name": "Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen - Politisch-Administrativer Bereich und Service -",
+          "code": "1200",
+          "value": 46434800
+        },
+        {
+          "name": "Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen - Personalüberhang -",
+          "code": "1209",
+          "value": 488000
+        },
+        {
+          "name": "Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen - Stadtplanung -",
+          "code": "1210",
+          "value": 16273200
+        },
+        {
+          "name": "Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen - Gemeinsame Landesplanung -",
+          "code": "1214",
+          "value": 2038300
+        },
+        {
+          "name": "Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen - Städtebau und Projekte -",
+          "code": "1220",
+          "value": 176759100
+        },
+        {
+          "name": "Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen - Geoinformation -",
+          "code": "1230",
+          "value": 11077200
+        },
+        {
+          "name": "Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen - Wohnungswesen, Stadterneuerung, Städtebauförderung -",
+          "code": "1240",
+          "value": 240304600
+        },
+        {
+          "name": "Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen - Hochbau -",
+          "code": "1250",
+          "value": 306171800
+        },
+        {
+          "name": "Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen - Ministerielle Angelegenheiten des Bauens, Grundsatz und Recht -",
+          "code": "1260",
+          "value": 16944500
+        },
+        {
+          "name": "Denkmalschutz und Denkmalpflege",
+          "code": "1270",
+          "value": 2935200
+        },
+        {
+          "name": "Landesdenkmalamt",
+          "code": "1271",
+          "value": 16430500
+        },
+        {
+          "name": "Förderung des Wohnungsbaus",
+          "code": "1295",
+          "value": 1716004000
+        }
+      ]
+    },
+    {
+      "name": "Wirtschaft, Energie und Betriebe",
+      "code": "13",
+      "value": 1095934500,
+      "children": [
+        {
+          "name": "Senatsverwaltung für Wirtschaft, Energie und Betriebe - Politisch-Administrativer Bereich und Service -",
+          "code": "1300",
+          "value": 17587000
+        },
+        {
+          "name": "Senatsverwaltung für Wirtschaft, Energie unmd Betriebe - Personalüberhang -",
+          "code": "1309",
+          "value": 213000
+        },
+        {
+          "name": "Senatsverwaltung für Wirtschaft, Energie und Betriebe - Wirtschaftspolitik und Wirtschaftsordnung -",
+          "code": "1320",
+          "value": 108614500
+        },
+        {
+          "name": "Senatsverwaltung für Wirtschaft, Energie und Betriebe - Betriebe und Strukturpolitik -",
+          "code": "1330",
+          "value": 793387000
+        },
+        {
+          "name": "Senatsverwaltung für Wirtschaft, Energie und Betriebe - Energie, Digitalisierung und Innovation -",
+          "code": "1350",
+          "value": 176133000
+        }
+      ]
+    },
+    {
+      "name": "Finanzen",
+      "code": "15",
+      "value": 1050459600,
+      "children": [
+        {
+          "name": "Senatsverwaltung für Finanzen - Politisch-Administrativer Bereich und Service -",
+          "code": "1500",
+          "value": 24902900
+        },
+        {
+          "name": "Senatsverwaltung für Finanzen - Zentrale Datenstelle der Landesfinanzminister und sonstige Angelegenheiten der Finanzministerkonferenz -",
+          "code": "1502",
+          "value": 3103900
+        },
+        {
+          "name": "Senatsverwaltung für Finanzen - Personalüberhang -",
+          "code": "1509",
+          "value": 404200
+        },
+        {
+          "name": "Senatsverwaltung für Finanzen - Vermögen -",
+          "code": "1510",
+          "value": 177409000
+        },
+        {
+          "name": "Senatsverwaltung für Finanzen - Haushalt -",
+          "code": "1520",
+          "value": 11621000
+        },
+        {
+          "name": "Nebenforderungen Landesebene",
+          "code": "1521",
+          "value": 248000
+        },
+        {
+          "name": "Landesfinanzservice",
+          "code": "1523",
+          "value": 36463000
+        },
+        {
+          "name": "Senatsverwaltung für Finanzen - Steuern -",
+          "code": "1530",
+          "value": 17433200
+        },
+        {
+          "name": "Finanzämter",
+          "code": "1531",
+          "value": 667652100
+        },
+        {
+          "name": "Senatsverwaltung für Finanzen - Landespersonal -",
+          "code": "1540",
+          "value": 16895400
+        },
+        {
+          "name": "Landesverwaltungsamt - Leitung und Zentraler Service -",
+          "code": "1541",
+          "value": 11725500
+        },
+        {
+          "name": "Landesverwaltungsamt - Logistikservice -",
+          "code": "1542",
+          "value": 12597900
+        },
+        {
+          "name": "Landesverwaltungsamt - Personalservice -",
+          "code": "1543",
+          "value": 9229200
+        },
+        {
+          "name": "Landesverwaltungsamt - Beihilfeservice -",
+          "code": "1544",
+          "value": 11041200
+        },
+        {
+          "name": "Landesverwaltungsamt - Digitalisierungs-Service und Integrierte Personalverwaltung -",
+          "code": "1545",
+          "value": 16127700
+        },
+        {
+          "name": "Landesverwaltungsamt - Versorgungsservice -",
+          "code": "1546",
+          "value": 8731000
+        },
+        {
+          "name": "Zentrale Steuerung eines Serviceorientierten Personalmanagementsystems",
+          "code": "1547",
+          "value": 10856800
+        },
+        {
+          "name": "Verwaltungsakademie Berlin - Landesamt für Aus- und Fortbildung sowie interne Beratung (Verwaltungsakademie Berlin)",
+          "code": "1548",
+          "value": 12890000
+        },
+        {
+          "name": "Senatsverwaltung für Finanzen - Personalüberhang - (ehemals Zentrales Personalüberhangmanagement)",
+          "code": "1599",
+          "value": 1127600
+        }
+      ]
+    },
+    {
+      "name": "Rechnungshof",
+      "code": "20",
+      "value": 29709200,
+      "children": [
+        {
+          "name": "Rechnungshof",
+          "code": "2000",
+          "value": 29709200
+        }
+      ]
+    },
+    {
+      "name": "Beauftragte/Beauftragter für Datenschutz und Informationsfreiheit",
+      "code": "21",
+      "value": 13864600,
+      "children": [
+        {
+          "name": "Beauftragte/Beauftragter für Datenschutz und Informationsfreiheit",
+          "code": "2100",
+          "value": 8673400
+        },
+        {
+          "name": "Beauftragte/Beauftragter zur Aufarbeitung der SED-Diktatur (BAB)",
+          "code": "2101",
+          "value": 5191200
+        }
+      ]
+    },
+    {
+      "name": "Bürger- und Polizeibeauftragte/Bürger- und Polizeibeauftragter des Landes Berlin",
+      "code": "22",
+      "value": 1716000,
+      "children": [
+        {
+          "name": "Bürger- und Polizeibeauftragte/Bürger- und Polizeibeauftragter des Landes Berlin",
+          "code": "2200",
+          "value": 1716000
+        }
+      ]
+    },
+    {
+      "name": "Landesweite Maßnahmen des E-Governments",
+      "code": "25",
+      "value": 349825700,
+      "children": [
+        {
+          "name": "Steuerung der verfahrensunabhängigen Informations- und Kommunikationstechnik (IKT) und Geschäftsprozessoptimierung",
+          "code": "2500",
+          "value": 214646000
+        },
+        {
+          "name": "Regierende Bürgermeisterin/Regierender Bürgermeister",
+          "code": "2503",
+          "value": 1277800
+        },
+        {
+          "name": "Senatsverwaltung für Inneres und Sport",
+          "code": "2505",
+          "value": 3347000
+        },
+        {
+          "name": "Senatsverwaltung für Justiz und Verbraucherschutz",
+          "code": "2506",
+          "value": 1627300
+        },
+        {
+          "name": "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt",
+          "code": "2507",
+          "value": 2794400
+        },
+        {
+          "name": "Senatsverwaltung für Kultur und Gesellschaftlichen Zusammenhalt",
+          "code": "2508",
+          "value": 811700
+        },
+        {
+          "name": "Senatsverwaltung für Wissenschaft, Gesundheit und Pflege",
+          "code": "2509",
+          "value": 1383500
+        },
+        {
+          "name": "Senatsverwaltung für Bildung, Jugend und Familie",
+          "code": "2510",
+          "value": 19935000
+        },
+        {
+          "name": "Senatsverwaltung für Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung",
+          "code": "2511",
+          "value": 967000
+        },
+        {
+          "name": "Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen",
+          "code": "2512",
+          "value": 2309000
+        },
+        {
+          "name": "Senatsverwaltung für Wirtschaft, Energie und Betriebe",
+          "code": "2513",
+          "value": 1461300
+        },
+        {
+          "name": "Senatsverwaltung für Finanzen",
+          "code": "2515",
+          "value": 4026000
+        },
+        {
+          "name": "Bezirksamt Mitte",
+          "code": "2531",
+          "value": 6734000
+        },
+        {
+          "name": "Bezirksamt Friedrichshain-Kreuzberg",
+          "code": "2532",
+          "value": 3572600
+        },
+        {
+          "name": "Bezirksamt Pankow",
+          "code": "2533",
+          "value": 4210000
+        },
+        {
+          "name": "Bezirksamt Charlottenburg-Wilmersdorf",
+          "code": "2534",
+          "value": 4025700
+        },
+        {
+          "name": "Bezirksamt Spandau",
+          "code": "2535",
+          "value": 3595000
+        },
+        {
+          "name": "Bezirksamt Steglitz-Zehlendorf",
+          "code": "2536",
+          "value": 3671000
+        },
+        {
+          "name": "Bezirksamt Tempelhof-Schöneberg",
+          "code": "2537",
+          "value": 4242000
+        },
+        {
+          "name": "Bezirksamt Neukölln",
+          "code": "2538",
+          "value": 3730800
+        },
+        {
+          "name": "Bezirksamt Treptow-Köpenick",
+          "code": "2539",
+          "value": 3346500
+        },
+        {
+          "name": "Bezirksamt Marzahn-Hellersdorf",
+          "code": "2540",
+          "value": 3099100
+        },
+        {
+          "name": "Bezirksamt Lichtenberg",
+          "code": "2541",
+          "value": 3984000
+        },
+        {
+          "name": "Bezirksamt Reinickendorf",
+          "code": "2542",
+          "value": 3408000
+        },
+        {
+          "name": "Polizei Berlin",
+          "code": "2552",
+          "value": 32766000
+        },
+        {
+          "name": "Berliner Feuerwehr",
+          "code": "2554",
+          "value": 3593000
+        },
+        {
+          "name": "Landesamt für Bürger- und Ordnungsangelegenheiten",
+          "code": "2555",
+          "value": 2063500
+        },
+        {
+          "name": "Sozialpädagogisches Fortbildungsinstitut Berlin-Brandenburg",
+          "code": "2557",
+          "value": 251000
+        },
+        {
+          "name": "Landesamt für Gesundheit und Soziales",
+          "code": "2558",
+          "value": 1690900
+        },
+        {
+          "name": "Landesamt für Arbeitsschutz, Gesundheitsschutz und technische Sicherheit",
+          "code": "2559",
+          "value": 565000
+        },
+        {
+          "name": "Landesamt für Flüchtlingsangelegenheiten",
+          "code": "2560",
+          "value": 3358500
+        },
+        {
+          "name": "Landesinstitut für gerichtliche und soziale Medizin",
+          "code": "2561",
+          "value": 85600
+        },
+        {
+          "name": "Landesverwaltungsamt",
+          "code": "2562",
+          "value": 1232400
+        },
+        {
+          "name": "Landesamt für Einwanderung",
+          "code": "2563",
+          "value": 2015100
+        }
+      ]
+    },
+    {
+      "name": "Zuweisungen an und Programme für die Bezirke",
+      "code": "27",
+      "value": -7958160000,
+      "children": [
+        {
+          "name": "Aufwendungen der Bezirke - Regierende Bürgermeisterin/ Regierender Bürgermeister -",
+          "code": "2703",
+          "value": 1300000
+        },
+        {
+          "name": "Aufwendungen der Bezirke - Inneres und Sport -",
+          "code": "2705",
+          "value": 20938000
+        },
+        {
+          "name": "Aufwendungen der Bezirke - Mobilität, Verkehr, Klimaschutz und Umwelt -",
+          "code": "2707",
+          "value": 20755000
+        },
+        {
+          "name": "Aufwendungen der Bezirke - Kultur und Gesellschaftlicher Zusammenhalt -",
+          "code": "2708",
+          "value": 7694000
+        },
+        {
+          "name": "Aufwendungen der Bezirke - Bildung, Jugend und Familie -",
+          "code": "2710",
+          "value": 400599000
+        },
+        {
+          "name": "Aufwendungen der Bezirke - Arbeit, Soziales, Gleichstellung, Integration, Vielfalt und Antidiskriminierung -",
+          "code": "2711",
+          "value": 8763000
+        },
+        {
+          "name": "Aufwendungen der Bezirke - Stadtentwicklung, Bauen und Wohnen -",
+          "code": "2712",
+          "value": 363918000
+        },
+        {
+          "name": "Aufwendungen der Bezirke - Wirtschaft, Energie und Betriebe -",
+          "code": "2713",
+          "value": 4445000
+        },
+        {
+          "name": "Zuweisungen an die Bezirke",
+          "code": "2729",
+          "value": -9219586000
+        },
+        {
+          "name": "Kalkulatorische Verrechnungen",
+          "code": "2730",
+          "value": 433014000
+        }
+      ]
+    },
+    {
+      "name": "Allgemeine Finanz- und Personalangelegenheiten",
+      "code": "29",
+      "value": 45156091800,
+      "children": [
+        {
+          "name": "Steuern und Finanzausgleich",
+          "code": "2900",
+          "value": 31381235000
+        },
+        {
+          "name": "Darlehen und Schuldendienst",
+          "code": "2902",
+          "value": 5373137900
+        },
+        {
+          "name": "Übrige allgemeine Finanzangelegenheiten",
+          "code": "2910",
+          "value": 1674261900
+        },
+        {
+          "name": "Kommunalinvestitionsprogramm",
+          "code": "2920",
+          "value": 847000
+        },
+        {
+          "name": "Landesweite Maßnahmen im Zusammenhang mit Flucht",
+          "code": "2931",
+          "value": 870000000
+        },
+        {
+          "name": "Versorgungsausgaben und weitere zentrale Personalangelegenheiten",
+          "code": "2940",
+          "value": 3525881000
+        },
+        {
+          "name": "Infrastrukturinvestitionen aus dem Sondervermögen des Bundes",
+          "code": "2980",
+          "value": 994350000
+        },
+        {
+          "name": "Vermögen",
+          "code": "2990",
+          "value": 1138480000
+        },
+        {
+          "name": "Immobilienbezogene Sondervermögen",
+          "code": "2991",
+          "value": 197899000
+        }
+      ]
+    },
+    {
+      "name": "Bezirksverordnetenversammlung",
+      "code": "31",
+      "value": 23162900,
+      "children": [
+        {
+          "name": "Bezirksverordnetenversammlung",
+          "code": "3100",
+          "value": 23162900
+        }
+      ]
+    },
+    {
+      "name": "Bezirksamt - Politisch- Administrativer Bereich -",
+      "code": "33",
+      "value": 830476200,
+      "children": [
+        {
+          "name": "Bezirksbürgermeisterin/Bezirksbürgermeister",
+          "code": "3300",
+          "value": 33777800
+        },
+        {
+          "name": "Steuerungsdienst",
+          "code": "3301",
+          "value": 13209100
+        },
+        {
+          "name": "Beschäftigtenvertretungen",
+          "code": "3302",
+          "value": 5819900
+        },
+        {
+          "name": "Rechtsamt",
+          "code": "3303",
+          "value": 12932000
+        },
+        {
+          "name": "Serviceeinheit Personal",
+          "code": "3304",
+          "value": 39118300
+        },
+        {
+          "name": "Serviceeinheit Finanzen",
+          "code": "3305",
+          "value": 11169700
+        },
+        {
+          "name": "Serviceeinheit Facility Management",
+          "code": "3306",
+          "value": 593472300
+        },
+        {
+          "name": "Serviceeinheit Personal und Finanzen",
+          "code": "3307",
+          "value": 61779900
+        },
+        {
+          "name": "Sozialraumorientierte Planungskoordination (SPK)",
+          "code": "3308",
+          "value": 11300300
+        },
+        {
+          "name": "Wirtschaftsförderung",
+          "code": "3309",
+          "value": 8711700
+        },
+        {
+          "name": "Geschäftsbereich Bezirksbürgermeisterin/Bezirksbürgermeister",
+          "code": "3310",
+          "value": 6621700
+        },
+        {
+          "name": "Geschäftsbereich Schul- und Sportamt",
+          "code": "3320",
+          "value": 4755000
+        },
+        {
+          "name": "Geschäftsbereich Ordnungsamt",
+          "code": "3330",
+          "value": 4049800
+        },
+        {
+          "name": "Geschäftsbereich Stadtentwicklungsamt",
+          "code": "3340",
+          "value": 6244900
+        },
+        {
+          "name": "Geschäftsbereich Amt für Soziales",
+          "code": "3350",
+          "value": 6414400
+        },
+        {
+          "name": "Geschäftsbereich Jugendamt",
+          "code": "3360",
+          "value": 8230100
+        },
+        {
+          "name": "Geschäftsstellen Produktkatalog/Geschäftsprozessmangement",
+          "code": "3381",
+          "value": 524600
+        },
+        {
+          "name": "Geschäftsstelle Schulbauoffensive der Berliner Bezirksämter",
+          "code": "3382",
+          "value": 574000
+        },
+        {
+          "name": "Personalüberhang",
+          "code": "3390",
+          "value": 1770700
+        }
+      ]
+    },
+    {
+      "name": "Ordnungsamt",
+      "code": "34",
+      "value": 198835700,
+      "children": [
+        {
+          "name": "Ordnung im öffentlichen Raum",
+          "code": "3400",
+          "value": 184017300
+        },
+        {
+          "name": "Märkte",
+          "code": "3401",
+          "value": 3782800
+        },
+        {
+          "name": "Regionalisierte Ordnungsaufgaben",
+          "code": "3481",
+          "value": 11035600
+        }
+      ]
+    },
+    {
+      "name": "Amt für Bürgerdienste",
+      "code": "35",
+      "value": 542937800,
+      "children": [
+        {
+          "name": "Bürgerdienste, Bürgerämter und Wahlen",
+          "code": "3500",
+          "value": 130262900
+        },
+        {
+          "name": "Standesamt",
+          "code": "3501",
+          "value": 23469400
+        },
+        {
+          "name": "Wohnungswesen",
+          "code": "3502",
+          "value": 388367300
+        },
+        {
+          "name": "Zentrales Fundbüro",
+          "code": "3581",
+          "value": 838200
+        }
+      ]
+    },
+    {
+      "name": "Amt für Weiterbildung und Kultur",
+      "code": "36",
+      "value": 288255100,
+      "children": [
+        {
+          "name": "Weiterbildung und Kultur",
+          "code": "3600",
+          "value": 8605200
+        },
+        {
+          "name": "Volkshochschulen",
+          "code": "3610",
+          "value": 83103800
+        },
+        {
+          "name": "Servicezentrum der Berliner Volkshochschulen",
+          "code": "3611",
+          "value": 5179500
+        },
+        {
+          "name": "Musikschulen",
+          "code": "3620",
+          "value": 90882200
+        },
+        {
+          "name": "Kultur",
+          "code": "3630",
+          "value": 33387400
+        },
+        {
+          "name": "Bibliotheken",
+          "code": "3640",
+          "value": 67097000
+        }
+      ]
+    },
+    {
+      "name": "Schul- und Sportamt",
+      "code": "37",
+      "value": 682181100,
+      "children": [
+        {
+          "name": "Schule und Sport",
+          "code": "3700",
+          "value": 167945700
+        },
+        {
+          "name": "Grundschulen",
+          "code": "3701",
+          "value": 300950000
+        },
+        {
+          "name": "Sekundarschulen",
+          "code": "3702",
+          "value": 72634300
+        },
+        {
+          "name": "Gemeinschaftsschulen",
+          "code": "3703",
+          "value": 24704100
+        },
+        {
+          "name": "Gymnasien",
+          "code": "3704",
+          "value": 35100900
+        },
+        {
+          "name": "Sonderpädagogische Förderzentren",
+          "code": "3705",
+          "value": 23412600
+        },
+        {
+          "name": "Sportförderung",
+          "code": "3715",
+          "value": 57433500
+        }
+      ]
+    },
+    {
+      "name": "Straßen- und Grünflächenamt",
+      "code": "38",
+      "value": 500230000,
+      "children": [
+        {
+          "name": "Tiefbau und Straßenverwaltung",
+          "code": "3800",
+          "value": 223425200
+        },
+        {
+          "name": "Grün- und Freiflächen",
+          "code": "3810",
+          "value": 232285000
+        },
+        {
+          "name": "Friedhöfe",
+          "code": "3820",
+          "value": 43669500
+        },
+        {
+          "name": "Gärtnereien und Baumschulen",
+          "code": "3881",
+          "value": 850300
+        }
+      ]
+    },
+    {
+      "name": "Amt für Soziales",
+      "code": "39",
+      "value": 7636227600,
+      "children": [
+        {
+          "name": "Soziales",
+          "code": "3900",
+          "value": 61377200
+        },
+        {
+          "name": "Allgemeine soziale Leistungen",
+          "code": "3910",
+          "value": 108673400
+        },
+        {
+          "name": "Leistungen nach SGB XII und LPflGG außerhalb von Einrichtungen",
+          "code": "3911",
+          "value": 2111091600
+        },
+        {
+          "name": "Leistungen nach SGB XII und LPflGG in Einrichtungen",
+          "code": "3912",
+          "value": 241701700
+        },
+        {
+          "name": "Leistungen für Menschen mit Behinderungen",
+          "code": "3915",
+          "value": 1422466600
+        },
+        {
+          "name": "Einrichtungen und Angebote für Seniorinnen und Senioren",
+          "code": "3930",
+          "value": 15180700
+        },
+        {
+          "name": "Kommunale Angebote der Wohnungslosenhilfe",
+          "code": "3940",
+          "value": 2923300
+        },
+        {
+          "name": "Leistungen nach SGB II - Kommunale Träger -",
+          "code": "3960",
+          "value": 3337594900
+        },
+        {
+          "name": "Ausbildungsförderung",
+          "code": "3981",
+          "value": 84341700
+        },
+        {
+          "name": "Zentralisierte Abrechnungsverfahren im Sozialbereich",
+          "code": "3982",
+          "value": 115466000
+        },
+        {
+          "name": "Leistungen nach dem Asylbewerberleistungsgesetz",
+          "code": "3995",
+          "value": 135410500
+        }
+      ]
+    },
+    {
+      "name": "Jugendamt",
+      "code": "40",
+      "value": 4094400100,
+      "children": [
+        {
+          "name": "Jugend",
+          "code": "4000",
+          "value": 22461700
+        },
+        {
+          "name": "Jugendsozialarbeit, Jugendarbeit, erzieherischer Kinder- und Jugendschutz",
+          "code": "4010",
+          "value": 105759900
+        },
+        {
+          "name": "Einrichtungen der Jugendarbeit",
+          "code": "4011",
+          "value": 43338900
+        },
+        {
+          "name": "Leistungen für Menschen mit Behinderungen",
+          "code": "4015",
+          "value": 299440700
+        },
+        {
+          "name": "Kindertagesbetreuung",
+          "code": "4021",
+          "value": 2559531700
+        },
+        {
+          "name": "Förderung von Familien und familiärer Erziehung",
+          "code": "4040",
+          "value": 248058900
+        },
+        {
+          "name": "Hilfe zur Erziehung und Inobhutnahme",
+          "code": "4042",
+          "value": 785690600
+        },
+        {
+          "name": "Leistungen außerhalb SGB VIII",
+          "code": "4043",
+          "value": 27613300
+        },
+        {
+          "name": "Leistungen nach SGB XII und LPflGG außerhalb von Einrichtungen",
+          "code": "4044",
+          "value": 670700
+        },
+        {
+          "name": "Leistungen nach SGB XII und LPflGG in Einrichtungen",
+          "code": "4045",
+          "value": 70500
+        },
+        {
+          "name": "Jugendausbildungszentrum",
+          "code": "4082",
+          "value": 1763200
+        }
+      ]
+    },
+    {
+      "name": "Gesundheitsamt",
+      "code": "41",
+      "value": 169164800,
+      "children": [
+        {
+          "name": "Gesundheit und Jugendgesundheitsdienst",
+          "code": "4100",
+          "value": 122149900
+        },
+        {
+          "name": "Qualitätsentwicklung, Planung und Koordination des öffentlichen Gesundheitsdienstes",
+          "code": "4130",
+          "value": 29086600
+        },
+        {
+          "name": "Überregionale Gesundheitsaufgaben",
+          "code": "4181",
+          "value": 17928300
+        }
+      ]
+    },
+    {
+      "name": "Stadtentwicklungsamt",
+      "code": "42",
+      "value": 159635400,
+      "children": [
+        {
+          "name": "Stadtentwicklung und Quartiersmanagement",
+          "code": "4200",
+          "value": 54451000
+        },
+        {
+          "name": "Bau- und Wohnungsaufsicht",
+          "code": "4201",
+          "value": 74276500
+        },
+        {
+          "name": "Vermessung",
+          "code": "4202",
+          "value": 30907900
+        }
+      ]
+    },
+    {
+      "name": "Umwelt- und Naturschutzamt",
+      "code": "43",
+      "value": 36608000,
+      "children": [
+        {
+          "name": "Umwelt- und Naturschutz",
+          "code": "4300",
+          "value": 36608000
+        }
+      ]
+    },
+    {
+      "name": "Allgemeine Finanzangelegenheiten",
+      "code": "45",
+      "value": 10437224300,
+      "children": [
+        {
+          "name": "Allgemeine Finanzangelegenheiten",
+          "code": "4500",
+          "value": 10415407300
+        },
+        {
+          "name": "Verwaltung von Finanzvermögen",
+          "code": "4510",
+          "value": 20266400
+        },
+        {
+          "name": "Stiftungen (ohne Heime)",
+          "code": "4520",
+          "value": 1550600
+        }
+      ]
+    },
+    {
+      "name": "Abgeordnetenhaus",
+      "code": "01",
+      "value": 102610900,
+      "children": [
+        {
+          "name": "Abgeordnetenhaus",
+          "code": "0100",
+          "value": 102610900
+        }
+      ]
+    },
+    {
+      "name": "Verfassungsgerichtshof",
+      "code": "02",
+      "value": 1164000,
+      "children": [
+        {
+          "name": "Verfassungsgerichtshof",
+          "code": "0200",
+          "value": 1164000
+        }
+      ]
+    },
+    {
+      "name": "Regierende Bürgermeisterin/ Regierender Bürgermeister",
+      "code": "03",
+      "value": 111813000,
+      "children": [
+        {
+          "name": "Senatskanzlei",
+          "code": "0300",
+          "value": 93771600
+        },
+        {
+          "name": "Senatskanzlei - Personalüberhang -",
+          "code": "0309",
+          "value": 153300
+        },
+        {
+          "name": "Senatskanzlei - Europa -",
+          "code": "0350",
+          "value": 2933100
+        },
+        {
+          "name": "Senatskanzlei - Digitalisierung -",
+          "code": "0360",
+          "value": 14955000
+        }
+      ]
+    },
+    {
+      "name": "Inneres und Sport",
+      "code": "05",
+      "value": 3591185300,
+      "children": [
+        {
+          "name": "Senatsverwaltung für Inneres und Sport - Politisch-Administrativer Bereich und Service -",
+          "code": "0500",
+          "value": 135886600
+        },
+        {
+          "name": "Senatsverwaltung für Inneres und Sport - Personalüberhang -",
+          "code": "0509",
+          "value": 438000
+        },
+        {
+          "name": "Senatsverwaltung für Inneres und Sport - Sport -",
+          "code": "0510",
+          "value": 201306200
+        },
+        {
+          "name": "Olympiapark Berlin",
+          "code": "0511",
+          "value": 31841000
+        },
+        {
+          "name": "Sportforum Berlin",
+          "code": "0512",
+          "value": 23899100
+        },
+        {
+          "name": "Senatsverwaltung für Inneres und Sport - Verfassungsschutz -",
+          "code": "0520",
+          "value": 20241400
+        },
+        {
+          "name": "Polizei Berlin - Behördenleitung -",
+          "code": "0531",
+          "value": 24220000
+        },
+        {
+          "name": "Polizei Berlin - Landespolizeidirektion -",
+          "code": "0532",
+          "value": 1086168400
+        },
+        {
+          "name": "Polizei Berlin - Landeskriminalamt -",
+          "code": "0543",
+          "value": 291278400
+        },
+        {
+          "name": "Polizei Berlin - Polizeiakademie -",
+          "code": "0552",
+          "value": 108922900
+        },
+        {
+          "name": "Polizei Berlin - Direktion Zentraler Service -",
+          "code": "0556",
+          "value": 520076900
+        },
+        {
+          "name": "Hauptstadtbedingte Aufwendungen im Sicherheitsbereich des Landes Berlin",
+          "code": "0559",
+          "value": 303145600
+        },
+        {
+          "name": "Berliner Feuerwehr - Behördenleitung -",
+          "code": "0561",
+          "value": 24656900
+        },
+        {
+          "name": "Berliner Feuerwehr - Einsatzbetrieb -",
+          "code": "0562",
+          "value": 214912000
+        },
+        {
+          "name": "Berliner Feuerwehr - Zentraler Service -",
+          "code": "0565",
+          "value": 333743400
+        },
+        {
+          "name": "Berliner Feuerwehr - Berliner Feuerwehr- und Rettungsdienst-Akademie -",
+          "code": "0566",
+          "value": 50916000
+        },
+        {
+          "name": "Landesamt für Bürger- und Ordnungsangelegenheiten - Leitung -",
+          "code": "0571",
+          "value": 15799700
+        },
+        {
+          "name": "Landesamt für Bürger- und Ordnungsangelegenheiten - Personenstands- und Einwohnerwesen -",
+          "code": "0572",
+          "value": 23734800
+        },
+        {
+          "name": "Landesamt für Bürger- und Ordnungsangelegenheiten - Kraftfahrzeugzulassung -",
+          "code": "0573",
+          "value": 37724400
+        },
+        {
+          "name": "Landesamt für Bürger- und Ordnungsangelegenheiten - Fahrerlaubnisse, Personen- und Güterbeförderung -",
+          "code": "0574",
+          "value": 26306500
+        },
+        {
+          "name": "Landesamt für Bürger- und Ordnungsangelegenheiten - Entschädigungsleistungen -",
+          "code": "0575",
+          "value": 18727100
+        },
+        {
+          "name": "Landesamt für Einwanderung",
+          "code": "0581",
+          "value": 97240000
+        }
+      ]
+    },
+    {
+      "name": "Justiz und Verbraucherschutz",
+      "code": "06",
+      "value": 1624484900,
+      "children": [
+        {
+          "name": "Senatsverwaltung für Justiz und Verbraucherschutz - Politisch-Administrativer Bereich und Service -",
+          "code": "0600",
+          "value": 50184800
+        },
+        {
+          "name": "Gemeinsames Juristisches Prüfungsamt",
+          "code": "0605",
+          "value": 4824400
+        },
+        {
+          "name": "Senatsverwaltung für Justiz und Verbraucherschutz - Verbraucherschutz -",
+          "code": "0608",
+          "value": 40429400
+        },
+        {
+          "name": "Senatsverwaltung für Justiz und Verbraucherschutz - Personalüberhang -",
+          "code": "0609",
+          "value": 831000
+        },
+        {
+          "name": "Strafverfolgungsbehörden",
+          "code": "0610",
+          "value": 176327600
+        },
+        {
+          "name": "Ordentliche Gerichtsbarkeit",
+          "code": "0620",
+          "value": 902309600
+        },
+        {
+          "name": "Zentrales Mahngericht Berlin-Brandenburg",
+          "code": "0632",
+          "value": 45451200
+        },
+        {
+          "name": "Oberverwaltungsgericht Berlin-Brandenburg",
+          "code": "0641",
+          "value": 13863700
+        },
+        {
+          "name": "Verwaltungsgericht",
+          "code": "0642",
+          "value": 30437200
+        },
+        {
+          "name": "Sozialgericht",
+          "code": "0651",
+          "value": 35835300
+        },
+        {
+          "name": "Justizvollzugsanstalt Plötzensee",
+          "code": "0661",
+          "value": 97196200
+        },
+        {
+          "name": "Justizvollzugsanstalt für Frauen",
+          "code": "0663",
+          "value": 17853200
+        },
+        {
+          "name": "Justizvollzugsanstalt des Offenen Vollzuges Berlin",
+          "code": "0664",
+          "value": 19879200
+        },
+        {
+          "name": "Justizvollzugsanstalt Moabit",
+          "code": "0666",
+          "value": 49762100
+        },
+        {
+          "name": "Justizvollzugsanstalt Tegel",
+          "code": "0668",
+          "value": 61851100
+        },
+        {
+          "name": "Jugendstrafanstalt",
+          "code": "0669",
+          "value": 32584300
+        },
+        {
+          "name": "Jugendarrestanstalt",
+          "code": "0671",
+          "value": 2379500
+        },
+        {
+          "name": "Justizvollzugsanstalt Heidering",
+          "code": "0672",
+          "value": 31291000
+        },
+        {
+          "name": "Soziale Dienste der Justiz - Gerichtshilfe und Bewährungshilfe -",
+          "code": "0691",
+          "value": 11194100
+        }
+      ]
+    },
+    {
+      "name": "Mobilität, Verkehr, Klimaschutz und Umwelt",
+      "code": "07",
+      "value": 4021745700,
+      "children": [
+        {
+          "name": "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt - Politisch-Administrativer Bereich und Service -",
+          "code": "0700",
+          "value": -3094000
+        },
+        {
+          "name": "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt - Generelle Angelegenheiten und Recht -",
+          "code": "0705",
+          "value": 46933900
+        },
+        {
+          "name": "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt - Personalüberhang -",
+          "code": "0709",
+          "value": 983800
+        },
+        {
+          "name": "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt - Umwelt- und Klimaschutzpolitik, Kreislaufwirtschaft und Immissionsschutz -",
+          "code": "0710",
+          "value": 63729500
+        },
+        {
+          "name": "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt - Integrativer Umweltschutz -",
+          "code": "0720",
+          "value": 124273200
+        },
+        {
+          "name": "Fischereiamt",
+          "code": "0721",
+          "value": 2312000
+        },
+        {
+          "name": "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt - Verkehr -",
+          "code": "0730",
+          "value": 3318747300
+        },
+        {
+          "name": "Gemeinsame Obere Luftfahrtbehörde Berlin-Brandenburg",
+          "code": "0732",
+          "value": 869700
+        },
+        {
+          "name": "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt - Tiefbau -",
+          "code": "0740",
+          "value": 261704800
+        },
+        {
+          "name": "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt - Naturschutz und Stadtgrün -",
+          "code": "0750",
+          "value": 124954300
+        },
+        {
+          "name": "Berliner Forsten",
+          "code": "0751",
+          "value": 35887500
+        },
+        {
+          "name": "Pflanzenschutzamt",
+          "code": "0752",
+          "value": 2511900
+        },
+        {
+          "name": "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt - Integratives Verkehrsmanagement -",
+          "code": "0770",
+          "value": 41931800
+        }
+      ]
+    },
+    {
+      "name": "Kultur und Gesellschaftlicher Zusammenhalt",
+      "code": "08",
+      "value": 1018656600,
+      "children": [
+        {
+          "name": "Senatsverwaltung für Kultur und Gesellschaftlichen Zusammenhalt - Politisch-Administrativer Bereich und Service -",
+          "code": "0800",
+          "value": 2799200
+        },
+        {
+          "name": "Senatsverwaltung für Kultur und Gesellschaftlichen Zusammenhalt - Personalüberhang -",
+          "code": "0809",
+          "value": 653400
+        },
+        {
+          "name": "Senatsverwaltung für Kultur und Gesellschaftlichen Zusammenhalt - Kultur -",
+          "code": "0810",
+          "value": 857642300
+        },
+        {
+          "name": "Brücke-Museum",
+          "code": "0812",
+          "value": 2324200
+        },
+        {
+          "name": "Gedenkstätte Deutscher Widerstand",
+          "code": "0813",
+          "value": 7878900
+        },
+        {
+          "name": "Landesarchiv",
+          "code": "0814",
+          "value": 11578800
+        },
+        {
+          "name": "Leistungen an die Kirchen, Religions- und Weltanschauungsgemeinschaften",
+          "code": "0820",
+          "value": 123966300
+        },
+        {
+          "name": "Senatsverwaltung für Kultur und Gesellschaftlichen Zusammenhalt - Engagement und Demokratieförderung -",
+          "code": "0850",
+          "value": 11813500
+        }
+      ]
+    },
+    {
+      "name": "Wissenschaft, Gesundheit und Pflege",
+      "code": "09",
+      "value": 4660387200,
+      "children": [
+        {
+          "name": "Senatsverwaltung für Wissenschaft, Gesundheit und Pflege - Politisch-Administrativer Bereich und Service -",
+          "code": "0900",
+          "value": 14382600
+        },
+        {
+          "name": "Senatsverwaltung für Wissenschaft, Gesundheit und Pflege - Personalüberhang -",
+          "code": "0909",
+          "value": 654700
+        },
+        {
+          "name": "Senatsverwaltung für Wissenschaft, Gesundheit und Pflege - Hochschulen -",
+          "code": "0910",
+          "value": 2596251700
+        },
+        {
+          "name": "Senatsverwaltung für Wissenschaft, Gesundheit und Pflege - Gesundheit -",
+          "code": "0920",
+          "value": 418554700
+        },
+        {
+          "name": "Landesinstitut für gerichtliche und soziale Medizin",
+          "code": "0921",
+          "value": 6451300
+        },
+        {
+          "name": "Senatsverwaltung für Wissenschaft, Gesundheit und Pflege - Pflege -",
+          "code": "0930",
+          "value": 67743000
+        },
+        {
+          "name": "Senatsverwaltung für Wissenschaft, Gesundheit und Pflege - Außeruniversitäre Forschung und Charité -",
+          "code": "0940",
+          "value": 1134802500
+        },
+        {
+          "name": "Sekretariat der Kultusministerkonferenz",
+          "code": "0991",
+          "value": 421546700
+        }
+      ]
+    }
+  ],
+  "value": 90452407100
+}
