@@ -104,10 +104,16 @@ export default function BudgetExplorerView() {
                         </div>
 
                         <div className="flex-1 min-h-0">
-                            <BudgetTreeExplorer
-                                data={currentData}
-                                onSelect={(node) => setSelectedNode(node)}
-                            />
+                            {currentData ? (
+                                <BudgetTreeExplorer
+                                    data={currentData}
+                                    onSelect={(node) => setSelectedNode(node)}
+                                />
+                            ) : (
+                                <div className="h-full flex items-center justify-center text-slate-500">
+                                    Keine Daten verfügbar
+                                </div>
+                            )}
                         </div>
                     </div>
 
