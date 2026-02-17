@@ -7,12 +7,18 @@ import BudgetExplanation from '@/components/BudgetExplanation';
 import BudgetComparison from '@/components/BudgetComparison';
 
 
+interface TreeNode {
+    name: string;
+    value: number;
+    children?: TreeNode[];
+}
+
 export default function BudgetExplorerView() {
     const [year, setYear] = useState('2026');
-    const [data2026, setData2026] = useState(null);
-    const [data2027, setData2027] = useState(null);
+    const [data2026, setData2026] = useState<TreeNode | null>(null);
+    const [data2027, setData2027] = useState<TreeNode | null>(null);
     const [loading, setLoading] = useState(true);
-    const [selectedNode, setSelectedNode] = useState(null);
+    const [selectedNode, setSelectedNode] = useState<TreeNode | null>(null);
 
     useEffect(() => {
         setLoading(true);
@@ -29,7 +35,7 @@ export default function BudgetExplorerView() {
     }, []);
 
     // Helper to find the same node in the other year's data
-    const findCorrespondingNode = (sourceNode, targetTree) => {
+    const findCorrespondingNode = (sourceNode: TreeNode | null, targetTree: TreeNode | null): TreeNode | null => {
         if (!sourceNode || !targetTree) return null;
         if (sourceNode.name === targetTree.name) return targetTree;
 
