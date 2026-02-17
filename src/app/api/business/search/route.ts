@@ -23,7 +23,7 @@ export async function GET(request: Request) {
         const lorCounts: Record<string, number> = {};
         const lowercaseQuery = query.toLowerCase();
 
-        return new Promise((resolve) => {
+        return new Promise<NextResponse>((resolve) => {
             parse(fileStream, {
                 header: true,
                 skipEmptyLines: true,
