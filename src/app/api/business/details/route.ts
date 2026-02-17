@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 
         const results: any[] = [];
 
-        return new Promise((resolve) => {
+        return new Promise<NextResponse>((resolve) => {
             parse(fileStream, {
                 header: true,
                 skipEmptyLines: true,
