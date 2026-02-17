@@ -9,11 +9,13 @@ import { getPopulation } from '@/lib/demographics';
 import BudgetChapters from '@/components/BudgetChapters';
 import PopulationMapWrapper from '@/components/PopulationMapWrapper';
 import BusinessMapWrapper from '@/components/BusinessMapWrapper';
+import { getTaxMetrics } from '@/lib/taxes';
+import TaxRevenueView from '@/components/TaxRevenueView';
 
 export default async function Dashboard({ searchParams }: { searchParams: Promise<any> }) {
   const resolvedSearchParams = await searchParams;
   const district = resolvedSearchParams.district || 'Berlin';
-  const activeTab = (resolvedSearchParams.tab || 'subsidies') as 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business';
+  const activeTab = (resolvedSearchParams.tab || 'subsidies') as 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes';
 
   // Data for budget tab
   const data = await getDistrictMetrics(district);
@@ -31,6 +33,9 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   // Initial data for subsidies tab
   const initialSubsidiesMetrics = await getSubsidiesMetrics(district);
   const initialSubsidiesList = await searchSubsidies('', district);
+
+  // Data for taxes tab
+  const taxMetrics = await getTaxMetrics();
 
   const lastSync = await getLastSyncTime();
 
@@ -79,6 +84,12 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'subsidies' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
               >
                 Subventionen
+              </Link>
+              <Link
+                href={`/?tab=taxes&district=${district}`}
+                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'taxes' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
+              >
+                Steuern
               </Link>
               <Link
                 href={`/?tab=theft&district=${district}`}
@@ -215,6 +226,8 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
               initialList={initialSubsidiesList}
               district={district}
             />
+          ) : activeTab === 'taxes' ? (
+            <TaxRevenueView metrics={taxMetrics} />
           ) : activeTab === 'theft' ? (
             <BicycleTheftMap district={district} />
           ) : activeTab === 'demographics' ? (
