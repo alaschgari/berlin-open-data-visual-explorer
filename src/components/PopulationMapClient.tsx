@@ -401,14 +401,15 @@ export default function PopulationMapClient({ district }: { district: string }) 
                                 const colors = ['#fef3c7', '#fde68a', '#fbbf24', '#f59e0b', '#d97706', '#92400e']; // Dynamic colors below
 
                                 // Mocking scales for legend quickly - better would be mapping scales object
-                                const scaleColors = {
+                                const allScales: Record<string, string[]> = {
                                     total: ['#fef3c7', '#fde68a', '#fbbf24', '#f59e0b', '#d97706', '#92400e'],
                                     density: ['#ecfdf5', '#a7f3d0', '#34d399', '#10b981', '#059669', '#064e3b'],
                                     kita: ['#e0f2fe', '#bae6fd', '#7dd3fc', '#38bdf8', '#0284c7', '#075985'],
                                     school: ['#ede9fe', '#ddd6fe', '#c4b5fd', '#a78bfa', '#8b5cf6', '#5b21b6'],
                                     seniors: ['#fff7ed', '#ffedd5', '#fed7aa', '#fb923c', '#ea580c', '#9a3412'],
                                     women_ratio: ['#fdf2f8', '#fce7f3', '#fbcfe8', '#f472b6', '#db2777', '#831843']
-                                }[selectedTheme as keyof typeof scaleColors] || scaleColors.total;
+                                };
+                                const scaleColors = allScales[selectedTheme] || allScales.total;
 
                                 return labels.map((label, i) => (
                                     <div key={i} className="flex items-center gap-3 group/item">
@@ -475,9 +476,9 @@ export default function PopulationMapClient({ district }: { district: string }) 
                                             return (
                                                 <ResponsiveContainer width="100%" height="100%">
                                                     <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
-                                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
-                                                        <RechartsTooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: '10px' }} />
+                                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' } as any} />
+                                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' } as any} />
+                                                        <RechartsTooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: 10 }} />
                                                         <Bar dataKey="val" radius={[4, 4, 0, 0]}>
                                                             {chartData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
                                                         </Bar>

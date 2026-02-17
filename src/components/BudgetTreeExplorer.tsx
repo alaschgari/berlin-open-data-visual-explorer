@@ -103,7 +103,7 @@ export default function BudgetTreeExplorer({ data, onSelect }: BudgetTreeExplore
         return cleaned.trim();
     };
 
-    const renderNode = (node: TreeNode, depth: number, parentTotal: number, parentName?: string): JSX.Element => {
+    const renderNode = (node: TreeNode, depth: number, parentTotal: number, parentName?: string): React.ReactElement => {
         const isExpanded = expandedKeys.has(node.name);
         const hasChildren = node.children && node.children.length > 0;
         const percentage = (node.value / parentTotal) * 100;

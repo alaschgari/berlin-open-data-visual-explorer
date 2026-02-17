@@ -6,7 +6,18 @@ import {
     PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip
 } from 'recharts';
 
-export default function BudgetRadar({ data, year }) {
+interface TreeNode {
+    name: string;
+    value: number;
+    children?: TreeNode[];
+}
+
+interface BudgetRadarProps {
+    data: TreeNode | null;
+    year: string;
+}
+
+export default function BudgetRadar({ data, year }: BudgetRadarProps) {
     // Aggregate data for functional radar
     // For demonstration, we'll map the Einzelpläne to the radar
     const radarData = data?.children?.slice(0, 7).map(child => ({

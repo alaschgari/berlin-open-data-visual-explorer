@@ -42,6 +42,8 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const lastSync = await getLastSyncTime();
 
   const districts = [
+    'Berlin', 'Mitte', 'Friedrichshain-Kreuzberg', 'Pankow', 'Charlottenburg-Wilmersdorf',
+    'Spandau', 'Steglitz-Zehlendorf', 'Tempelhof-Schöneberg', 'Neukölln',
     'Treptow-Köpenick', 'Marzahn-Hellersdorf', 'Lichtenberg', 'Reinickendorf'
   ];
 

@@ -811,10 +811,10 @@ export default function BusinessMapClient({ district }: { district: string }) {
 
                                             return (
                                                 <ResponsiveContainer width="100%" height="100%">
-                                                    <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} onClick={(data) => data && setChartFilter(data.activeLabel || null)}>
-                                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#64748b' }} />
-                                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#64748b' }} />
-                                                        <RechartsTooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: '10px' }} />
+                                                    <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} onClick={(data) => data && setChartFilter(data.activeLabel ? String(data.activeLabel) : null)}>
+                                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#64748b' } as any} />
+                                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#64748b' } as any} />
+                                                        <RechartsTooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: 10 }} />
                                                         <Bar dataKey="val" radius={[4, 4, 0, 0]}>
                                                             {chartData.map((entry, index) => (
                                                                 <Cell key={`cell-${index}`} fill={chartFilter === entry.name ? '#fbbf24' : '#f59e0b'} fillOpacity={chartFilter && chartFilter !== entry.name ? 0.3 : 1} />
