@@ -12,20 +12,50 @@ import TaxRevenueView from '@/components/TaxRevenueView';
 import BicycleTheftMap from '@/components/BicycleTheftMapWrapper';
 import PopulationMapWrapper from '@/components/PopulationMapWrapper';
 import BusinessMapWrapper from '@/components/BusinessMapWrapper';
+import WastewaterView from '@/components/WastewaterView';
+import { WastewaterRecord } from '@/lib/wastewater';
 
 interface DashboardClientProps {
     district: string;
-    activeTab: 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes';
+    activeTab: 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater';
     budgetMode: 'historic' | 'explorer';
     lastSync: Date | null;
     districts: string[];
     // Pre-fetched data
-    enrichedData: any;
-    timeline: any[];
-    topChapters: any[];
-    initialSubsidiesMetrics: any;
-    initialSubsidiesList: any[];
-    taxMetrics: any;
+    enrichedData: {
+        budget: number;
+        actual: number;
+        diff: number;
+        isEstimated?: boolean;
+    };
+    timeline: Array<{
+        year: number;
+        budget: number;
+        actual: number;
+        isEstimated?: boolean;
+    }>;
+    topChapters: Array<{
+        name: string;
+        value: number;
+        color?: string;
+    }>;
+    initialSubsidiesMetrics: {
+        totalAmount: number;
+        count: number;
+        topRecipients: Array<{ name: string; amount: number }>;
+    };
+    initialSubsidiesList: Array<{
+        id: string;
+        name: string;
+        amount: number;
+        year: number;
+        purpose: string;
+    }>;
+    taxMetrics: {
+        totalRevenue: number;
+        distribution: Array<{ name: string; value: number }>;
+    };
+    wastewaterData: WastewaterRecord[];
 }
 
 export default function DashboardClient({
@@ -39,7 +69,8 @@ export default function DashboardClient({
     topChapters,
     initialSubsidiesMetrics,
     initialSubsidiesList,
-    taxMetrics
+    taxMetrics,
+    wastewaterData
 }: DashboardClientProps) {
     const { t } = useLanguage();
 
@@ -79,7 +110,7 @@ export default function DashboardClient({
                         <div className="h-8 w-px bg-slate-700/50 hidden sm:block"></div>
 
                         {/* Tab Switcher */}
-                        <div className="bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 flex shadow-inner">
+                        <div className="bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 flex shadow-inner overflow-x-auto custom-scrollbar">
                             <Link
                                 href={`/?tab=subsidies&district=${district}`}
                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'subsidies' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
@@ -115,6 +146,12 @@ export default function DashboardClient({
                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'business' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
                             >
                                 {t('tab_business')}
+                            </Link>
+                            <Link
+                                href={`/?tab=wastewater&district=${district}`}
+                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'wastewater' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
+                            >
+                                {t('tab_wastewater')}
                             </Link>
                         </div>
 
@@ -168,10 +205,12 @@ export default function DashboardClient({
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                             <PopulationMapWrapper district={district} />
                         </div>
-                    ) : (
+                    ) : activeTab === 'business' ? (
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                             <BusinessMapWrapper district={district} />
                         </div>
+                    ) : (
+                        <WastewaterView data={wastewaterData} />
                     )
                 }
             </div>

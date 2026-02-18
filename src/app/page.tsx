@@ -1,25 +1,14 @@
 import React from 'react';
 import { getDistrictMetrics, getTopChapters, getTimelineData, enrichMetricsWithHistory, getLastSyncTime } from '@/lib/proxy';
-import SubsidiesView from '@/components/SubsidiesView';
-import DistrictSelector from '@/components/DistrictSelector';
 import { getSubsidiesMetrics, searchSubsidies } from '@/lib/subsidies-proxy';
-import Link from 'next/link';
-import BicycleTheftMap from '@/components/BicycleTheftMapWrapper';
-import { getPopulation } from '@/lib/demographics';
-import BudgetChapters from '@/components/BudgetChapters';
-import BudgetExplorerView from '@/components/BudgetExplorerView';
-import HistoricBudgetView from '@/components/HistoricBudgetView';
-import PopulationMapWrapper from '@/components/PopulationMapWrapper';
-import BusinessMapWrapper from '@/components/BusinessMapWrapper';
 import { getTaxMetrics } from '@/lib/taxes';
-import TaxRevenueView from '@/components/TaxRevenueView';
-
+import { getWastewaterData } from '@/lib/wastewater';
 import DashboardClient from '@/components/DashboardClient';
 
-export default async function Dashboard({ searchParams }: { searchParams: Promise<any> }) {
+export default async function Dashboard({ searchParams }: { searchParams: Promise<{ district?: string, tab?: string, budgetMode?: string }> }) {
   const resolvedSearchParams = await searchParams;
   const district = resolvedSearchParams.district || 'Berlin';
-  const activeTab = (resolvedSearchParams.tab || 'subsidies') as 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes';
+  const activeTab = (resolvedSearchParams.tab || 'subsidies') as 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater';
   const budgetMode = (resolvedSearchParams.budgetMode || 'historic') as 'historic' | 'explorer';
 
   // Data pre-fetching (SSR)
@@ -28,7 +17,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const topChapters = await getTopChapters(district);
   const enrichedData = (district === 'Berlin' || district === 'All') ? await enrichMetricsWithHistory(data) : data;
 
-  const timeline = await Promise.all(rawTimeline.map(async (item) => {
+  const timeline = await Promise.all(rawTimeline.map(async (item: Record<string, any>) => {
     return (district === 'Berlin' || district === 'All') ? await enrichMetricsWithHistory(item) : item;
   }));
 
@@ -36,6 +25,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const initialSubsidiesList = await searchSubsidies('', district);
   const taxMetrics = await getTaxMetrics();
   const lastSync = await getLastSyncTime();
+  const wastewaterData = await getWastewaterData();
 
   const districts = [
     'Berlin', 'Mitte', 'Friedrichshain-Kreuzberg', 'Pankow', 'Charlottenburg-Wilmersdorf',
@@ -56,6 +46,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       initialSubsidiesMetrics={initialSubsidiesMetrics}
       initialSubsidiesList={initialSubsidiesList}
       taxMetrics={taxMetrics}
+      wastewaterData={wastewaterData}
     />
   );
 }

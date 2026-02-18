@@ -25,6 +25,7 @@ const translations: Translations = {
     'tab_budget': { de: 'Haushalt', en: 'Budget' },
     'tab_demographics': { de: 'Demografie', en: 'Demographics' },
     'tab_business': { de: 'Gewerbe', en: 'Business' },
+    'tab_wastewater': { de: 'Abwasser', en: 'Wastewater' },
 
     // Selectors
     'all_districts': { de: 'Alle Bezirke', en: 'All Districts' },
