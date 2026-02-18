@@ -129,9 +129,9 @@ export async function processFiles() {
                                 district: district,
                                 chapter: String(chapter),
                                 title_code: titleStr,
-                                budget,
-                                actual,
-                                diff: budget - actual
+                                budget: budget || 0,
+                                actual: actual || 0,
+                                diff: (budget || 0) - (actual || 0)
                             });
                         }
                     }
@@ -258,14 +258,17 @@ function parseDoppelhaushalt(filePath: string): FinancialRecord[] {
 
         if (isNaN(amount)) continue;
 
+        const budget = budgetType === 'Soll' ? amount : 0;
+        const actual = budgetType === 'Ist' ? amount : 0;
+
         records.push({
             year: year,
             district: districtName || 'Berlin',
             chapter: cols[7] + ' ' + cols[8], // Kapitel + Bezeichnung
             title_code: titleCode, // Titel
-            budget: budgetType === 'Soll' ? amount : 0,
-            actual: budgetType === 'Ist' ? amount : 0, // In case Ist exists
-            diff: 0 // Will be calculated later if both exist, otherwise 0
+            budget: budget,
+            actual: actual,
+            diff: budget - actual
         });
     }
     return records;

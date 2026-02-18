@@ -302,7 +302,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                             </span>
                                         </div>
                                         <p className="text-slate-400 text-xs line-clamp-2 mb-3 leading-relaxed">
-                                            {r.purpose.replace(/^"|"$/g, '').replace(/\\"/g, '"')}
+                                            {r.purpose?.replace(/^"|"$/g, '').replace(/\\"/g, '"') || ''}
                                         </p>
                                         <div className="flex items-center justify-between">
                                             <div className="flex gap-2 items-center">
@@ -520,9 +520,9 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                         <tr key={idx} className="border-b border-slate-800/50 hover:bg-slate-700/20 transition-colors">
                                             <td className="py-3 px-4 text-slate-300">{detail.year}</td>
                                             <td className="py-3 px-4 text-slate-300">{detail.area}</td>
-                                            <td className="py-3 px-4 text-slate-400" title={detail.purpose.replace(/^"|"$/g, '').replace(/\\"/g, '"')}>
+                                            <td className="py-3 px-4 text-slate-400" title={detail.purpose?.replace(/^"|"$/g, '').replace(/\\"/g, '"') || ''}>
                                                 <div className="max-w-md truncate">
-                                                    {detail.purpose.replace(/^"|"$/g, '').replace(/\\"/g, '"')}
+                                                    {detail.purpose?.replace(/^"|"$/g, '').replace(/\\"/g, '"') || ''}
                                                 </div>
                                             </td>
                                             <td className="py-3 px-4 text-slate-500 text-xs" title={detail.provider.replace(/^"|"$/g, '')}>

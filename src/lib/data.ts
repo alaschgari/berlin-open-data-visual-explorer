@@ -71,15 +71,15 @@ export async function getSummaryMetrics() {
 import { HISTORICAL_DATA } from './historical-data';
 
 export function calculateMetrics(data: FinancialRecord[]) {
-    const totalBudget = data.reduce((sum, r) => sum + r.budget, 0);
-    const totalActual = data.reduce((sum, r) => sum + r.actual, 0);
+    const totalBudget = data.reduce((sum, r) => sum + (r.budget || 0), 0);
+    const totalActual = data.reduce((sum, r) => sum + (r.actual || 0), 0);
 
     // Group by Year
     const byYearRaw: Record<number, { budget: number, actual: number }> = {};
     data.forEach(r => {
         if (!byYearRaw[r.year]) byYearRaw[r.year] = { budget: 0, actual: 0 };
-        byYearRaw[r.year].budget += r.budget;
-        byYearRaw[r.year].actual += r.actual;
+        byYearRaw[r.year].budget += (r.budget || 0);
+        byYearRaw[r.year].actual += (r.actual || 0);
     });
 
     const byYear = Object.entries(byYearRaw)
@@ -96,7 +96,7 @@ export function calculateMetrics(data: FinancialRecord[]) {
     // const byChapterStr: Record<string, number> = {}; (removed duplicate)
     data.forEach(r => {
         if (!byChapterStr[r.chapter]) byChapterStr[r.chapter] = 0;
-        byChapterStr[r.chapter] += r.actual;
+        byChapterStr[r.chapter] += (r.actual || 0);
     });
 
     const topChapters = Object.entries(byChapterStr)

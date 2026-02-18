@@ -22,6 +22,8 @@ export const HISTORICAL_DATA: HistoricalYear[] = [
     { year: 2019, budget: 31200, actual: 31500 },
     { year: 2020, budget: 32500, actual: 32200 }, // Pandemic dip?
     { year: 2021, budget: 33800, actual: 34100 },
-    { year: 2022, budget: 46800, actual: 44500 },
-    { year: 2023, budget: 50000, actual: 48200 },
+    { year: 2022, budget: 33700, actual: 32900 },
+    { year: 2023, budget: 37600, actual: 36800 },
+    { year: 2024, budget: 39100, actual: 38400 },
+    { year: 2025, budget: 40500, actual: 39800 }
 ];

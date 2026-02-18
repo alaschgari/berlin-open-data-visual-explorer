@@ -58,22 +58,33 @@ export default function HistoricBudgetView({ enrichedData, timeline, topChapters
                             <p className="text-slate-500 text-sm">Vergleich Planung vs. tatsächliche Ausgaben</p>
                         </div>
                     </div>
-                    <div className="h-[300px] flex items-end gap-2 px-4">
+                    <div className="h-[300px] flex items-end gap-2 px-4 whitespace-nowrap overflow-x-auto pb-4 custom-scrollbar">
                         {timeline.map((item, i) => {
                             const budgetHeight = (item.budget / maxBudget) * 100;
                             const actualHeight = (item.actual / maxBudget) * 100;
 
                             return (
-                                <div key={i} className="flex-1 flex flex-col items-center group relative h-full justify-end">
-                                    <div className="w-full flex justify-center gap-1 h-full items-end pb-8">
+                                <div key={i} className="flex-none w-12 flex flex-col items-center group relative h-full justify-end">
+                                    <div className="w-full flex justify-center gap-1 h-full items-end pb-8 relative">
+                                        {/* Budget Bar - Centered if actual is 0 */}
                                         <div
-                                            style={{ height: `${budgetHeight}%` }}
-                                            className="w-1/2 bg-slate-700 group-hover:bg-slate-600 transition-all rounded-t-sm shadow-lg"
+                                            className="bg-slate-700/50 rounded-t transition-all"
+                                            style={{
+                                                height: `${budgetHeight}%`,
+                                                width: item.actual > 0 ? '45%' : '90%',
+                                                position: 'absolute',
+                                                bottom: '2rem',
+                                                left: item.actual > 0 ? '0' : '50%',
+                                                transform: item.actual > 0 ? 'none' : 'translateX(-50%)'
+                                            }}
                                         />
-                                        <div
-                                            style={{ height: `${actualHeight}%` }}
-                                            className={`w-1/2 ${item.isEstimated ? 'bg-emerald-500/50' : 'bg-emerald-500'} group-hover:brightness-110 transition-all rounded-t-sm shadow-lg`}
-                                        />
+                                        {/* Actual Bar */}
+                                        {item.actual > 0 && (
+                                            <div
+                                                className={`rounded-t absolute bottom-8 right-0 transition-all hover:brightness-110 ${item.isEstimated ? 'bg-emerald-500/40' : 'bg-emerald-500'}`}
+                                                style={{ height: `${actualHeight}%`, width: '45%' }}
+                                            />
+                                        )}
                                     </div>
                                     <div className="absolute bottom-0 text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
                                         {item.year.toString().slice(-2)}
@@ -91,7 +102,7 @@ export default function HistoricBudgetView({ enrichedData, timeline, topChapters
                                             <span className="text-emerald-400 text-[10px] font-bold">{(item.actual / 1000).toFixed(1)} Mrd. €</span>
                                         </div>
                                         {item.isEstimated && (
-                                            <p className="text-[8px] text-emerald-500 border-t border-slate-800 mt-2 pt-1 font-bold">HISTORISCHE DATEN</p>
+                                            <p className="text-[8px] text-emerald-500 border-t border-slate-800 mt-2 pt-1 font-bold italic">HISTORISCHE DATEN</p>
                                         )}
                                     </div>
                                 </div>

@@ -283,6 +283,18 @@ export async function getTimelineData(district: string) {
         byYear[r.year].actual += r.actual;
     });
 
+    // Merge in historical baseline for Berlin view
+    if (district === 'Berlin' || district === 'All') {
+        HISTORICAL_DATA.forEach(h => {
+            const budgetVal = h.budget * 1000000;
+            const actualVal = h.actual * 1000000;
+
+            if (!byYear[h.year] || byYear[h.year].budget < budgetVal * 0.5) {
+                byYear[h.year] = { budget: budgetVal, actual: actualVal };
+            }
+        });
+    }
+
     return Object.keys(byYear).map(yearStr => ({
         year: parseInt(yearStr),
         budget: byYear[parseInt(yearStr)].budget,

@@ -4,30 +4,18 @@ import fs from 'fs/promises';
 
 export async function GET() {
     try {
-        // Try to load the reprojected file first, fall back to original (though original is likely wrong projection)
-        const possiblePaths = [
-            path.join(process.cwd(), 'data', 'raw', 'lor_planungsraeume_2021_wgs84.geojson'),
-            path.join(process.cwd(), 'data', 'raw', 'lor_planungsraeume_2021.geojson')
-        ];
+        const filePath = path.join(process.cwd(), 'data', 'processed', 'lor_data.json');
 
-        let fileContents = null;
-        for (const p of possiblePaths) {
-            try {
-                fileContents = await fs.readFile(p, 'utf8');
-                break;
-            } catch (e) {
-                continue;
-            }
+        if (!(await fs.access(filePath).then(() => true).catch(() => false))) {
+            return NextResponse.json({ error: 'Processed LOR data not found' }, { status: 404 });
         }
 
-        if (!fileContents) {
-            throw new Error('No GeoJSON file found');
-        }
-
+        const fileContents = await fs.readFile(filePath, 'utf8');
         const data = JSON.parse(fileContents);
+
         return NextResponse.json(data);
     } catch (error) {
-        console.error('Error reading GeoJSON:', error);
+        console.error('Error reading LOR JSON:', error);
         return NextResponse.json({ error: 'Failed to load LOR data' }, { status: 500 });
     }
 }
