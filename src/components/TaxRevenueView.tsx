@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import { Building2, Landmark, LayoutGrid, Info, X } from 'lucide-react';
 import { getTaxDescription } from '@/lib/tax-descriptions';
+import { useLanguage } from './LanguageContext';
 
 interface TaxRevenueViewProps {
     metrics: {
@@ -20,9 +21,12 @@ const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#f43f5e', '#f59e0b'];
 type ViewMode = 'all' | 'land' | 'gemeinde';
 
 export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
+    const { t, language } = useLanguage();
     const [mounted, setMounted] = useState(false);
     const [viewMode, setViewMode] = useState<ViewMode>('all');
     const [activeDescription, setActiveDescription] = useState<{ name: string; text: string } | null>(null);
+
+    const locale = language === 'de' ? 'de-DE' : 'en-GB';
 
     // Fix hydration mismatch by only rendering on client
     useEffect(() => {
@@ -63,8 +67,8 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
     }, [filteredData]);
 
     const formatCurrency = (val: number) => {
-        if (val >= 1000000) return `${(val / 1000000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} Mio. €`;
-        return `${val.toLocaleString('de-DE')} €`;
+        if (val >= 1000000) return `${(val / 1000000).toLocaleString(locale, { maximumFractionDigits: 1 })} ${t('mio_euro')}`;
+        return `${val.toLocaleString(locale)} ${t('euro')}`;
     };
 
     const handleInfoClick = (type: string) => {
@@ -110,7 +114,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                 <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 rounded-xl border border-emerald-500/20 w-fit">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                     <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest">
-                        Datenstand: {metrics.period}
+                        {language === 'de' ? 'Datenstand' : 'Data Period'}: {metrics.period}
                     </span>
                 </div>
 
@@ -121,21 +125,21 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${viewMode === 'all' ? 'bg-emerald-500 text-white shadow-lg' : 'text-slate-400 hover:text-slate-200'}`}
                     >
                         <LayoutGrid size={14} />
-                        Gesamt
+                        {t('all')}
                     </button>
                     <button
                         onClick={() => setViewMode('land')}
                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${viewMode === 'land' ? 'bg-blue-500 text-white shadow-lg' : 'text-slate-400 hover:text-slate-200'}`}
                     >
                         <Landmark size={14} />
-                        Land
+                        {language === 'de' ? 'Land' : 'State'}
                     </button>
                     <button
                         onClick={() => setViewMode('gemeinde')}
                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${viewMode === 'gemeinde' ? 'bg-purple-500 text-white shadow-lg' : 'text-slate-400 hover:text-slate-200'}`}
                     >
                         <Building2 size={14} />
-                        Gemeinde
+                        {language === 'de' ? 'Gemeinde' : 'Local'}
                     </button>
                 </div>
             </div>
@@ -144,11 +148,11 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm group hover:border-emerald-500/50 transition-all">
                     <h3 className="text-slate-400 text-sm font-medium mb-1">
-                        {viewMode === 'all' ? 'Gesamteinnahmen' : viewMode === 'land' ? 'Einnahmen Land' : 'Einnahmen Gemeinde'}
+                        {viewMode === 'all' ? (language === 'de' ? 'Gesamteinnahmen' : 'Total Revenue') : viewMode === 'land' ? (language === 'de' ? 'Einnahmen Land' : 'State Revenue') : (language === 'de' ? 'Einnahmen Gemeinde' : 'Local Revenue')}
                     </h3>
                     <p className="text-3xl font-bold text-slate-100">
                         {activeMetrics.total >= 1000000000
-                            ? `${(activeMetrics.total / 1000000000).toLocaleString('de-DE', { maximumFractionDigits: 2 })} Mrd. €`
+                            ? `${(activeMetrics.total / 1000000000).toLocaleString(locale, { maximumFractionDigits: 2 })} ${language === 'de' ? 'Mrd. €' : 'B €'}`
                             : formatCurrency(activeMetrics.total)}
                     </p>
                     <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider mt-1">{metrics.period}</p>
@@ -159,9 +163,9 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                     <p className="text-sm text-slate-500">{formatCurrency(activeMetrics.topSources[0]?.monthlyAmount || 0)}</p>
                 </div>
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm">
-                    <h3 className="text-slate-400 text-sm font-medium mb-1">Anzahl Posten</h3>
+                    <h3 className="text-slate-400 text-sm font-medium mb-1">{language === 'de' ? 'Anzahl Posten' : 'Items Count'}</h3>
                     <p className="text-3xl font-bold text-blue-400">{filteredData.length}</p>
-                    <p className="text-[10px] text-slate-500 mt-1 uppercase font-bold">In dieser Perspektive</p>
+                    <p className="text-[10px] text-slate-500 mt-1 uppercase font-bold">{language === 'de' ? 'In dieser Perspektive' : 'In this perspective'}</p>
                 </div>
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm group hover:border-blue-500/50 transition-all">
                     <div className="flex items-center justify-between mb-1">
@@ -206,7 +210,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                                                     <p className="text-emerald-400 font-bold text-sm">{formatCurrency(payload[0].value as number)}</p>
                                                     <p className="text-[10px] text-slate-500 mt-1">{payload[0].payload.category}</p>
                                                     {getTaxDescription(payload[0].payload.type) && (
-                                                        <p className="text-[10px] text-blue-400 mt-2 italic font-medium">Klicke in der Liste für Details</p>
+                                                        <p className="text-[10px] text-blue-400 mt-2 italic font-medium">{language === 'de' ? 'Klicke in der Liste für Details' : 'Click in the list for details'}</p>
                                                     )}
                                                 </div>
                                             );
@@ -230,7 +234,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
 
                 {/* Category Breakdown Pie Chart */}
                 <div className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 shadow-inner flex flex-col">
-                    <h2 className="text-xl font-bold text-slate-100 mb-6">Verteilung</h2>
+                    <h2 className="text-xl font-bold text-slate-100 mb-6">{language === 'de' ? 'Verteilung' : 'Distribution'}</h2>
                     <div className="flex-1 flex items-center justify-center min-h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
@@ -280,15 +284,15 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
             {/* Detailed Table */}
             <div className="bg-slate-800/50 rounded-3xl border border-white/5 overflow-hidden">
                 <div className="p-6 border-b border-slate-700/50 flex justify-between items-center">
-                    <h2 className="text-lg font-bold text-slate-100">Detailansicht: {viewMode === 'all' ? 'Alle Steuern' : viewMode === 'land' ? 'Staatsebene (Land)' : 'Stadtebene (Gemeinde)'}</h2>
+                    <h2 className="text-lg font-bold text-slate-100">{language === 'de' ? 'Detailansicht' : 'Detailed View'}: {viewMode === 'all' ? (language === 'de' ? 'Alle Steuern' : 'All Taxes') : viewMode === 'land' ? (language === 'de' ? 'Staatsebene (Land)' : 'State Level') : (language === 'de' ? 'Stadtebene (Gemeinde)' : 'Local Level')}</h2>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
                             <tr className="text-[10px] font-black uppercase tracking-widest text-slate-500 border-b border-slate-700/50">
-                                <th className="px-6 py-4">Steuerart</th>
-                                <th className="px-6 py-4">Kategorie</th>
-                                <th className="px-6 py-4 text-right">Einnahmen ({metrics.period})</th>
+                                <th className="px-6 py-4">{language === 'de' ? 'Steuerart' : 'Tax Type'}</th>
+                                <th className="px-6 py-4">{language === 'de' ? 'Kategorie' : 'Category'}</th>
+                                <th className="px-6 py-4 text-right">{language === 'de' ? 'Einnahmen' : 'Revenue'} ({metrics.period})</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-700/30">
@@ -308,8 +312,8 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${source.type.includes('(Land)') ? 'bg-blue-500/10 text-blue-400' :
-                                                source.type.includes('(Gemeinde)') ? 'bg-purple-500/10 text-purple-400' :
-                                                    'bg-slate-900 text-slate-400'
+                                            source.type.includes('(Gemeinde)') ? 'bg-purple-500/10 text-purple-400' :
+                                                'bg-slate-900 text-slate-400'
                                             }`}>
                                             {source.category}
                                         </span>

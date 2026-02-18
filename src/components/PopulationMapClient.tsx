@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, Cell } from 'recharts';
 import { Download, Users, Baby, School, UserRound, Map as MapIcon, ChevronRight, X as CloseIcon } from 'lucide-react';
+import { useLanguage } from './LanguageContext';
 
 // Helper component to auto-zoom to GeoJSON data
 function FitBounds({ data }: { data: any }) {
@@ -54,10 +55,13 @@ const getDistrictName = (bezId: number | string) => {
 };
 
 export default function PopulationMapClient({ district }: { district: string }) {
+    const { t, language } = useLanguage();
     const [geoJsonData, setGeoJsonData] = useState<any>(null);
     const [demographicsData, setDemographicsData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [featureCount, setFeatureCount] = useState<number>(0);
+
+    const locale = language === 'de' ? 'de-DE' : 'en-GB';
     const [selectedTheme, setSelectedTheme] = useState<'total' | 'density' | 'kita' | 'school' | 'seniors' | 'women_ratio'>('total');
     const [selectedFeature, setSelectedFeature] = useState<any>(null);
     const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
@@ -188,12 +192,12 @@ export default function PopulationMapClient({ district }: { district: string }) 
         <div className="h-[600px] flex items-center justify-center bg-slate-800/50 rounded-3xl border border-slate-700">
             <div className="flex flex-col items-center gap-4">
                 <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-slate-400 font-medium">Lade Kartendaten...</p>
+                <p className="text-slate-400 font-medium">{t('loading')}</p>
             </div>
         </div>
     );
 
-    if (!geoJsonData) return <div className="h-[600px] flex items-center justify-center text-rose-400 bg-slate-800/50 rounded-3xl border border-slate-700">Fehler beim Laden der Karte</div>;
+    if (!geoJsonData) return <div className="h-[600px] flex items-center justify-center text-rose-400 bg-slate-800/50 rounded-3xl border border-slate-700">{t('error')}</div>;
 
     const onEachFeature = (feature: any, layer: L.Layer) => {
         const pop = getPopulation(feature.properties.PLR_ID);
@@ -216,12 +220,12 @@ export default function PopulationMapClient({ district }: { district: string }) 
             <span style="font-size: 9px; color: #64748b; margin-left: 8px; text-transform: uppercase;">${districtName}</span>
         </div>
         <div style="display: grid; grid-template-columns: auto auto; gap: 8px; font-size: 12px;">
-          <span style="color: #64748b;">Einwohner:</span>
-          <span style="font-weight: bold; text-align: right;">${pop ? pop.toLocaleString('de-DE') : 'N/A'}</span>
-          <span style="color: #64748b;">Männer:</span>
-          <span style="font-weight: bold; text-align: right;">${data && data.E_EM != null ? Number(data.E_EM).toLocaleString('de-DE') : '-'}</span>
-          <span style="color: #64748b;">Frauen:</span>
-          <span style="font-weight: bold; text-align: right;">${data && data.E_EW != null ? Number(data.E_EW).toLocaleString('de-DE') : '-'}</span>
+          <span style="color: #64748b;">{t('pop_total')}:</span>
+          <span style="font-weight: bold; text-align: right;">${pop ? pop.toLocaleString(locale) : 'N/A'}</span>
+          <span style="color: #64748b;">{language === 'de' ? 'Männer' : 'Men'}:</span>
+          <span style="font-weight: bold; text-align: right;">${data && data.E_EM != null ? Number(data.E_EM).toLocaleString(locale) : '-'}</span>
+          <span style="color: #64748b;">{language === 'de' ? 'Frauen' : 'Women'}:</span>
+          <span style="font-weight: bold; text-align: right;">${data && data.E_EW != null ? Number(data.E_EW).toLocaleString(locale) : '-'}</span>
           <span style="color: #64748b;">ID:</span>
           <span style="text-align: right; font-family: monospace;">${feature.properties.PLR_ID}</span>
         </div>
@@ -306,16 +310,16 @@ export default function PopulationMapClient({ district }: { district: string }) 
                         <Users className="w-5 h-5 text-emerald-500" />
                     </div>
                     <div>
-                        <h2 className="text-sm font-bold text-white uppercase tracking-wider">Demografische Analyse</h2>
-                        <p className="text-[10px] text-slate-500 font-medium">Visualisierung der Berliner Planungsräume (LOR)</p>
+                        <h2 className="text-sm font-bold text-white uppercase tracking-wider">{t('pop_title')}</h2>
+                        <p className="text-[10px] text-slate-500 font-medium">{t('pop_subtitle')}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                     <span className="flex items-center gap-2 bg-slate-900/50 px-3 py-1.5 rounded-lg border border-white/5">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Stand: 31.12.2024
+                        {language === 'de' ? 'Stand' : 'As of'}: 31.12.2024
                     </span>
-                    <span className="hidden sm:inline-block opacity-50">Quelle: Amt für Statistik Berlin-Brandenburg (EWR)</span>
+                    <span className="hidden sm:inline-block opacity-50">{language === 'de' ? 'Quelle: Amt für Statistik Berlin-Brandenburg (EWR)' : 'Source: Statistical Office Berlin-Brandenburg'}</span>
                 </div>
             </div>
 
@@ -345,12 +349,12 @@ export default function PopulationMapClient({ district }: { district: string }) 
                     {/* Theme Selector Toolbar */}
                     <div className="absolute top-6 left-1/2 -translate-x-1/2 flex gap-1 p-1.5 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-700 shadow-2xl z-[1000]">
                         {[
-                            { id: 'total', icon: Users, label: 'Einwohner' },
-                            { id: 'density', icon: MapIcon, label: 'Dichte' },
-                            { id: 'kita', icon: Baby, label: 'Kita' },
-                            { id: 'school', icon: School, label: 'Schule' },
-                            { id: 'seniors', icon: UserRound, label: 'Senioren' },
-                            { id: 'women_ratio', icon: UserRound, label: 'Frauen %' },
+                            { id: 'total', icon: Users, label: t('pop_total') },
+                            { id: 'density', icon: MapIcon, label: t('pop_density') },
+                            { id: 'kita', icon: Baby, label: language === 'de' ? 'Kita' : 'Preschool' },
+                            { id: 'school', icon: School, label: language === 'de' ? 'Schule' : 'School' },
+                            { id: 'seniors', icon: UserRound, label: language === 'de' ? 'Senioren' : 'Seniors' },
+                            { id: 'women_ratio', icon: UserRound, label: language === 'de' ? 'Frauen %' : 'Women %' },
                         ].map((t) => (
                             <button
                                 key={t.id}
@@ -367,7 +371,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
                     {/* Status & Export */}
                     <div className="absolute bottom-6 left-6 flex items-center gap-3 z-[1000]">
                         <div className="bg-slate-900/90 px-4 py-2 rounded-xl border border-slate-700 backdrop-blur-md text-[10px] text-slate-400 font-bold uppercase tracking-widest shadow-xl">
-                            {featureCount} Planungsräume geladen
+                            {featureCount} {language === 'de' ? 'Planungsräume geladen' : 'districts loaded'}
                         </div>
                         <button
                             onClick={handleExportCSV}
@@ -381,11 +385,11 @@ export default function PopulationMapClient({ district }: { district: string }) 
                     {/* Legend */}
                     <div className="absolute bottom-6 right-6 bg-slate-900/90 p-4 rounded-xl border border-slate-700 backdrop-blur-md shadow-xl z-[1000] min-w-[140px]">
                         <h4 className="text-[10px] font-black text-slate-500 mb-3 uppercase tracking-[0.2em] border-b border-slate-800 pb-2">
-                            {selectedTheme === 'total' ? 'Einwohner' :
-                                selectedTheme === 'density' ? 'Pers. / km²' :
-                                    selectedTheme === 'kita' ? 'Kita-Alter' :
-                                        selectedTheme === 'school' ? 'Schulalter' :
-                                            selectedTheme === 'seniors' ? '65+ Jahre' : 'Frauenanteil %'}
+                            {selectedTheme === 'total' ? t('pop_total') :
+                                selectedTheme === 'density' ? t('pop_density') :
+                                    selectedTheme === 'kita' ? (language === 'de' ? 'Kita-Alter' : 'Preschool Age') :
+                                        selectedTheme === 'school' ? (language === 'de' ? 'Schulalter' : 'School Age') :
+                                            selectedTheme === 'seniors' ? (language === 'de' ? '65+ Jahre' : '65+ Years') : (language === 'de' ? 'Frauenanteil %' : 'Women Share %')}
                         </h4>
                         <div className="space-y-2.5">
                             {(() => {
@@ -394,7 +398,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
                                         case 'density': return ['< 2.000', '2.000 - 5.000', '5.000 - 10.000', '10.000 - 15.000', '15.000 - 25.000', '> 25.000'];
                                         case 'kita': return ['< 100', '100 - 300', '300 - 500', '500 - 800', '800 - 1200', '> 1200'];
                                         case 'women_ratio': return ['< 48%', '48% - 49.5%', '49.5% - 50.5%', '50.5% - 51.5%', '51.5% - 53%', '> 53%'];
-                                        default: return ['Sehr gering', 'Gering', 'Normal', 'Erhöht', 'Hoch', 'Sehr hoch'];
+                                        default: return language === 'de' ? ['Sehr gering', 'Gering', 'Normal', 'Erhöht', 'Hoch', 'Sehr hoch'] : ['Very Low', 'Low', 'Moderate', 'Elevated', 'High', 'Very High'];
                                     }
                                 };
                                 const labels = getLegend();
@@ -429,7 +433,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
                             <div className="p-6 border-b border-slate-700/50 flex justify-between items-start">
                                 <div>
                                     <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1 block">
-                                        {getDistrictName(selectedFeature.demographics?.BEZ || '')} • Planungsraum
+                                        {getDistrictName(selectedFeature.demographics?.BEZ || '')} • {language === 'de' ? 'Planungsraum' : 'District'}
                                     </span>
                                     <h2 className="text-xl font-bold text-white leading-tight">{selectedFeature.properties.PLR_NAME}</h2>
                                     <p className="text-xs text-slate-500 font-mono mt-1">ID: {selectedFeature.properties.PLR_ID}</p>
@@ -443,13 +447,13 @@ export default function PopulationMapClient({ district }: { district: string }) 
                                 {/* Key Metrics */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="bg-slate-800/40 p-4 rounded-2xl border border-white/5">
-                                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Bevölkerung</p>
-                                        <p className="text-2xl font-bold text-white">{(selectedFeature.demographics?.E_E || 0).toLocaleString('de-DE')}</p>
+                                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">{language === 'de' ? 'Bevölkerung' : 'Population'}</p>
+                                        <p className="text-2xl font-bold text-white">{(selectedFeature.demographics?.E_E || 0).toLocaleString(locale)}</p>
                                     </div>
                                     <div className="bg-slate-800/40 p-4 rounded-2xl border border-white/5">
-                                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Dichte</p>
+                                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">{language === 'de' ? 'Dichte' : 'Density'}</p>
                                         <p className="text-2xl font-bold text-emerald-400">
-                                            {Math.round((selectedFeature.demographics?.E_E || 0) / (selectedFeature.properties.GROESSE_M2 / 1000000)).toLocaleString('de-DE')}
+                                            {Math.round((selectedFeature.demographics?.E_E || 0) / (selectedFeature.properties.GROESSE_M2 / 1000000)).toLocaleString(locale)}
                                             <span className="text-[10px] ml-1 text-slate-500">/km²</span>
                                         </p>
                                     </div>
@@ -459,7 +463,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
                                 <div>
                                     <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-4 flex items-center gap-2">
                                         <ChevronRight className="w-3 h-3 text-emerald-500" />
-                                        Altersstruktur
+                                        {t('pop_age_groups')}
                                     </h3>
                                     <div className="h-48 w-full mt-4">
                                         {(() => {
@@ -493,13 +497,13 @@ export default function PopulationMapClient({ district }: { district: string }) 
                                 <div>
                                     <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-4 flex items-center gap-2">
                                         <ChevronRight className="w-3 h-3 text-emerald-500" />
-                                        Geschlechterverteilung
+                                        {language === 'de' ? 'Geschlechterverteilung' : 'Gender Distribution'}
                                     </h3>
                                     {selectedFeature.demographics && (
                                         <div className="space-y-3">
                                             <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider">
-                                                <span className="text-pink-400">Frauen {Math.round((selectedFeature.demographics.E_EW / selectedFeature.demographics.E_E) * 100)}%</span>
-                                                <span className="text-blue-400">Männer {Math.round((selectedFeature.demographics.E_EM / selectedFeature.demographics.E_E) * 100)}%</span>
+                                                <span className="text-pink-400">{language === 'de' ? 'Frauen' : 'Women'} {Math.round((selectedFeature.demographics.E_EW / selectedFeature.demographics.E_E) * 100)}%</span>
+                                                <span className="text-blue-400">{language === 'de' ? 'Männer' : 'Men'} {Math.round((selectedFeature.demographics.E_EM / selectedFeature.demographics.E_E) * 100)}%</span>
                                             </div>
                                             <div className="h-2 w-full bg-slate-800 rounded-full flex overflow-hidden">
                                                 <div style={{ width: `${(selectedFeature.demographics.E_EW / selectedFeature.demographics.E_E) * 100}%` }} className="h-full bg-pink-500 shadow-lg shadow-pink-500/20"></div>
@@ -512,7 +516,9 @@ export default function PopulationMapClient({ district }: { district: string }) 
 
                             <div className="p-6 mt-auto border-t border-slate-700/50 bg-slate-800/20">
                                 <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">
-                                    Quelle: Einwohnerregister Berlin (EWR) am 31.12.2024. Geodaten: ODIS Berlin 2021.
+                                    {language === 'de'
+                                        ? 'Quelle: Einwohnerregister Berlin (EWR) am 31.12.2024. Geodaten: ODIS Berlin 2021.'
+                                        : 'Source: Residents Register Berlin (EWR) as of 31.12.2024. Geo data: ODIS Berlin 2021.'}
                                 </p>
                             </div>
                         </div>
@@ -521,8 +527,8 @@ export default function PopulationMapClient({ district }: { district: string }) 
                             <div className="w-16 h-16 bg-slate-800 rounded-3xl flex items-center justify-center mb-6 border border-white/5">
                                 <Users className="w-8 h-8 text-slate-600" />
                             </div>
-                            <h3 className="text-lg font-bold text-slate-300">Wähle einen Bezirk</h3>
-                            <p className="text-sm text-slate-500 mt-2 leading-relaxed">Klicke auf die Karte, um detaillierte demografische Analysen für einen Kiez zu erhalten.</p>
+                            <h3 className="text-lg font-bold text-slate-300">{language === 'de' ? 'Wähle einen Bezirk' : 'Select a District'}</h3>
+                            <p className="text-sm text-slate-500 mt-2 leading-relaxed">{language === 'de' ? 'Klicke auf die Karte, um detaillierte demografische Analysen für einen Kiez zu erhalten.' : 'Click on the map to receive detailed demographic analyses for a neighborhood.'}</p>
                         </div>
                     )}
                 </div>
@@ -534,15 +540,15 @@ export default function PopulationMapClient({ district }: { district: string }) 
                     <div>
                         <h3 className="text-lg font-bold text-white flex items-center gap-2">
                             <ChevronRight className="w-4 h-4 text-emerald-500" />
-                            Top 10 Planungsräume
+                            {language === 'de' ? 'Top 10 Planungsräume' : 'Top 10 Districts'}
                         </h3>
                         <p className="text-xs text-slate-500 mt-1 uppercase tracking-wider font-medium">
-                            Sortiert nach {
-                                selectedTheme === 'total' ? 'Einwohnerzahl' :
-                                    selectedTheme === 'density' ? 'Bevölkerungsdichte' :
-                                        selectedTheme === 'kita' ? 'Kita-Alter (1-6)' :
-                                            selectedTheme === 'school' ? 'Schulalter (6-15)' :
-                                                selectedTheme === 'seniors' ? 'Senioren (65+)' : 'Frauenanteil'
+                            {language === 'de' ? 'Sortiert nach' : 'Sorted by'} {
+                                selectedTheme === 'total' ? t('pop_total') :
+                                    selectedTheme === 'density' ? t('pop_density') :
+                                        selectedTheme === 'kita' ? (language === 'de' ? 'Kita-Alter (1-6)' : 'Preschool Age (1-6)') :
+                                            selectedTheme === 'school' ? (language === 'de' ? 'Schulalter (6-15)' : 'School Age (6-15)') :
+                                                selectedTheme === 'seniors' ? (language === 'de' ? 'Senioren (65+)' : 'Seniors (65+)') : (language === 'de' ? 'Frauenanteil' : 'Women share')
                             }
                         </p>
                     </div>
@@ -552,10 +558,10 @@ export default function PopulationMapClient({ district }: { district: string }) 
                     <table className="w-full text-left border-separate border-spacing-y-2">
                         <thead>
                             <tr className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                                <th className="px-4 py-2">Rang</th>
-                                <th className="px-4 py-2">Kiez / Planungsraum</th>
-                                <th className="px-4 py-2 text-right">Wert</th>
-                                <th className="px-4 py-2 w-32">Visualisierung</th>
+                                <th className="px-4 py-2">{language === 'de' ? 'Rang' : 'Rank'}</th>
+                                <th className="px-4 py-2">{language === 'de' ? 'Kiez / Planungsraum' : 'Neighborhood / District'}</th>
+                                <th className="px-4 py-2 text-right">{language === 'de' ? 'Wert' : 'Value'}</th>
+                                <th className="px-4 py-2 w-32">{language === 'de' ? 'Visualisierung' : 'Visualization'}</th>
                             </tr>
                         </thead>
                         <tbody className="text-sm">
@@ -599,7 +605,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
                                             </div>
                                         </td>
                                         <td className="bg-slate-900/40 px-4 py-3 text-right font-mono font-bold text-emerald-400">
-                                            {selectedTheme === 'women_ratio' ? `${item.val.toFixed(1)}%` : Math.round(item.val).toLocaleString('de-DE')}
+                                            {selectedTheme === 'women_ratio' ? `${item.val.toFixed(1)}%` : Math.round(item.val).toLocaleString(locale)}
                                             <span className="text-[10px] ml-1 text-slate-500 font-normal">
                                                 {selectedTheme === 'density' ? '/km²' : ''}
                                             </span>
@@ -627,12 +633,12 @@ export default function PopulationMapClient({ district }: { district: string }) 
                     <div className="flex items-center gap-4 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
                         <span>© 2024 Land Berlin</span>
                         <span className="w-1 h-1 rounded-full bg-slate-700"></span>
-                        <span>Daten: Einwohnerregister (EWR)</span>
+                        <span>{language === 'de' ? 'Daten: Einwohnerregister (EWR)' : 'Data: Residents Register (EWR)'}</span>
                         <span className="w-1 h-1 rounded-full bg-slate-700"></span>
-                        <span>Geometrie: LOR 2021 (WGS84)</span>
+                        <span>{language === 'de' ? 'Geometrie: LOR 2021 (WGS84)' : 'Geometry: LOR 2021 (WGS84)'}</span>
                     </div>
                     <p className="text-[10px] text-slate-400 font-medium italic">
-                        Hinweis: Die Daten spiegeln den amtlichen Stand zum Jahresende 2024 wider.
+                        {language === 'de' ? 'Hinweis: Die Daten spiegeln den amtlichen Stand zum Jahresende 2024 wider.' : 'Note: Data reflects official status as of end 2024.'}
                     </p>
                 </div>
             </div>

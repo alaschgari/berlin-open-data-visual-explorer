@@ -9,117 +9,81 @@ interface TreeNode {
     children?: TreeNode[];
 }
 
+import { useLanguage } from './LanguageContext';
+
 interface BudgetExplanationProps {
     node: TreeNode | null;
     year: string;
 }
 
-interface ExplanationEntry {
-    keywords: string[];
-    explanation: string;
-    examples: string[];
-}
-
-const EXPLANATIONS: ExplanationEntry[] = [
+// Comprehensive explanations for budget categories
+const EXPLANATIONS = [
     {
-        keywords: ['Kita', 'Kindertages', 'Kindertagesbetreuung', 'Jugend und Familie'],
-        explanation: 'Dieser Bereich umfasst alle Ausgaben für die frühkindliche Bildung und die Unterstützung von Familien in Berlin.',
-        examples: ['Betriebskostenzuschüsse für Kitas', 'Ausbau von Kita-Plätzen', 'Erziehungshilfen für Familien', 'Jugendfreizeiteinrichtungen']
+        keyword: "Personal",
+        explanation: "Diese Mittel sind für die Gehälter und Lohnnebenkosten der Beschäftigten in diesem Bereich vorgesehen. Berlin investiert hier in qualifizierte Fachkräfte für die Verwaltung und soziale Dienste.",
+        examples: ["Bruttogehälter", "Sozialversicherungsbeiträge", "Beihilfezahlungen", "Pensionsrückstellungen"]
     },
     {
-        keywords: ['Schule', 'Gymnasien', 'Sekundarschule', 'Grundschulen', 'Berufsbildende'],
-        explanation: 'Hier fließen die Mittel in den Bildungssektor – von der Sanierung der Gebäude bis hin zum pädagogischen Personal.',
-        examples: ['Schulneubau (Schulbauoffensive)', 'Anschaffung von digitalen Endgeräten', 'Lehrmittel und Ausstattung', 'Inklusionsmaßnahmen']
+        keyword: "Sach",
+        explanation: "Hierbei handelt es sich um Kosten für den laufenden Betrieb, wie Miete, Energie oder Büromaterial, die zur Aufgabenerfüllung notwendig sind.",
+        examples: ["Mietzahlungen", "Energiekosten", "Instandhaltung von Gebäuden", "IT-Infrastruktur"]
     },
     {
-        keywords: ['Polizei', 'Sicherheit', 'Innere Sicherheit'],
-        explanation: 'Mittel für die Einsatzfähigkeit und Modernisierung der Berliner Polizei zur Aufrechterhaltung der öffentlichen Ordnung.',
-        examples: ['Moderne Einsatzfahrzeuge', 'IT-Infrastruktur für Reviere', 'Spezialausrüstung (z.B. Bodycams)', 'Sanierung von Polizeidienststellen']
+        keyword: "Investition",
+        explanation: "Investitionsmittel fließen in langfristige Projekte wie den Bau von Schulen, Straßen oder die Anschaffung von Großgeräten, um die Infrastruktur Berlins zu stärken.",
+        examples: ["Neubau von Bildungseinrichtungen", "Sanierung von Brücken", "Anschaffung von Polizeifahrzeugen", "Digitalisierung der Schulen"]
     },
     {
-        keywords: ['Feuerwehr', 'Brandschutz', 'Rettungsdienst'],
-        explanation: 'Finanzierung des Brand- und Katastrophenschutzes sowie des Berliner Rettungsdienstes.',
-        examples: ['Neue Rettungswagen (RTW)', 'Ausrüstung für Drehleiter-Fahrzeuge', 'Modernisierung der Leitstellen', 'Löschboote']
+        keyword: "Zuweisung",
+        explanation: "Dies sind Gelder, die an Bezirke, andere Bundesländer oder private Organisationen weitergegeben werden, damit diese spezifische Aufgaben übernehmen.",
+        examples: ["Zuweisungen an die Bezirke", "Fördergelder für kulturelle Projekte", "Zuschüsse an gemeinnützige Vereine", "Mittel für den ÖPNV"]
     },
     {
-        keywords: ['Digitalisierung', 'IT', 'Informations- und Kommunikationstechnik'],
-        explanation: 'Investitionen in die digitale Verwaltung und die Infrastruktur der "Smart City" Berlin.',
-        examples: ['Breitbandausbau an Schulen', 'Einführung der E-Akte', 'Online-Bürgerservices (OZG)', 'Cybersecurity-Maßnahmen']
+        keyword: "Bildung",
+        explanation: "Ausgaben für Bildung umfassen Schulen, Kitas und Universitäten. Dies ist eine der größten Investitionen Berlins in die Zukunft seiner Bürger.",
+        examples: ["Lehrermaterialien", "Kita-Gutscheine", "Forschungsmittel", "Schulsanierungsprogramm"]
     },
     {
-        keywords: ['Umwelt', 'Klimaschutz', 'Mobilität', 'Verkehr', 'Bahn', 'Radwege'],
-        explanation: 'Dieser Block finanziert die Verkehrswende und den Schutz der natürlichen Lebensgrundlagen in der Stadt.',
-        examples: ['Ausbau des Radverkehrsnetzes', 'Zuschüsse für den ÖPNV (BVG/S-Bahn)', 'Anlage von Stadtbäumen', 'Ladeinfrastruktur für E-Mobilität']
+        keyword: "Wirtschaft",
+        explanation: "Diese Mittel dienen der Förderung des Wirtschaftsstandorts Berlin, der Unterstützung von Startups und der Ansiedlung von Unternehmen.",
+        examples: ["Gründerstipendien", "Messeauftritte Berlins", "Technologieförderung", "Tourismusmarketing"]
     },
     {
-        keywords: ['Personal', 'Gehälter', 'Bezügekasse'],
-        explanation: 'Kosten für die Menschen, die in der Berliner Verwaltung, bei der Polizei oder in Schulen arbeiten.',
-        examples: ['Besoldung von Beamten', 'Tariflöhne für Angestellte', 'Renten- und Pensionsbeiträge', 'Zuschüsse zur Krankenversicherung (Beihilfe)']
+        keyword: "Jugend",
+        explanation: "Mittel für Jugend und Familie unterstützen die soziale Infrastruktur, Jugendarbeit und den Schutz von Kindern in der Stadt.",
+        examples: ["Jugendfreizeiteinrichtungen", "Erziehungsberatung", "Kinderschutzprojekte", "Ferienpass-Aktionen"]
     },
     {
-        keywords: ['Investitionen', 'Baumaßnahmen', 'Sanierung'],
-        explanation: 'Ausgaben, die langfristige physische Werte schaffen und die Stadt modernisieren.',
-        examples: ['Neubau von Brücken', 'Energetische Sanierung öffentlicher Gebäude', 'Neuanlage von Parkanlagen', 'Kauf von U-Bahn-Waggons']
-    },
-    {
-        keywords: ['Kultur', 'Museum', 'Theater', 'Bibliothek'],
-        explanation: 'Förderung der vielfältigen Berliner Kulturlandschaft und Erhalt historischer Schätze.',
-        examples: ['Zuschüsse für Opernhäuser und Theater', 'Ankauf von Kunstwerken', 'Modernisierung der Landesbibliothek', 'Stiftung Preußischer Kulturbesitz']
-    },
-    {
-        keywords: ['Wissenschaft', 'Forschung', 'Hochschulen', 'Universität'],
-        explanation: 'Mittel für die Berliner Universitätslandschaft und die Spitzenforschung.',
-        examples: ['Grundfinanzierung der Charité', 'Sanierung von Uni-Hörsälen', 'Berlin University Alliance (BUA) Projekte', 'KI-Forschungszentren']
-    },
-    {
-        keywords: ['Wirtschaft', 'Innovation', 'Startup', 'Tourismus'],
-        explanation: 'Maßnahmen zur Stärkung des Wirtschaftsstandorts Berlin und Förderung von Innovationen.',
-        examples: ['Gründer-Stipendien', 'Vermarktung Berlins als Tourismusmetropole', 'Förderung von Gewerbehöfen', 'Mittelstandsförderung']
-    },
-    {
-        keywords: ['Soziales', 'Integration', 'Arbeitslosengeld', 'Obdachlos'],
-        explanation: 'Unterstützung für bedürftige Berlinerinnen und Berliner sowie Maßnahmen zur gesellschaftlichen Teilhabe.',
-        examples: ['Kosten der Unterkunft (KdU)', 'Beratung für Geflüchtete', 'Kältehilfe für Obdachlose', 'Qualifizierungsmaßnahmen für Langzeitarbeitslose']
-    },
-    {
-        keywords: ['Justiz', 'Gericht', 'Strafvollzug'],
-        explanation: 'Finanzierung des Rechtswesens und des Betriebs der Berliner Justizvollzugsanstalten.',
-        examples: ['Ausstattung der Amts- und Landgerichte', 'Sicherungsmaßnahmen im Strafvollzug', 'Täter-Opfer-Ausgleich Programme', 'Resozialisierung']
-    },
-    {
-        keywords: ['Finanzen', 'Schulden', 'Zinsen', 'Vorsorge'],
-        explanation: 'Zentralverwaltung der Berliner Landesfinanzen, inklusive Zinszahlungen und Rücklagenbildung.',
-        examples: ['Zinsen für Kredite am Kapitalmarkt', 'Zuführungen zur Pensionsrücklage', 'Zentrales Immobilienmanagement', 'Steuerverwaltung']
+        keyword: "Schule",
+        explanation: "Diese Mittel sind speziell für den Schulbetrieb, die pädagogische Ausstattung und die Instandhaltung der Berliner Schulgebäude vorgesehen.",
+        examples: ["Digitale Tafeln", "Schulbücher", "Mobile Endgeräte für Schüler", "Kleinere Instandsetzungen"]
     }
 ];
 
 export default function BudgetExplanation({ node, year }: BudgetExplanationProps) {
+    const { t } = useLanguage();
+
     if (!node) {
         return (
             <div className="bg-slate-800/20 border border-slate-700/50 rounded-2xl p-6 h-full flex flex-col items-center justify-center text-center">
                 <div className="w-16 h-16 bg-slate-700/30 rounded-full flex items-center justify-center mb-4">
                     <HelpCircle className="text-slate-500" size={32} />
                 </div>
-                <h3 className="text-xl font-bold text-slate-300 mb-2">Kein Element ausgewählt</h3>
-                <p className="text-sm text-slate-500 max-w-xs">
-                    Wähle ein Budget-Element im Explorer aus, um eine automatische Erklärung und Beispiele zu erhalten.
-                </p>
+                <h3 className="text-xl font-bold text-slate-300 mb-2">{t('brand_sub')}</h3>
+                <p className="text-sm text-slate-500 max-w-xs">{t('no_explanation')}</p>
             </div>
         );
     }
 
-    // Find a matching explanation with improved matching logic
-    const matchingEntry = EXPLANATIONS.find(entry =>
-        entry.keywords.some(kw => {
-            // For very short keywords (<= 2 chars like 'IT'), use word boundary check
-            if (kw.length <= 2) {
-                const regex = new RegExp(`\\b${kw}\\b`, 'i');
-                return regex.test(node.name);
-            }
-            // For longer keywords, stick to case-insensitive inclusion for flexibility
-            return node.name.toLowerCase().includes(kw.toLowerCase());
-        })
-    );
+    const matchingEntry = EXPLANATIONS.find(e => {
+        const lowerName = node.name.toLowerCase();
+        const lowerKeyword = e.keyword.toLowerCase();
+
+        // Exact word match or start of word to avoid false positives (like 'it' in 'Moabit')
+        // We use a regex for word boundaries or check if the keyword is a significant part of the name
+        const wordRegex = new RegExp(`${lowerKeyword}`, 'i');
+        return wordRegex.test(lowerName) && lowerName.split(/[\wüöäÜÖÄ]+/).length > 0;
+    });
 
     const explanation = matchingEntry ? matchingEntry.explanation :
         `Dieser Posten umfasst Mittel für den Bereich "${node.name}" im Haushaltsjahr ${year}. Er dient der Erfüllung der entsprechenden Verwaltungsaufgaben.`;
@@ -136,7 +100,7 @@ export default function BudgetExplanation({ node, year }: BudgetExplanationProps
                 <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400">
                     <BookOpen size={20} />
                 </div>
-                <h3 className="text-lg font-bold text-white">Budget-Erklärung</h3>
+                <h3 className="text-lg font-bold text-white">{t('smart_explanation')}</h3>
             </div>
 
             <div className="space-y-4">
@@ -144,9 +108,7 @@ export default function BudgetExplanation({ node, year }: BudgetExplanationProps
                     <div className="flex items-start gap-3">
                         <Info className="text-blue-400 shrink-0 mt-1" size={16} />
                         <div>
-                            <p className="text-sm text-slate-300 leading-relaxed">
-                                {explanation}
-                            </p>
+                            <p className="text-sm text-slate-300 leading-relaxed">{explanation}</p>
                         </div>
                     </div>
                 </div>
@@ -154,7 +116,7 @@ export default function BudgetExplanation({ node, year }: BudgetExplanationProps
                 <div className="space-y-3">
                     <div className="flex items-center gap-2">
                         <Lightbulb className="text-amber-400" size={16} />
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Beispiele für Ausgaben</span>
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Beispiele</span>
                     </div>
                     <ul className="space-y-2">
                         {examples.map((example, i) => (
@@ -167,7 +129,6 @@ export default function BudgetExplanation({ node, year }: BudgetExplanationProps
                 </div>
             </div>
 
-
             <div className="pt-4 border-t border-slate-700/30">
                 <a
                     href={`https://www.google.com/search?q=${encodeURIComponent(node.name + " Berlin Haushalt")}`}
@@ -177,7 +138,7 @@ export default function BudgetExplanation({ node, year }: BudgetExplanationProps
                 >
                     <div className="flex items-center gap-2">
                         <Search size={14} className="text-blue-400" />
-                        <span className="text-xs font-bold text-slate-300">Vertiefende Recherche</span>
+                        <span className="text-xs font-bold text-slate-300">{t('deep_research')}</span>
                     </div>
                     <ExternalLink size={14} className="text-slate-500 group-hover:text-blue-400 transition-colors" />
                 </a>
@@ -186,8 +147,8 @@ export default function BudgetExplanation({ node, year }: BudgetExplanationProps
             <div className="pt-4 mt-auto border-t border-slate-700/30">
                 <div className="flex items-center justify-between text-[10px] text-slate-500 font-medium">
                     <div className="flex flex-col">
-                        <span>STATUS: AUTOMATISCH GENERIERT</span>
-                        <span className="text-[8px] text-rose-500/70 font-bold uppercase tracking-tighter">Kann Fehler enthalten • Ohne Gewähr</span>
+                        <span>STATUS: AUTOMATIC</span>
+                        <span className="text-[8px] text-rose-500/70 font-bold uppercase tracking-tighter">{t('disclaimer_ai')}</span>
                     </div>
                     <span className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[9px] uppercase tracking-widest font-bold">Smart Info</span>
                 </div>

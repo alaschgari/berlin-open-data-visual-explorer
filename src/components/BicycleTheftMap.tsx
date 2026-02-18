@@ -9,6 +9,7 @@ import {
   PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip as RechartsTooltip,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, AreaChart, Area
 } from 'recharts';
+import { useLanguage } from './LanguageContext';
 
 // Fix for Leaflet icon issues in Next.js
 // @ts-ignore
@@ -56,6 +57,7 @@ const LOR_PREFIX_TO_DISTRICT: Record<string, string> = {
 };
 
 export default function BicycleTheftMap({ district }: { district?: string }) {
+  const { t, language } = useLanguage();
   const [data, setData] = useState<TheftData[]>([]);
   const [prevYearData, setPrevYearData] = useState<TheftData[]>([]);
   const [lorData, setLorData] = useState<any>(null);
@@ -68,6 +70,8 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [theftType, setTheftType] = useState<'bicycle' | 'car' | 'both'>('bicycle');
   const itemsPerPage = 20;
+
+  const locale = language === 'de' ? 'de-DE' : 'en-GB';
 
   const [startDate, setStartDate] = useState<string>(() => {
     const d = new Date();
@@ -413,7 +417,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
           <div className="flex flex-col">
             <div className="flex items-center gap-3">
               <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-                {theftType === 'bicycle' ? 'Fahrraddiebstahl' : theftType === 'car' ? 'Kfz-Diebstahl' : 'Fahrzeugdiebstahl'} Karte
+                {t('theft_title')}
               </h2>
               <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-full border border-slate-700/50">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -421,14 +425,14 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
               </div>
               {dataStatus && (
                 <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-full border border-white/5">
-                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Stand: {dataStatus}</span>
+                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{t('last_sync')}: {dataStatus}</span>
                 </div>
               )}
             </div>
             <p className="text-slate-400 mt-1 text-sm flex items-center gap-2">
-              Visualisierung {district && district !== 'Berlin' ? `in ${district}` : 'in Berlin'}
+              {t('theft_subtitle')}
               <span className="w-1 h-1 rounded-full bg-slate-700"></span>
-              <span className="text-slate-500 font-medium">({diffDays === 30 ? 'Letzte 30 Tage' : `${diffDays} Tage`})</span>
+              <span className="text-slate-500 font-medium">({diffDays} {language === 'de' ? 'Tage' : 'Days'})</span>
             </p>
           </div>
 
@@ -439,19 +443,19 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                 onClick={() => setTheftType('bicycle')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${theftType === 'bicycle' ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
               >
-                Fahrrad
+                {language === 'de' ? 'Fahrrad' : 'Bicycle'}
               </button>
               <button
                 onClick={() => setTheftType('car')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${theftType === 'car' ? 'bg-rose-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
               >
-                Kfz
+                {language === 'de' ? 'Kfz' : 'Car'}
               </button>
               <button
                 onClick={() => setTheftType('both')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${theftType === 'both' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
               >
-                Beide
+                {language === 'de' ? 'Beide' : 'Both'}
               </button>
             </div>
 
@@ -644,25 +648,25 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                   <Popup className="custom-popup">
                     <div className="p-2 min-w-[200px]">
                       <h3 className="font-bold text-slate-900 text-sm mb-2">
-                        {theft.category === 'bicycle' ? '🚲 Fahrraddiebstahl' : '🚗 Kfz-Diebstahl'}
+                        {theft.category === 'bicycle' ? `🚲 ${language === 'de' ? 'Fahrraddiebstahl' : 'Bicycle Theft'}` : `🚗 ${language === 'de' ? 'Kfz-Diebstahl' : 'Car Theft'}`}
                       </h3>
                       <div className="space-y-1 text-xs text-slate-600">
-                        <div className="flex justify-between">
-                          <span>Tatzeit:</span>
+                        <div className="flex justify-between gap-4">
+                          <span>{language === 'de' ? 'Tatzeit' : 'Time'}:</span>
                           <span className="font-medium">
-                            {new Date(theft.date).toLocaleDateString('de-DE')} • {String(theft.hour ?? 0).padStart(2, '0')}:00 Uhr
+                            {new Date(theft.date).toLocaleDateString(locale)} • {String(theft.hour ?? 0).padStart(2, '0')}:00 {language === 'de' ? 'Uhr' : ''}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Schaden:</span>
-                          <span className="font-medium text-slate-900">{theft.amount} €</span>
+                          <span>{t('amount_label')}:</span>
+                          <span className="font-medium text-slate-900">{theft.amount.toLocaleString(locale)} €</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span>Typ/Gut:</span>
+                        <div className="flex justify-between gap-4">
+                          <span>{language === 'de' ? 'Typ/Gut' : 'Type'}:</span>
                           <span className="font-medium truncate max-w-[150px]" title={theft.type}>{theft.type}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span>Detail:</span>
+                        <div className="flex justify-between gap-4">
+                          <span>{language === 'de' ? 'Detail' : 'Detail'}:</span>
                           <span className="font-medium truncate max-w-[150px]" title={theft.details}>{theft.details}</span>
                         </div>
                       </div>
@@ -677,28 +681,28 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
         <div className="flex items-center gap-6">
-          <p>Datenquelle: Polizei Berlin / Open Data Berlin</p>
+          <p>{language === 'de' ? 'Datenquelle' : 'Data Source'}: Polizei Berlin / Open Data Berlin</p>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span>Fahrrad</span>
+            <span>{language === 'de' ? 'Fahrrad' : 'Bicycle'}</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-rose-500"></span>
-            <span>Kfz</span>
+            <span>{language === 'de' ? 'Kfz' : 'Car'}</span>
           </div>
         </div>
 
         {riskProfile && (
           <div className="flex items-center gap-4 bg-slate-900/50 px-4 py-2 rounded-2xl border border-white/5">
             <div className="flex flex-col items-center">
-              <span className="text-[10px] uppercase tracking-tighter text-slate-500 font-bold">Fahrrad-Risiko</span>
+              <span className="text-[10px] uppercase tracking-tighter text-slate-500 font-bold">{t('theft_risk_level')} ({language === 'de' ? 'Fahrrad' : 'Bike'})</span>
               <span className={`text-sm font-black ${riskProfile.bikeRisk > 7 ? 'text-rose-400' : 'text-emerald-400'}`}>
                 {riskProfile.bikeRisk.toFixed(1)}/10
               </span>
             </div>
             <div className="w-px h-6 bg-slate-700"></div>
             <div className="flex flex-col items-center">
-              <span className="text-[10px] uppercase tracking-tighter text-slate-500 font-bold">Kfz-Risiko</span>
+              <span className="text-[10px] uppercase tracking-tighter text-slate-500 font-bold">{t('theft_risk_level')} ({language === 'de' ? 'Kfz' : 'Car'})</span>
               <span className={`text-sm font-black ${riskProfile.carRisk > 7 ? 'text-rose-400' : 'text-emerald-400'}`}>
                 {riskProfile.carRisk.toFixed(1)}/10
               </span>
@@ -711,14 +715,14 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
       <div className="bg-slate-800/50 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl">
         <h3 className="text-xl font-bold text-white mb-6">
           {(!district || district === 'Berlin' || district === 'All')
-            ? `Diebstähle nach Bezirken (${theftType === 'bicycle' ? 'Fahrrad' : theftType === 'car' ? 'Kfz' : 'Gesamt'})`
+            ? `${language === 'de' ? 'Diebstähle nach Bezirken' : 'Thefts by District'} (${theftType === 'bicycle' ? (language === 'de' ? 'Fahrrad' : 'Bike') : theftType === 'car' ? (language === 'de' ? 'Kfz' : 'Car') : (language === 'de' ? 'Gesamt' : 'Total')})`
             : `Top 10 LORs in ${district}`}
         </h3>
         {loading ? (
           <div className="h-[400px] flex items-center justify-center bg-slate-900/20 rounded-2xl border border-dashed border-slate-700">
             <div className="flex flex-col items-center gap-3">
               <div className="w-8 h-8 border-2 border-slate-500 border-t-white rounded-full animate-spin"></div>
-              <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">Daten werden geladen...</span>
+              <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">{language === 'de' ? 'Daten werden geladen...' : 'Loading data...'}</span>
             </div>
           </div>
         ) : (
@@ -761,7 +765,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
         {/* Bicycle Type Pie Chart */}
         <div className="bg-slate-800/50 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl">
           <h3 className="text-xl font-bold text-white mb-6">
-            {theftType === 'car' ? 'Entwendete Gegenstände' : theftType === 'bicycle' ? 'Verteilung der Fahrradtypen' : 'Verteilung der Typen'}
+            {theftType === 'car' ? (language === 'de' ? 'Entwendete Gegenstände' : 'Stolen Items') : theftType === 'bicycle' ? (language === 'de' ? 'Verteilung der Fahrradtypen' : 'Bicycle Type Distribution') : (language === 'de' ? 'Verteilung der Typen' : 'Type Distribution')}
           </h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -801,7 +805,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
 
         {/* Crime Type Pie Chart */}
         <div className="bg-slate-800/50 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl">
-          <h3 className="text-xl font-bold text-white mb-6">Verteilung der Delikte</h3>
+          <h3 className="text-xl font-bold text-white mb-6">{language === 'de' ? 'Verteilung der Delikte' : 'Crime Distribution'}</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -842,7 +846,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
       {/* Weekday & Damage Trend Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-slate-800/50 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl">
-          <h3 className="text-xl font-bold text-white mb-6">Diebstähle nach Wochentag</h3>
+          <h3 className="text-xl font-bold text-white mb-6">{language === 'de' ? 'Diebstähle nach Wochentag' : 'Thefts by Weekday'}</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={weekdayData}>
@@ -865,7 +869,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
         </div>
 
         <div className="bg-slate-800/50 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl">
-          <h3 className="text-xl font-bold text-white mb-6">Trendvergleich (Diebstähle)</h3>
+          <h3 className="text-xl font-bold text-white mb-6">{language === 'de' ? 'Trendvergleich (Diebstähle)' : 'Trend Comparison (Thefts)'}</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={trendComparisonData}>
@@ -902,19 +906,19 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
       {/* Theft List Table */}
       <div className="bg-slate-800/50 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl overflow-hidden">
         <div className="p-6 border-b border-slate-700/50">
-          <h3 className="text-xl font-bold text-white">Details der Diebstähle</h3>
-          <p className="text-xs text-slate-500 mt-1">Liste aller gefilterten Fälle</p>
+          <h3 className="text-xl font-bold text-white">{language === 'de' ? 'Details der Diebstähle' : 'Theft Details'}</h3>
+          <p className="text-xs text-slate-500 mt-1">{language === 'de' ? 'Liste aller gefilterten Fälle' : 'List of all filtered cases'}</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left border-collapse">
             <thead>
               <tr className="bg-slate-900/30">
                 {[
-                  { key: 'date', label: 'Datum' },
-                  { key: 'type', label: theftType === 'bicycle' ? 'Fahrradtyp' : 'Gegenstand' },
-                  { key: 'amount', label: 'Schaden' },
-                  { key: 'lor', label: 'Bezirk / LOR' },
-                  { key: 'details', label: 'Delikt' }
+                  { key: 'date', label: language === 'de' ? 'Datum' : 'Date' },
+                  { key: 'type', label: theftType === 'bicycle' ? (language === 'de' ? 'Fahrradtyp' : 'Bicycle Type') : (language === 'de' ? 'Gegenstand' : 'Item') },
+                  { key: 'amount', label: language === 'de' ? 'Schaden' : 'Damage' },
+                  { key: 'lor', label: language === 'de' ? 'Bezirk / LOR' : 'District / LOR' },
+                  { key: 'details', label: language === 'de' ? 'Delikt' : 'Crime' }
                 ].map((col) => (
                   <th
                     key={col.key}
@@ -939,9 +943,9 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                     className="hover:bg-slate-700/20 transition-colors group"
                   >
                     <td className="px-6 py-4 text-slate-300 font-medium whitespace-nowrap">
-                      {new Date(theft.date).toLocaleDateString('de-DE')}
+                      {new Date(theft.date).toLocaleDateString(locale)}
                       <span className="text-[10px] text-slate-500 block uppercase tracking-tighter font-bold">
-                        Tatzeit: {String(theft.hour ?? 0).padStart(2, '0')}:00 Uhr
+                        {language === 'de' ? 'Tatzeit' : 'Time'}: {String(theft.hour ?? 0).padStart(2, '0')}:00 {language === 'de' ? 'Uhr' : ''}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-slate-100">
@@ -950,7 +954,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                       </span>
                     </td>
                     <td className={`px-6 py-4 font-bold ${theft.category === 'bicycle' ? 'text-emerald-400' : 'text-rose-400'}`}>
-                      {theft.amount.toLocaleString('de-DE')} €
+                      {theft.amount.toLocaleString(locale)} €
                     </td>
                     <td className="px-6 py-4 text-slate-300">
                       <div className="flex flex-col">
@@ -966,7 +970,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
               ) : (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-slate-500 italic">
-                    Keine Daten für diesen Zeitraum gefunden.
+                    {language === 'de' ? 'Keine Daten für diesen Zeitraum gefunden.' : 'No data found for this period.'}
                   </td>
                 </tr>
               )}
@@ -978,7 +982,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
         {totalPages > 1 && (
           <div className="px-6 py-4 bg-slate-900/30 border-t border-slate-700/50 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-xs text-slate-500 font-medium">
-              Zeige <span className="text-slate-300">{(currentPage - 1) * itemsPerPage + 1}</span> bis <span className="text-slate-300">{Math.min(currentPage * itemsPerPage, sortedData.length)}</span> von <span className="text-slate-300">{sortedData.length}</span> Diebstählen
+              {language === 'de' ? 'Zeige' : 'Showing'} <span className="text-slate-300">{(currentPage - 1) * itemsPerPage + 1}</span> {language === 'de' ? 'bis' : 'to'} <span className="text-slate-300">{Math.min(currentPage * itemsPerPage, sortedData.length)}</span> {language === 'de' ? 'von' : 'of'} <span className="text-slate-300">{sortedData.length}</span> {language === 'de' ? 'Diebstählen' : 'Thefts'}
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -986,7 +990,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                 disabled={currentPage === 1}
                 className="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold hover:bg-slate-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                Zurück
+                {language === 'de' ? 'Zurück' : 'Back'}
               </button>
 
               <div className="flex items-center gap-1">
@@ -1019,7 +1023,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                 disabled={currentPage === totalPages}
                 className="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold hover:bg-slate-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                Weiter
+                {language === 'de' ? 'Weiter' : 'Next'}
               </button>
             </div>
           </div>

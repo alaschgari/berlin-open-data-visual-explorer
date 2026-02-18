@@ -14,6 +14,8 @@ const CircleMarker = dynamic(() => import('react-leaflet').then(mod => mod.Circl
 const Tooltip = dynamic(() => import('react-leaflet').then(mod => mod.Tooltip), { ssr: false });
 const Pane = dynamic(() => import('react-leaflet').then(mod => mod.Pane), { ssr: false });
 
+import { useLanguage } from './LanguageContext';
+
 interface SubsidiesViewProps {
     initialMetrics: SubsidyMetrics;
     initialList: SubsidyRecord[];
@@ -21,6 +23,7 @@ interface SubsidiesViewProps {
 }
 
 export default function SubsidiesView({ initialMetrics, initialList, district }: SubsidiesViewProps) {
+    const { t, language } = useLanguage();
     const [metrics, setMetrics] = useState<SubsidyMetrics>(initialMetrics);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<SubsidyRecord[]>(initialList);
@@ -32,64 +35,96 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
     const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
     const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
-    // Reload data when district changes
-    React.useEffect(() => {
-        const loadDistrictData = async () => {
-            setLoading(true);
-            try {
-                const { getSubsidiesMetrics } = await import('@/lib/subsidies-proxy');
-                const newMetrics = await getSubsidiesMetrics(district);
-                const newList = await searchSubsidies('', district);
-                setMetrics(newMetrics);
-                setSearchResults(newList);
-                setSelectedRecipient(null);
-                setRecipientDetails([]);
-            } catch (error) {
-                console.error('Failed to load district data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const locale = language === 'de' ? 'de-DE' : 'en-GB';
 
-        loadDistrictData();
-    }, [district]);
-
-    const handleSearch = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            const results = await searchSubsidies(searchQuery, district);
-            setSearchResults(results);
-        } catch (error) {
-            console.error('Search failed:', error);
-        } finally {
-            setLoading(false);
+    const processedDetails = React.useMemo(() => {
+        let sorted = [...recipientDetails];
+        if (sortByAmount) {
+            sorted.sort((a, b) => sortByAmount === 'desc' ? b.amount - a.amount : a.amount - b.amount);
         }
-    };
 
-    const handleRecipientClick = async (recipientName: string) => {
-        if (selectedRecipient === recipientName) {
-            setSelectedRecipient(null);
-            setRecipientDetails([]);
-        } else {
-            setSelectedRecipient(recipientName);
-            setLoading(true);
-            try {
-                const results = await searchSubsidies(recipientName, district);
-                setRecipientDetails(results);
-                setSortByAmount(null);
-                setGroupBy('none');
-            } catch (error) {
-                console.error('Failed to load recipient details:', error);
-            } finally {
-                setLoading(false);
-            }
+        if (groupBy === 'none') return sorted;
+
+        const groups: Record<string, any[]> = {};
+        sorted.forEach(item => {
+            let key = '';
+            if (groupBy === 'year') key = String(item.year);
+            else if (groupBy === 'area') key = item.area;
+            else if (groupBy === 'provider') key = item.provider;
+            else if (groupBy === 'year+area') key = `${item.year}::${item.area}`;
+
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(item);
+        });
+
+        const flattened: any[] = [];
+        const sortedGroupKeys = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
+        if (groupBy === 'year+area') {
+            const years = Array.from(new Set(sorted.map(s => s.year))).sort((a, b) => b - a);
+            years.forEach(year => {
+                const yearItems = sorted.filter(s => s.year === year);
+                const yearTotal = yearItems.reduce((sum, s) => sum + s.amount, 0);
+                const yearKey = String(year);
+
+                flattened.push({
+                    isGroupHeader: true,
+                    groupKey: yearKey,
+                    groupType: 'year',
+                    count: yearItems.length,
+                    total: yearTotal
+                });
+
+                if (!collapsedGroups.has(yearKey)) {
+                    const areas = Array.from(new Set(yearItems.map(s => s.area))).sort();
+                    areas.forEach(area => {
+                        const areaItems = yearItems.filter(s => s.area === area);
+                        const areaTotal = areaItems.reduce((sum, s) => sum + s.amount, 0);
+                        const areaKey = `${year}::${area}`;
+
+                        flattened.push({
+                            isGroupHeader: true,
+                            groupKey: areaKey,
+                            groupType: 'area',
+                            displayKey: area,
+                            count: areaItems.length,
+                            total: areaTotal,
+                            isNested: true,
+                            parentKey: yearKey
+                        });
+
+                        if (!collapsedGroups.has(areaKey)) {
+                            flattened.push(...areaItems);
+                        }
+                    });
+                }
+            });
+            return flattened;
         }
-    };
+
+        sortedGroupKeys.forEach(key => {
+            const groupItems = groups[key];
+            const groupTotal = groupItems.reduce((sum, item) => sum + item.amount, 0);
+
+            flattened.push({
+                isGroupHeader: true,
+                groupKey: key,
+                groupType: groupBy,
+                count: groupItems.length,
+                total: groupTotal
+            });
+
+            if (!collapsedGroups.has(key)) {
+                flattened.push(...groupItems);
+            }
+        });
+
+        return flattened;
+    }, [recipientDetails, sortByAmount, groupBy, collapsedGroups]);
 
     const handleExport = () => {
         if (searchResults.length === 0) return;
-        const headers = ['Jahr', 'Empfänger', 'Zweck', 'Bereich', 'Geber', 'Betrag'];
+        const headers = [t('year_label'), t('recipients'), t('purpose_label'), t('area_label'), t('provider_label'), t('amount_label')];
         const csvRows = [
             headers.join(','),
             ...searchResults.map(r => [
@@ -106,139 +141,59 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
-        link.setAttribute('download', `subventionen_berlin_${district}_${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute('download', `subsidies_berlin_${district}_${new Date().toISOString().split('T')[0]}.csv`);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     };
 
-    // Process details based on sorting and grouping
-    const processedDetails = React.useMemo(() => {
-        let details = [...recipientDetails];
-
-        // Sort by amount if enabled
-        if (sortByAmount) {
-            details.sort((a, b) => {
-                return sortByAmount === 'desc'
-                    ? b.amount - a.amount
-                    : a.amount - b.amount;
-            });
+    const handleSearch = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const data = await searchSubsidies(district, searchQuery);
+            setSearchResults(data);
+        } catch (error) {
+            console.error('Search failed:', error);
+        } finally {
+            setLoading(false);
         }
+    };
 
-        // Group if enabled
-        if (groupBy !== 'none') {
-            // Nested grouping: Year + Area
-            if (groupBy === 'year+area') {
-                const yearGroups: Record<string, Record<string, SubsidyRecord[]>> = {};
-
-                details.forEach(detail => {
-                    const yearKey = String(detail.year);
-                    const areaKey = detail.area;
-
-                    if (!yearGroups[yearKey]) yearGroups[yearKey] = {};
-                    if (!yearGroups[yearKey][areaKey]) yearGroups[yearKey][areaKey] = [];
-                    yearGroups[yearKey][areaKey].push(detail);
-                });
-
-                // Sort years descending
-                const sortedYears = Object.entries(yearGroups).sort(([a], [b]) => Number(b) - Number(a));
-
-                return sortedYears.flatMap(([year, areaGroups]) => {
-                    const yearRecords = Object.values(areaGroups).flat();
-                    const yearHeader = {
-                        isGroupHeader: true,
-                        groupKey: year,
-                        groupType: 'year',
-                        isNested: true,
-                        count: yearRecords.length,
-                        total: yearRecords.reduce((sum, r) => sum + r.amount, 0)
-                    } as any;
-
-                    // Sort areas alphabetically
-                    const sortedAreas = Object.entries(areaGroups).sort(([a], [b]) => a.localeCompare(b));
-
-                    const areaItems = sortedAreas.flatMap(([area, records]) => [
-                        {
-                            isGroupHeader: true,
-                            groupKey: `${year}::${area}`,
-                            groupType: 'area',
-                            isNested: true,
-                            parentKey: year,
-                            displayKey: area,
-                            count: records.length,
-                            total: records.reduce((sum, r) => sum + r.amount, 0)
-                        } as any,
-                        ...records
-                    ]);
-
-                    return [yearHeader, ...areaItems];
-                });
-            }
-
-            // Single-level grouping
-            const grouped: Record<string, SubsidyRecord[]> = {};
-
-            details.forEach(detail => {
-                let key: string;
-                if (groupBy === 'year') {
-                    key = String(detail.year);
-                } else if (groupBy === 'area') {
-                    key = detail.area;
-                } else { // provider
-                    key = detail.provider;
-                }
-
-                if (!grouped[key]) grouped[key] = [];
-                grouped[key].push(detail);
-            });
-
-            // Sort groups and create headers
-            const sortedGroups = Object.entries(grouped).sort(([a], [b]) => {
-                if (groupBy === 'year') {
-                    return Number(b) - Number(a); // Descending for years
-                }
-                return a.localeCompare(b); // Alphabetical for area/provider
-            });
-
-            return sortedGroups.flatMap(([key, records]) => [
-                {
-                    isGroupHeader: true,
-                    groupKey: key,
-                    groupType: groupBy,
-                    count: records.length,
-                    total: records.reduce((sum, r) => sum + r.amount, 0)
-                } as any,
-                ...records
-            ]);
+    const handleRecipientClick = (recipientName: string) => {
+        if (selectedRecipient === recipientName) {
+            setSelectedRecipient(null);
+            setRecipientDetails([]);
+            setSearchResults(initialList);
+        } else {
+            setSelectedRecipient(recipientName);
+            const details = initialList.filter(r => r.recipient === recipientName);
+            setRecipientDetails(details);
+            setSearchResults(details);
         }
-
-        return details;
-    }, [recipientDetails, sortByAmount, groupBy]);
-
-    const totalVolumeMio = (Number(metrics?.totalAmount || 0) / 1000000);
+    };
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
             {/* Metrics Header */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm">
-                    <h3 className="text-slate-400 text-sm font-medium mb-1">Gesamtvolumen</h3>
-
+                    <h3 className="text-slate-400 text-sm font-medium mb-1">{t('total_volume')}</h3>
                     <p className="text-3xl font-bold text-emerald-400">
-                        {(Number(metrics?.totalAmount || 0) / 1000000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} Mio. €
+                        {(Number(metrics?.totalAmount || 0) / 1000000).toLocaleString(locale, { maximumFractionDigits: 1 })} {t('mio_euro')}
                     </p>
                 </div>
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm">
-                    <h3 className="text-slate-400 text-sm font-medium mb-1">Anzahl Zuwendungen</h3>
+                    <h3 className="text-slate-400 text-sm font-medium mb-1">{t('count_subsidies')}</h3>
                     <p className="text-3xl font-bold text-blue-400">
-                        {Number(metrics?.totalCount || 0).toLocaleString('de-DE')}
+                        {Number(metrics?.totalCount || 0).toLocaleString(locale)}
                     </p>
                 </div>
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm">
-                    <h3 className="text-slate-400 text-sm font-medium mb-1">Größte Einzelbereiche</h3>
+                    <h3 className="text-slate-400 text-sm font-medium mb-1">{t('largest_areas')}</h3>
                     <p className="text-xl font-semibold text-slate-100 truncate">
-                        {metrics?.byArea?.[0]?.area || 'N/A'}
+                        {metrics?.byArea?.[0]?.area || t('na')}
                     </p>
                 </div>
             </div>
@@ -246,7 +201,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Top Recipients */}
                 <div className="bg-slate-800/50 p-8 rounded-3xl border border-slate-700 shadow-inner flex flex-col">
-                    <h2 className="text-xl font-bold text-slate-100 mb-6">Top 100 Empfänger</h2>
+                    <h2 className="text-xl font-bold text-slate-100 mb-6">{t('top_recipients')}</h2>
                     <div className="space-y-2 overflow-y-auto max-h-[600px] pr-2 scrollbar-thin scrollbar-thumb-slate-700">
                         {metrics?.topRecipients?.map((r, i) => {
                             const isSelected = selectedRecipient === r.name;
@@ -264,12 +219,12 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                                 }`}>
                                                 {r.name.replace(/^"|"$/g, '')}
                                             </p>
-                                            <p className="text-slate-500 text-xs">{r.count} Bescheide</p>
+                                            <p className="text-slate-500 text-xs">{r.count} {t('resolutions')}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
                                         <p className="text-slate-100 font-bold">
-                                            {(Number(r.amount) / 1000000).toLocaleString('de-DE', { maximumFractionDigits: 2 })} Mio. €
+                                            {(Number(r.amount) / 1000000).toLocaleString(locale, { maximumFractionDigits: 2 })} {t('mio_euro')}
                                         </p>
                                     </div>
                                 </div>
@@ -281,19 +236,19 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                 {/* Search & Results */}
                 <div className="bg-slate-800/50 p-8 rounded-3xl border border-slate-700 flex flex-col shadow-inner">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-xl font-bold text-white">Subventionen</h2>
+                        <h2 className="text-xl font-bold text-white">{t('subsidies_title')}</h2>
                         <div className="flex bg-slate-900/50 p-1 rounded-xl border border-slate-700">
                             <button
                                 onClick={() => setViewMode('list')}
                                 className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'list' ? 'bg-emerald-500 text-slate-900' : 'text-slate-400 hover:text-white'}`}
                             >
-                                Liste
+                                {t('list_view')}
                             </button>
                             <button
                                 onClick={() => setViewMode('map')}
                                 className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'map' ? 'bg-emerald-500 text-slate-900' : 'text-slate-400 hover:text-white'}`}
                             >
-                                Karte
+                                {t('map_view')}
                             </button>
                         </div>
                     </div>
@@ -302,7 +257,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Name oder Zweck..."
+                            placeholder={t('placeholder_search')}
                             className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 placeholder:text-slate-600 transition-all font-medium"
                         />
                         <div className="flex gap-2 mt-4">
@@ -311,7 +266,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                 className="flex-1 bg-emerald-500 text-slate-900 px-6 py-2 rounded-xl font-bold hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-50"
                                 disabled={loading}
                             >
-                                Suchen
+                                {t('search_button')}
                             </button>
                             <button
                                 type="button"
@@ -319,7 +274,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                 className="flex-1 bg-slate-800 text-slate-300 px-6 py-2 rounded-xl font-bold border border-slate-700 hover:text-white transition-colors disabled:opacity-50"
                                 disabled={loading}
                             >
-                                CSV Export
+                                {t('export_button')}
                             </button>
                         </div>
                     </form>
@@ -329,7 +284,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                             loading ? (
                                 <div className="flex flex-col items-center justify-center py-12 space-y-4">
                                     <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
-                                    <p className="text-slate-500 text-sm font-medium italic">Suchen...</p>
+                                    <p className="text-slate-500 text-sm font-medium italic">{t('loading')}</p>
                                 </div>
                             ) : searchResults?.length > 0 ? (
                                 searchResults.map((r, i) => (
@@ -343,7 +298,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                                 {r.recipient.replace(/^"|"$/g, '')}
                                             </h4>
                                             <span className="text-emerald-400 font-bold whitespace-nowrap text-sm">
-                                                {Number(r.amount).toLocaleString('de-DE')} €
+                                                {Number(r.amount).toLocaleString(locale)} {t('euro')}
                                             </span>
                                         </div>
                                         <p className="text-slate-400 text-xs line-clamp-2 mb-3 leading-relaxed">
@@ -360,7 +315,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                 ))
                             ) : (
                                 <div className="text-center py-12">
-                                    <p className="text-slate-500 text-sm italic">Keine Treffer gefunden.</p>
+                                    <p className="text-slate-500 text-sm italic">{t('no_results')}</p>
                                 </div>
                             )
                         ) : (
@@ -376,7 +331,6 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                         attribution='&copy; CARTO'
                                     />
                                     {metrics.byDistrict?.map((d, i) => {
-                                        // Find coordinates for district name
                                         const coordsEntry = Object.values(districtCoordinates).find(c => c.name === d.district);
                                         if (!coordsEntry) return null;
 
@@ -397,8 +351,8 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                                 <Tooltip>
                                                     <div className="p-2">
                                                         <p className="font-bold text-slate-900">{d.district}</p>
-                                                        <p className="text-sm text-slate-700">Volume: {(d.amount / 1000000).toFixed(2)} Mio. €</p>
-                                                        <p className="text-xs text-slate-500">{d.count} Bescheide</p>
+                                                        <p className="text-sm text-slate-700">{t('volume')}: {(d.amount / 1000000).toLocaleString(locale, { maximumFractionDigits: 2 })} {t('mio_euro')}</p>
+                                                        <p className="text-xs text-slate-500">{d.count} {t('resolutions')}</p>
                                                     </div>
                                                 </Tooltip>
                                             </CircleMarker>
@@ -411,12 +365,12 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                 </div>
             </div>
 
-            {/* Recipient Details Table - Shown at bottom when a recipient is selected */}
+            {/* Recipient Details Table */}
             {selectedRecipient && recipientDetails.length > 0 && (
                 <div className="bg-slate-800/50 p-8 rounded-3xl border border-slate-700 shadow-inner animate-in fade-in duration-300">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-bold text-slate-100">
-                            Bescheide für: {selectedRecipient.replace(/^"|"$/g, '')}
+                            {t('details_for')}: {selectedRecipient.replace(/^"|"$/g, '')}
                         </h2>
                         <button
                             onClick={() => {
@@ -440,7 +394,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                 : 'bg-slate-700/50 text-slate-300 border border-slate-600 hover:bg-slate-700'
                                 }`}
                         >
-                            Nach Betrag sortieren {sortByAmount === 'desc' ? '↓' : sortByAmount === 'asc' ? '↑' : ''}
+                            {t('sort_by_amount')} {sortByAmount === 'desc' ? '↓' : sortByAmount === 'asc' ? '↑' : ''}
                         </button>
 
                         <div className="flex gap-2">
@@ -451,7 +405,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                     : 'bg-slate-700/50 text-slate-300 border border-slate-600 hover:bg-slate-700'
                                     }`}
                             >
-                                Nach Jahr
+                                {t('by_year')}
                             </button>
                             <button
                                 onClick={() => setGroupBy(groupBy === 'area' ? 'none' : 'area')}
@@ -460,7 +414,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                     : 'bg-slate-700/50 text-slate-300 border border-slate-600 hover:bg-slate-700'
                                     }`}
                             >
-                                Nach Bereich
+                                {t('by_area')}
                             </button>
                             <button
                                 onClick={() => setGroupBy(groupBy === 'provider' ? 'none' : 'provider')}
@@ -469,7 +423,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                     : 'bg-slate-700/50 text-slate-300 border border-slate-600 hover:bg-slate-700'
                                     }`}
                             >
-                                Nach Geber
+                                {t('by_provider')}
                             </button>
                             <button
                                 onClick={() => setGroupBy(groupBy === 'year+area' ? 'none' : 'year+area')}
@@ -478,7 +432,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                     : 'bg-slate-700/50 text-slate-300 border border-slate-600 hover:bg-slate-700'
                                     }`}
                             >
-                                Jahr + Bereich
+                                {t('year_area')}
                             </button>
                         </div>
                     </div>
@@ -487,23 +441,22 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b border-slate-700">
-                                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Jahr</th>
-                                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Bereich</th>
-                                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Zweck</th>
-                                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Geber</th>
-                                    <th className="text-right py-3 px-4 text-slate-400 font-semibold">Betrag</th>
+                                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">{t('year_label')}</th>
+                                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">{t('area_label')}</th>
+                                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">{t('purpose_label')}</th>
+                                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">{t('provider_label')}</th>
+                                    <th className="text-right py-3 px-4 text-slate-400 font-semibold">{t('amount_label')}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {processedDetails.map((detail: any, idx) => {
-                                    // Group header row
                                     if (detail.isGroupHeader) {
                                         const isCollapsed = collapsedGroups.has(detail.groupKey);
                                         const isNestedChild = detail.isNested && detail.parentKey;
 
                                         let headerLabel = '';
                                         if (detail.groupType === 'year') {
-                                            headerLabel = `Jahr ${detail.groupKey}`;
+                                            headerLabel = `${t('year_label')} ${detail.groupKey}`;
                                         } else if (detail.groupType === 'area') {
                                             headerLabel = detail.displayKey || detail.groupKey;
                                         } else {
@@ -543,7 +496,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                                             </span>
                                                         </div>
                                                         <span className="text-slate-400 text-sm">
-                                                            {detail.count} Bescheide · {detail.total.toLocaleString('de-DE')} €
+                                                            {detail.count} {t('resolutions')} · {detail.total.toLocaleString(locale)} {t('euro')}
                                                         </span>
                                                     </div>
                                                 </td>
@@ -551,33 +504,18 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                         );
                                     }
 
-                                    // Check if this row's group is collapsed
+                                    // Check collapse...
                                     if (groupBy !== 'none') {
                                         if (groupBy === 'year+area') {
-                                            // Check both year and area collapse state
                                             const yearKey = String(detail.year);
                                             const areaKey = `${yearKey}::${detail.area}`;
-
-                                            if (collapsedGroups.has(yearKey) || collapsedGroups.has(areaKey)) {
-                                                return null;
-                                            }
+                                            if (collapsedGroups.has(yearKey) || collapsedGroups.has(areaKey)) return null;
                                         } else {
-                                            let groupKey: string;
-                                            if (groupBy === 'year') {
-                                                groupKey = String(detail.year);
-                                            } else if (groupBy === 'area') {
-                                                groupKey = detail.area;
-                                            } else {
-                                                groupKey = detail.provider;
-                                            }
-
-                                            if (collapsedGroups.has(groupKey)) {
-                                                return null;
-                                            }
+                                            let groupKey = groupBy === 'year' ? String(detail.year) : groupBy === 'area' ? detail.area : detail.provider;
+                                            if (collapsedGroups.has(groupKey)) return null;
                                         }
                                     }
 
-                                    // Regular data row
                                     return (
                                         <tr key={idx} className="border-b border-slate-800/50 hover:bg-slate-700/20 transition-colors">
                                             <td className="py-3 px-4 text-slate-300">{detail.year}</td>
@@ -593,7 +531,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                                 </div>
                                             </td>
                                             <td className="py-3 px-4 text-right text-emerald-400 font-bold">
-                                                {Number(detail.amount).toLocaleString('de-DE')} €
+                                                {Number(detail.amount).toLocaleString(locale)} {t('euro')}
                                             </td>
                                         </tr>
                                     );
@@ -602,7 +540,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                         </table>
                     </div>
                     <div className="mt-4 text-sm text-slate-500">
-                        Gesamt: {recipientDetails.length} Bescheide
+                        {t('total_label')}: {recipientDetails.length} {t('resolutions')}
                     </div>
                 </div>
             )}

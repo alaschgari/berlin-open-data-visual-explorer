@@ -8,6 +8,13 @@ interface TreeNode {
     value: number;
 }
 
+import { useLanguage } from './LanguageContext';
+
+interface TreeNode {
+    name: string;
+    value: number;
+}
+
 interface BudgetComparisonProps {
     node2026: TreeNode | null;
     node2027: TreeNode | null;
@@ -15,10 +22,13 @@ interface BudgetComparisonProps {
 }
 
 export default function BudgetComparison({ node2026, node2027, selectedYear }: BudgetComparisonProps) {
+    const { t, language } = useLanguage();
+    const locale = language === 'de' ? 'de-DE' : 'en-GB';
+
     if (!node2026 || !node2027) {
         return (
             <div className="bg-slate-800/20 border border-slate-700/50 rounded-2xl p-6 h-full flex items-center justify-center">
-                <p className="text-slate-500 text-sm">Wähle ein Element für den YoY-Vergleich</p>
+                <p className="text-slate-500 text-sm">{t('select_element_comparison')}</p>
             </div>
         );
     }
@@ -29,9 +39,9 @@ export default function BudgetComparison({ node2026, node2027, selectedYear }: B
     const percentDiff = val26 !== 0 ? (diff / val26) * 100 : 0;
 
     const formatCurrency = (val: number) => {
-        if (Math.abs(val) >= 1e9) return `${(val / 1e9).toFixed(2)} Mrd. €`;
-        if (Math.abs(val) >= 1e6) return `${(val / 1e6).toFixed(2)} Mio. €`;
-        return `${val.toLocaleString()} €`;
+        if (Math.abs(val) >= 1e9) return `${(val / 1e9).toLocaleString(locale, { maximumFractionDigits: 2 })} ${t('mrd_euro')}`;
+        if (Math.abs(val) >= 1e6) return `${(val / 1e6).toLocaleString(locale, { maximumFractionDigits: 2 })} ${t('mio_euro')}`;
+        return `${val.toLocaleString(locale)} ${t('euro')}`;
     };
 
     const isIncrease = diff > 0;
@@ -43,7 +53,7 @@ export default function BudgetComparison({ node2026, node2027, selectedYear }: B
                 <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400">
                     <TrendingUp size={20} />
                 </div>
-                <h3 className="text-lg font-bold text-white">YoY Vergleich</h3>
+                <h3 className="text-lg font-bold text-white">{t('yoy_comparison')}</h3>
             </div>
 
             <div className="space-y-6">
@@ -70,9 +80,9 @@ export default function BudgetComparison({ node2026, node2027, selectedYear }: B
                         <div>
                             <div className={`text-sm font-bold ${isNeutral ? 'text-slate-400' : isIncrease ? 'text-emerald-400' : 'text-rose-400'
                                 }`}>
-                                {isNeutral ? 'Unverändert' : isIncrease ? 'Steigerung' : 'Einsparung'}
+                                {isNeutral ? t('unchanged') : isIncrease ? t('increase') : t('saving')}
                             </div>
-                            <div className="text-[10px] text-slate-500 font-medium uppercase tracking-tighter">Gegenüber Vorjahr</div>
+                            <div className="text-[10px] text-slate-500 font-medium uppercase tracking-tighter">{t('vs_prev_year')}</div>
                         </div>
                     </div>
                     <div className="text-right">

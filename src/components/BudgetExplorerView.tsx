@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import BudgetTreeExplorer from '@/components/BudgetTreeExplorer';
 import BudgetExplanation from '@/components/BudgetExplanation';
 import BudgetComparison from '@/components/BudgetComparison';
+import { useLanguage } from './LanguageContext';
 
 
 interface TreeNode {
@@ -14,11 +15,14 @@ interface TreeNode {
 }
 
 export default function BudgetExplorerView() {
+    const { t, language } = useLanguage();
     const [year, setYear] = useState('2026');
     const [data2026, setData2026] = useState<TreeNode | null>(null);
     const [data2027, setData2027] = useState<TreeNode | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedNode, setSelectedNode] = useState<TreeNode | null>(null);
+
+    const locale = language === 'de' ? 'de-DE' : 'en-GB';
 
     useEffect(() => {
         setLoading(true);
@@ -28,21 +32,18 @@ export default function BudgetExplorerView() {
         ]).then(([d26, d27]) => {
             setData2026(d26);
             setData2027(d27);
-            // Initialize with current year's root
             setSelectedNode(year === '2026' ? d26 : d27);
             setLoading(false);
         });
     }, []);
 
-    // Helper to find the same node in the other year's data
-    const findCorrespondingNode = (sourceNode: TreeNode | null, targetTree: TreeNode | null): TreeNode | null => {
-        if (!sourceNode || !targetTree) return null;
-        if (sourceNode.name === targetTree.name) return targetTree;
-
-        if (targetTree.children) {
-            for (const child of targetTree.children) {
-                const found = findCorrespondingNode(sourceNode, child);
-                if (found) return found;
+    const findCorrespondingNode = (node: TreeNode | null, root: TreeNode | null): TreeNode | null => {
+        if (!node || !root) return null;
+        if (root.name === node.name) return root;
+        if (root.children) {
+            for (const child of root.children) {
+                const result = findCorrespondingNode(node, child);
+                if (result) return result;
             }
         }
         return null;
@@ -61,13 +62,13 @@ export default function BudgetExplorerView() {
                         onClick={() => setYear('2026')}
                         className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${year === '2026' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
                     >
-                        Haushaltsplan 2026
+                        {t('budget_plan')} 2026
                     </button>
                     <button
                         onClick={() => setYear('2027')}
                         className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${year === '2027' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
                     >
-                        Haushaltsplan 2027
+                        {t('budget_plan')} 2027
                     </button>
                 </div>
 
@@ -75,7 +76,7 @@ export default function BudgetExplorerView() {
                     <div className="bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/20 flex items-center gap-3">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                         <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest">
-                            Gesamtvolumen: {((currentData?.value || 0) / 1e9).toFixed(2)} Mrd. €
+                            {t('total_volume')}: {((currentData?.value || 0) / 1e9).toLocaleString(locale, { maximumFractionDigits: 2 })} {t('mrd_euro')}
                         </span>
                     </div>
                 )}
@@ -84,7 +85,7 @@ export default function BudgetExplorerView() {
             {loading ? (
                 <div className="h-[500px] flex flex-col items-center justify-center space-y-4 bg-slate-800/20 rounded-3xl border border-slate-700/50">
                     <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-emerald-500"></div>
-                    <p className="text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">Lade Haushaltsdaten...</p>
+                    <p className="text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">{t('loading')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -94,12 +95,12 @@ export default function BudgetExplorerView() {
                             <div>
                                 <h2 className="text-xl font-bold text-slate-100 flex items-center gap-3">
                                     <span className="w-1.5 h-6 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50"></span>
-                                    Budget-Hierarchie
+                                    {t('budget_hierarchy')}
                                 </h2>
-                                <p className="text-slate-500 text-xs mt-1">Interaktive Struktur der Berliner Haushaltsplanung</p>
+                                <p className="text-slate-500 text-xs mt-1">{t('budget_subtitle')}</p>
                             </div>
                             <div className="px-3 py-1 bg-slate-900/80 rounded-full border border-slate-700 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                                Click zum Ausklappen
+                                {t('click_to_expand')}
                             </div>
                         </div>
 
@@ -111,15 +112,14 @@ export default function BudgetExplorerView() {
                                 />
                             ) : (
                                 <div className="h-full flex items-center justify-center text-slate-500">
-                                    Keine Daten verfügbar
+                                    {t('no_data')}
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {/* Sidebar Analytics Section */}
+                    {/* Sidebar Analytics Section remains same, passing node2026/node2027 which are already handling translation in their respective components */}
                     <div className="lg:col-span-4 flex flex-col gap-6">
-                        {/* 1. Comparison Card */}
                         <div className="h-[250px]">
                             <BudgetComparison
                                 node2026={node2026}
@@ -128,8 +128,6 @@ export default function BudgetExplorerView() {
                             />
                         </div>
 
-
-                        {/* 3. Smart Explanation */}
                         <div className="flex-1 min-h-[150px]">
                             <BudgetExplanation node={selectedNode} year={year} />
                         </div>

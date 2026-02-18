@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, Cell, PieChart, Pie } from 'recharts';
 import { Download, Briefcase, Building2, Store, Factory, PlusCircle, Map as MapIcon, ChevronRight, X as CloseIcon, Info, Users, Calendar, MapPin, Search, Filter, ArrowUp, ArrowDown, ListTree, ChevronDown, BarChart3, TrendingUp, Zap, Scale, Copy, Crosshair } from 'lucide-react';
+import { useLanguage } from './LanguageContext';
 
 // Helper component to auto-zoom to GeoJSON data
 function FitBounds({ data }: { data: any }) {
@@ -42,6 +43,7 @@ const getDistrictId = (name: string) => {
 };
 
 export default function BusinessMapClient({ district }: { district: string }) {
+    const { t, language } = useLanguage();
     const [geoJsonData, setGeoJsonData] = useState<any>(null);
     const [businessData, setBusinessData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -50,6 +52,8 @@ export default function BusinessMapClient({ district }: { district: string }) {
     const [compareFeature, setCompareFeature] = useState<any>(null);
     const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
     const [isCompareMode, setIsCompareMode] = useState(false);
+
+    const locale = language === 'de' ? 'de-DE' : 'en-GB';
     const [businessDetails, setBusinessDetails] = useState<any[]>([]);
     const [loadingDetails, setLoadingDetails] = useState(false);
     const [chartFilter, setChartFilter] = useState<string | null>(null);
@@ -530,13 +534,13 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                         <h3 className="font-bold mb-2 text-sm border-b pb-1 border-slate-200 leading-tight">{b.branch}</h3>
                                                         <div className="grid grid-cols-[16px_1fr] gap-x-2 gap-y-1.5 items-start">
                                                             <Users className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
-                                                            <span>{b.employees || 'Keine Angabe'}</span>
+                                                            <span>{b.employees || (language === 'de' ? 'Keine Angabe' : 'No info')}</span>
 
                                                             <Building2 className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
-                                                            <span className="leading-tight">{b.type || 'Keine Angabe'}</span>
+                                                            <span className="leading-tight">{b.type || (language === 'de' ? 'Keine Angabe' : 'No info')}</span>
 
                                                             <Calendar className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
-                                                            <span>{b.age ? `${b.age} Jahre alt` : 'Keine Angabe'}</span>
+                                                            <span>{b.age ? (language === 'de' ? `${b.age} Jahre alt` : `${b.age} years old`) : (language === 'de' ? 'Keine Angabe' : 'No info')}</span>
 
                                                             <MapPin className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
                                                             <span>{b.postcode} {b.city || 'Berlin'}</span>
@@ -572,13 +576,13 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                         <h3 className="font-bold mb-2 text-sm border-b pb-1 border-slate-200 leading-tight">{p.branch}</h3>
                                                         <div className="grid grid-cols-[16px_1fr] gap-x-2 gap-y-1.5 items-start">
                                                             <Users className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
-                                                            <span>{p.employees || 'Keine Angabe'}</span>
+                                                            <span>{p.employees || (language === 'de' ? 'Keine Angabe' : 'No info')}</span>
 
                                                             <Building2 className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
-                                                            <span className="leading-tight">{p.type || 'Keine Angabe'}</span>
+                                                            <span className="leading-tight">{p.type || (language === 'de' ? 'Keine Angabe' : 'No info')}</span>
 
                                                             <Calendar className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
-                                                            <span>{p.age ? `${p.age} Jahre alt` : 'Keine Angabe'}</span>
+                                                            <span>{p.age ? (language === 'de' ? `${p.age} Jahre alt` : `${p.age} years old`) : (language === 'de' ? 'Keine Angabe' : 'No info')}</span>
 
                                                             <MapPin className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
                                                             <span>{p.postcode} {p.city || 'Berlin'}</span>
@@ -596,10 +600,10 @@ export default function BusinessMapClient({ district }: { district: string }) {
                     <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-3 p-1.5 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-700 shadow-2xl z-[1000] w-[90%] md:w-auto overflow-x-auto no-scrollbar">
                         <div className="flex gap-1 border-r border-slate-700 pr-2 mr-1 shrink-0">
                             {[
-                                { id: 'total', icon: Building2, label: 'Alle' },
+                                { id: 'total', icon: Building2, label: language === 'de' ? 'Alle' : 'All' },
                                 { id: 'gastro', icon: Store, label: 'Gastro' },
                                 { id: 'tech', icon: Factory, label: 'Tech' },
-                                { id: 'retail', icon: PlusCircle, label: 'Handel' },
+                                { id: 'retail', icon: PlusCircle, label: language === 'de' ? 'Handel' : 'Retail' },
                             ].map((t) => (
                                 <button
                                     key={t.id}
@@ -631,7 +635,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                 <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${isSearching ? 'text-emerald-500 animate-pulse' : 'text-slate-500'}`} />
                                 <input
                                     type="text"
-                                    placeholder="Branchen-Explorer (z.B. IT, Kinos...)"
+                                    placeholder={t('biz_search_placeholder')}
                                     className="bg-slate-800/50 border border-slate-700 rounded-xl py-2 pl-9 pr-8 text-[10px] text-white w-full focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all placeholder:text-slate-600"
                                     value={globalBranchSearch}
                                     onChange={(e) => setGlobalBranchSearch(e.target.value)}
