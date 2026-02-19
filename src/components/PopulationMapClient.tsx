@@ -212,22 +212,39 @@ export default function PopulationMapClient({ district }: { district: string }) 
             }
         }
 
+        // Compute the current theme's metric value for this feature
+        const metricValue = getMetricValue(feature, selectedTheme);
+        const themeLabels: Record<string, string> = {
+            total: t('pop_total'),
+            density: language === 'de' ? 'Dichte' : 'Density',
+            kita: language === 'de' ? 'Kita-Alter (1-6)' : 'Preschool (1-6)',
+            school: language === 'de' ? 'Schulalter (6-15)' : 'School (6-15)',
+            seniors: language === 'de' ? 'Senioren (65+)' : 'Seniors (65+)',
+            women_ratio: language === 'de' ? 'Frauenanteil' : 'Women share',
+        };
+        const themeLabel = themeLabels[selectedTheme] || t('pop_total');
+        const formattedMetric = selectedTheme === 'women_ratio'
+            ? `${metricValue.toFixed(1)}%`
+            : selectedTheme === 'density'
+                ? `${Math.round(metricValue).toLocaleString(locale)} /km²`
+                : Math.round(metricValue).toLocaleString(locale);
+
         // Create tooltip content string
         const tooltipContent = `
       <div style="font-family: sans-serif; padding: 4px;">
-        <div style="display: flex; justify-between; align-items: center; margin-bottom: 4px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">
             <h3 style="font-weight: bold; margin: 0;">${feature.properties.PLR_NAME}</h3>
             <span style="font-size: 9px; color: #64748b; margin-left: 8px; text-transform: uppercase;">${districtName}</span>
         </div>
         <div style="display: grid; grid-template-columns: auto auto; gap: 8px; font-size: 12px;">
+          <span style="color: #64748b;">${themeLabel}:</span>
+          <span style="font-weight: bold; text-align: right; color: #10b981;">${formattedMetric}</span>
           <span style="color: #64748b;">${t('pop_total')}:</span>
           <span style="font-weight: bold; text-align: right;">${pop ? pop.toLocaleString(locale) : 'N/A'}</span>
           <span style="color: #64748b;">${language === 'de' ? 'Männer' : 'Men'}:</span>
           <span style="font-weight: bold; text-align: right;">${data && data.E_EM != null ? Number(data.E_EM).toLocaleString(locale) : '-'}</span>
           <span style="color: #64748b;">${language === 'de' ? 'Frauen' : 'Women'}:</span>
           <span style="font-weight: bold; text-align: right;">${data && data.E_EW != null ? Number(data.E_EW).toLocaleString(locale) : '-'}</span>
-          <span style="color: #64748b;">ID:</span>
-          <span style="text-align: right; font-family: monospace;">${feature.properties.PLR_ID}</span>
         </div>
       </div>
     `;
