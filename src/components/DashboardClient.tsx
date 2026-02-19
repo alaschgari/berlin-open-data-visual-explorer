@@ -94,7 +94,7 @@ export default function DashboardClient({
         <main className="min-h-screen bg-[#0f172a] text-slate-200 p-4 md:p-8 font-[family-name:var(--font-geist-sans)]">
             <div className="max-w-7xl mx-auto space-y-8">
                 {/* Unified Premium Header */}
-                <header className="relative z-[100] flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-2xl overflow-visible">
+                <header className="relative z-[2000] flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-2xl overflow-visible">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
                             <svg className="w-7 h-7 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
@@ -127,7 +127,7 @@ export default function DashboardClient({
 
                         {/* Scalable Tab Switcher */}
                         <div className="flex items-center gap-2">
-                            <div className="bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 flex shadow-inner overflow-hidden max-w-[300px] md:max-w-none">
+                            <div className="bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 flex shadow-inner max-w-[300px] md:max-w-none">
                                 {NAV_ITEMS.filter(item => item.priority <= 4).map((item) => (
                                     <Link
                                         key={item.id}

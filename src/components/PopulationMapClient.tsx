@@ -231,20 +231,20 @@ export default function PopulationMapClient({ district }: { district: string }) 
 
         // Create tooltip content string
         const tooltipContent = `
-      <div style="font-family: sans-serif; padding: 4px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">
-            <h3 style="font-weight: bold; margin: 0;">${feature.properties.PLR_NAME}</h3>
-            <span style="font-size: 9px; color: #64748b; margin-left: 8px; text-transform: uppercase;">${districtName}</span>
+      <div style="font-family: sans-serif; padding: 4px; background: #0f172a; color: #e2e8f0; border-radius: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px solid #334155; padding-bottom: 4px;">
+            <h3 style="font-weight: bold; margin: 0; color: #f1f5f9;">${feature.properties.PLR_NAME}</h3>
+            <span style="font-size: 9px; color: #94a3b8; margin-left: 8px; text-transform: uppercase;">${districtName}</span>
         </div>
         <div style="display: grid; grid-template-columns: auto auto; gap: 8px; font-size: 12px;">
-          <span style="color: #64748b;">${themeLabel}:</span>
+          <span style="color: #94a3b8;">${themeLabel}:</span>
           <span style="font-weight: bold; text-align: right; color: #10b981;">${formattedMetric}</span>
-          <span style="color: #64748b;">${t('pop_total')}:</span>
-          <span style="font-weight: bold; text-align: right;">${pop ? pop.toLocaleString(locale) : 'N/A'}</span>
-          <span style="color: #64748b;">${language === 'de' ? 'Männer' : 'Men'}:</span>
-          <span style="font-weight: bold; text-align: right;">${data && data.E_EM != null ? Number(data.E_EM).toLocaleString(locale) : '-'}</span>
-          <span style="color: #64748b;">${language === 'de' ? 'Frauen' : 'Women'}:</span>
-          <span style="font-weight: bold; text-align: right;">${data && data.E_EW != null ? Number(data.E_EW).toLocaleString(locale) : '-'}</span>
+          <span style="color: #94a3b8;">${t('pop_total')}:</span>
+          <span style="font-weight: bold; text-align: right; color: #f1f5f9;">${pop ? pop.toLocaleString(locale) : 'N/A'}</span>
+          <span style="color: #94a3b8;">${language === 'de' ? 'Männer' : 'Men'}:</span>
+          <span style="font-weight: bold; text-align: right; color: #f1f5f9;">${data && data.E_EM != null ? Number(data.E_EM).toLocaleString(locale) : '-'}</span>
+          <span style="color: #94a3b8;">${language === 'de' ? 'Frauen' : 'Women'}:</span>
+          <span style="font-weight: bold; text-align: right; color: #f1f5f9;">${data && data.E_EW != null ? Number(data.E_EW).toLocaleString(locale) : '-'}</span>
         </div>
       </div>
     `;
