@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup, Pane, useMap } from 'react-leaflet';
-import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets, MapPin, ExternalLink, X } from 'lucide-react';
+import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets, MapPin, ExternalLink, X, RefreshCw } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useLanguage } from './LanguageContext';
@@ -105,25 +105,57 @@ export default function BadestellenView({ district }: { district?: string }) {
     const { t, language } = useLanguage();
     const [data, setData] = useState<BadestelleFeature[]>([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [selectedSpot, setSelectedSpot] = useState<BadestelleFeature | null>(null);
+    const [lastUpdated, setLastUpdated] = useState<number | null>(null);
+    const [cooldownRemaining, setCooldownRemaining] = useState(0);
+
+    const fetchData = async (refresh = false) => {
+        if (refresh) setRefreshing(true); else setLoading(true);
+        try {
+            const url = refresh ? '/api/badestellen?refresh=true' : '/api/badestellen';
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('API request failed');
+            const result = await res.json();
+            setData(result.data);
+            setLastUpdated(result.lastUpdated);
+            setCooldownRemaining(result.cooldownRemaining || 0);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Unknown error');
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    };
 
     useEffect(() => {
-        async function fetchData() {
-            setLoading(true);
-            try {
-                const res = await fetch('/api/badestellen');
-                if (!res.ok) throw new Error('API request failed');
-                const spots = await res.json();
-                setData(spots);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Unknown error');
-            } finally {
-                setLoading(false);
-            }
-        }
         fetchData();
     }, []);
+
+    // Countdown timer
+    useEffect(() => {
+        if (cooldownRemaining <= 0) return;
+        const interval = setInterval(() => {
+            setCooldownRemaining(prev => {
+                if (prev <= 1000) { clearInterval(interval); return 0; }
+                return prev - 1000;
+            });
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [lastUpdated]);
+
+    const formatCooldown = (ms: number) => {
+        const mins = Math.floor(ms / 60000);
+        const secs = Math.floor((ms % 60000) / 1000);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const formatLastUpdated = (ts: number | null) => {
+        if (!ts) return null;
+        const d = new Date(ts);
+        return d.toLocaleTimeString(language === 'de' ? 'de-DE' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+    };
 
     const filteredData = useMemo(() => {
         if (!district || district === 'Berlin' || district === 'All') {
@@ -250,10 +282,24 @@ export default function BadestellenView({ district }: { district?: string }) {
                             <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent leading-tight">
                                 {t('swim_title')}
                             </h2>
-                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-full border border-slate-700/50 h-fit">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">Live API</span>
-                            </div>
+                            <button
+                                onClick={() => fetchData(true)}
+                                disabled={cooldownRemaining > 0 || refreshing}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all ${cooldownRemaining > 0
+                                        ? 'bg-slate-900/50 border-slate-700/50 text-slate-600 cursor-not-allowed'
+                                        : 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/20 active:scale-[0.98]'
+                                    }`}
+                                title={cooldownRemaining > 0 ? `${language === 'de' ? 'Verfügbar in' : 'Available in'} ${formatCooldown(cooldownRemaining)}` : ''}
+                            >
+                                <RefreshCw className={`w-3 h-3 ${refreshing ? 'animate-spin' : ''}`} />
+                                {cooldownRemaining > 0 ? formatCooldown(cooldownRemaining) : (language === 'de' ? 'Aktualisieren' : 'Refresh')}
+                            </button>
+                            {lastUpdated && (
+                                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-full border border-slate-700/50 h-fit">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">{formatLastUpdated(lastUpdated)}</span>
+                                </div>
+                            )}
                         </div>
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
                             <p className="text-slate-400 text-sm">
