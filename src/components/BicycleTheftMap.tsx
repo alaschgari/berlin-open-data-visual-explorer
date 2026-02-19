@@ -67,7 +67,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const [showHeatmap, setShowHeatmap] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const [theftType, setTheftType] = useState<'bicycle' | 'car' | 'both'>('bicycle');
   const itemsPerPage = 20;
 
@@ -164,33 +164,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
     fetchData();
   }, [debouncedStartDate, debouncedEndDate, district, theftType]);
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    try {
-      // 1. Trigger background download from official source
-      const res = await fetch('/api/bicycle-theft/refresh', { method: 'POST' });
 
-      if (res.ok) {
-        // 2. Clear local data and re-fetch with refresh=true to break server cache
-        const params = new URLSearchParams({
-          start: debouncedStartDate,
-          end: debouncedEndDate,
-          refresh: 'true',
-          type: theftType,
-          ...(district && district !== 'Berlin' && district !== 'All' ? { district } : {})
-        });
-        const dataRes = await fetch(`/api/bicycle-theft?${params.toString()}`);
-        if (dataRes.ok) {
-          const newData = await dataRes.json();
-          setData(newData);
-        }
-      }
-    } catch (err) {
-      console.error('Refresh failed:', err);
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
 
   useEffect(() => {
     fetch('/data/berlin-lor-planungsraeume.geojson')
@@ -482,25 +456,7 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                 </svg>
                 Export
               </button>
-              <button
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isRefreshing
-                  ? 'text-emerald-500 bg-emerald-500/10'
-                  : 'text-slate-400 hover:text-emerald-400 hover:bg-slate-800'
-                  }`}
-                title="Daten vom Server der Polizei Berlin aktualisieren"
-              >
-                <svg
-                  className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                {isRefreshing ? 'Aktualisiere...' : 'Aktualisieren'}
-              </button>
+
             </div>
 
             {/* Date Range */}
