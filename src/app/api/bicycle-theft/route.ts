@@ -3,28 +3,8 @@ import Papa from 'papaparse';
 import fs from 'fs';
 import path from 'path';
 
-interface TheftRecord {
-    ANGELEGT_AM: string;
-    TATZEIT_ANFANG_DATUM: string;
-    TATZEIT_ANFANG_STUNDE: string;
-    TATZEIT_ENDE_DATUM: string;
-    TATZEIT_ENDE_STUNDE: string;
-    LOR: string;
-    SCHADENSHOEHE: string;
-    VERSUCH: string;
-}
-
-interface BikeTheftRecord extends TheftRecord {
-    ART_DES_FAHRRADS: string;
-    DELIKT: string;
-    ERFASSUNGSGRUND: string;
-}
-
-interface CarTheftRecord extends TheftRecord {
-    DELIKT: string;
-    EINDRINGEN_IN_KFZ: string;
-    ERLANGTES_GUT: string;
-}
+// Interfaces and types are now imported from @/lib/theft where appropriate
+// or handled dynamically.
 
 interface LorCentroid {
     lat: number;
@@ -65,12 +45,13 @@ const globalForCache = global as unknown as {
 if (globalForCache.bicycleTheftCacheV2 === undefined) globalForCache.bicycleTheftCacheV2 = null;
 if (globalForCache.carTheftCacheV2 === undefined) globalForCache.carTheftCacheV2 = null;
 
+import { fetchLiveTheftData } from '@/lib/theft';
+
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const startDateStr = searchParams.get('start');
     const endDateStr = searchParams.get('end');
     const district = searchParams.get('district');
-    const refresh = searchParams.get('refresh') === 'true';
     const type = searchParams.get('type') || 'bicycle'; // bicycle, car, both
 
     try {
@@ -79,28 +60,11 @@ export async function GET(request: Request) {
         const lorText = fs.readFileSync(lorPath, 'utf-8');
         const lorCentroids: Record<string, LorCentroid> = JSON.parse(lorText);
 
-        const fetchAndMap = (theftType: string) => {
+        const getMappedData = async (theftType: 'bicycle' | 'car') => {
             const isBike = theftType === 'bicycle';
-            const cacheKey = (isBike ? 'bicycleTheftCacheV2' : 'carTheftCacheV2') as keyof typeof globalForCache;
+            const rawData = await fetchLiveTheftData(theftType);
 
-            if (globalForCache[cacheKey] && !refresh) {
-                return globalForCache[cacheKey];
-            }
-
-            const fileName = isBike ? 'Fahrraddiebstahl.csv' : 'Kfzdiebstahl.csv';
-            const csvPath = path.join(process.cwd(), 'data', 'raw', fileName);
-            if (!fs.existsSync(csvPath)) return [];
-
-            // Both datasets from Polizei Berlin typically use latin1 encoding
-            const csvText = fs.readFileSync(csvPath, 'latin1');
-            const parseResult = Papa.parse(csvText, {
-                header: true,
-                skipEmptyLines: true,
-                delimiter: isBike ? ',' : '|'
-            });
-
-            const rawData = parseResult.data as any[];
-            const mapped = rawData.reduce((acc: any[], record, index) => {
+            return rawData.reduce((acc: any[], record, index) => {
                 if (!record.TATZEIT_ANFANG_DATUM || !record.LOR) return acc;
 
                 const dateParts = record.TATZEIT_ANFANG_DATUM.split('.');
@@ -135,17 +99,14 @@ export async function GET(request: Request) {
                 }
                 return acc;
             }, []);
-
-            globalForCache[cacheKey] = mapped;
-            return mapped;
         };
 
         let allData: any[] = [];
         if (type === 'bicycle' || type === 'both') {
-            allData = [...allData, ...fetchAndMap('bicycle')];
+            allData = [...allData, ...await getMappedData('bicycle')];
         }
         if (type === 'car' || type === 'both') {
-            allData = [...allData, ...fetchAndMap('car')];
+            allData = [...allData, ...await getMappedData('car')];
         }
 
         const startDate = startDateStr ? new Date(startDateStr) : new Date(0);

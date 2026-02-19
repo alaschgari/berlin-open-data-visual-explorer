@@ -286,7 +286,7 @@ export interface SubsidyRecord {
     amount: number;
 }
 
-function parseSubsidies(filePath: string): SubsidyRecord[] {
+export function parseSubsidies(filePath: string): SubsidyRecord[] {
     const content = fs.readFileSync(filePath, 'utf8');
     const lines = content.split('\n');
     const records: SubsidyRecord[] = [];
