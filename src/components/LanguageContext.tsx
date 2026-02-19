@@ -219,7 +219,21 @@ const translations: Translations = {
     'traffic_unknown': { de: 'Unbekannt', en: 'Unknown' },
     'traffic_select_segment': { de: 'Wähle ein Segment für den Verlauf', en: 'Select a segment to view traffic history' },
     'traffic_night_gap': { de: 'Lücken nachts (kein Tageslicht)', en: 'Night gaps (no daylight)' },
-    'traffic_vol': { de: 'Vol', en: 'Vol' }
+    'traffic_vol': { de: 'Vol', en: 'Vol' },
+
+    // Markets
+    'tab_markets': { de: 'Märkte', en: 'Markets' },
+    'markets_title': { de: 'Wochen- & Trödelmärkte', en: 'Weekly & Flea Markets' },
+    'markets_subtitle': { de: 'Übersicht der Berliner Wochen- und Trödelmärkte', en: 'Overview of Berlin weekly and flea markets' },
+    'markets_days': { de: 'Tage', en: 'Days' },
+    'markets_times': { de: 'Zeiten', en: 'Hours' },
+    'markets_operator': { de: 'Betreiber', en: 'Operator' },
+    'markets_accessible': { de: 'Barrierefrei', en: 'Accessible' },
+    'markets_period': { de: 'Zeitraum', en: 'Period' },
+    'markets_loading': { de: 'Lade Marktdaten...', en: 'Loading market data...' },
+    'markets_search': { de: 'Markt suchen...', en: 'Search markets...' },
+    'markets_website': { de: 'Website besuchen', en: 'Visit Website' },
+    'markets_count': { de: 'Märkte', en: 'Markets' }
 };
 
 interface LanguageContextType {

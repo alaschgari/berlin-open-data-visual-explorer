@@ -4,6 +4,7 @@ import path from 'path';
 
 const CKAN_API_URL = 'https://datenregister.berlin.de/api/3/action/package_search';
 const DATA_DIR = path.join(process.cwd(), 'data/raw');
+const PROCESSED_DIR = path.join(process.cwd(), 'data/processed');
 
 interface CkanResource {
   id: string;
@@ -85,6 +86,9 @@ export async function fetchBerlinData() {
     // Fetch latest vehicle theft data
     await fetchBicycleTheftData();
     await fetchCarTheftData();
+
+    // Fetch weekly & flea markets
+    await fetchMarketsData();
 
     return { success: true, count: totalDownloadCount };
 
@@ -181,3 +185,21 @@ export async function fetchCarTheftData() {
   }
 }
 
+export async function fetchMarketsData() {
+  const MARKETS_URL = 'https://www.berlin.de/sen/web/service/maerkte-feste/wochen-troedelmaerkte/index.php/index/all.geojson?q=';
+  const TARGET_PATH = path.join(PROCESSED_DIR, 'markets.geojson');
+
+  console.log('Fetching Wochen- & Trödelmärkte (Markets)...');
+  try {
+    const response = await fetch(MARKETS_URL);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const buffer = await response.arrayBuffer();
+    fs.writeFileSync(TARGET_PATH, Buffer.from(buffer));
+    console.log(`Saved markets data to ${TARGET_PATH}`);
+    return true;
+  } catch (error) {
+    console.error('Error fetching markets data:', error);
+    return false;
+  }
+}

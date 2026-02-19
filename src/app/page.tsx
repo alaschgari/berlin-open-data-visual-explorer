@@ -8,7 +8,7 @@ import DashboardClient from '@/components/DashboardClient';
 export default async function Dashboard({ searchParams }: { searchParams: Promise<{ district?: string, tab?: string, budgetMode?: string }> }) {
   const resolvedSearchParams = await searchParams;
   const district = resolvedSearchParams.district || 'Berlin';
-  const activeTab = (resolvedSearchParams.tab || 'subsidies') as 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen';
+  const activeTab = (resolvedSearchParams.tab || 'subsidies') as 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets';
   const budgetMode = (resolvedSearchParams.budgetMode || 'historic') as 'historic' | 'explorer';
 
   // Data pre-fetching (SSR)
