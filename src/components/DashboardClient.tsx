@@ -13,11 +13,18 @@ import BicycleTheftMap from '@/components/BicycleTheftMapWrapper';
 import PopulationMapWrapper from '@/components/PopulationMapWrapper';
 import BusinessMapWrapper from '@/components/BusinessMapWrapper';
 import WastewaterView from '@/components/WastewaterView';
+import BadestellenWrapper from '@/components/BadestellenWrapper';
+import TrafficView from '@/components/TrafficView';
 import { WastewaterRecord } from '@/lib/wastewater';
+import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets } from 'lucide-react';
+
+import { SubsidyMetrics } from '@/lib/subsidies-proxy';
+import { SubsidyRecord } from '@/lib/parser';
+import { TaxMetrics } from '@/lib/taxes';
 
 interface DashboardClientProps {
     district: string;
-    activeTab: 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater';
+    activeTab: 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic';
     budgetMode: 'historic' | 'explorer';
     lastSync: Date | null;
     districts: string[];
@@ -39,24 +46,33 @@ interface DashboardClientProps {
         value: number;
         color?: string;
     }>;
-    initialSubsidiesMetrics: {
-        totalAmount: number;
-        count: number;
-        topRecipients: Array<{ name: string; amount: number }>;
-    };
-    initialSubsidiesList: Array<{
-        id: string;
-        name: string;
-        amount: number;
-        year: number;
-        purpose: string;
-    }>;
-    taxMetrics: {
-        totalRevenue: number;
-        distribution: Array<{ name: string; value: number }>;
-    };
+    initialSubsidiesMetrics: SubsidyMetrics;
+    initialSubsidiesList: SubsidyRecord[];
+    taxMetrics: TaxMetrics;
     wastewaterData: WastewaterRecord[];
 }
+
+type TabType = 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic';
+
+interface NavItem {
+    id: TabType;
+    labelKey: string;
+    icon: React.ReactNode;
+    category: 'finance' | 'infrastructure' | 'society';
+    priority: number;
+}
+
+const NAV_ITEMS: NavItem[] = [
+    { id: 'subsidies', labelKey: 'tab_subsidies', icon: <BarChart3 className="w-3.5 h-3.5" />, category: 'finance', priority: 1 },
+    { id: 'taxes', labelKey: 'tab_taxes', icon: <PieChart className="w-3.5 h-3.5" />, category: 'finance', priority: 2 },
+    { id: 'budget', labelKey: 'tab_budget', icon: <BarChart3 className="w-3.5 h-3.5" />, category: 'finance', priority: 3 },
+    { id: 'theft', labelKey: 'tab_theft', icon: <Shield className="w-3.5 h-3.5" />, category: 'society', priority: 4 },
+    { id: 'demographics', labelKey: 'tab_demographics', icon: <Users className="w-3.5 h-3.5" />, category: 'society', priority: 5 },
+    { id: 'badestellen', labelKey: 'tab_badestellen', icon: <Waves className="w-3.5 h-3.5" />, category: 'society', priority: 6 },
+    { id: 'business', labelKey: 'tab_business', icon: <Building2 className="w-3.5 h-3.5" />, category: 'infrastructure', priority: 7 },
+    { id: 'wastewater', labelKey: 'tab_wastewater', icon: <Droplets className="w-3.5 h-3.5" />, category: 'infrastructure', priority: 8 },
+    { id: 'traffic', labelKey: 'tab_traffic', icon: <BarChart3 className="w-3.5 h-3.5" />, category: 'infrastructure', priority: 9 },
+];
 
 export default function DashboardClient({
     district,
@@ -78,7 +94,7 @@ export default function DashboardClient({
         <main className="min-h-screen bg-[#0f172a] text-slate-200 p-4 md:p-8 font-[family-name:var(--font-geist-sans)]">
             <div className="max-w-7xl mx-auto space-y-8">
                 {/* Unified Premium Header */}
-                <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-2xl">
+                <header className="relative z-[100] flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-2xl overflow-visible">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
                             <svg className="w-7 h-7 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
@@ -109,50 +125,52 @@ export default function DashboardClient({
 
                         <div className="h-8 w-px bg-slate-700/50 hidden sm:block"></div>
 
-                        {/* Tab Switcher */}
-                        <div className="bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 flex shadow-inner overflow-x-auto custom-scrollbar">
-                            <Link
-                                href={`/?tab=subsidies&district=${district}`}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'subsidies' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
-                            >
-                                {t('tab_subsidies')}
-                            </Link>
-                            <Link
-                                href={`/?tab=taxes&district=${district}`}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'taxes' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
-                            >
-                                {t('tab_taxes')}
-                            </Link>
-                            <Link
-                                href={`/?tab=theft&district=${district}`}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'theft' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
-                            >
-                                {t('tab_theft')}
-                            </Link>
-                            <Link
-                                href={`/?tab=budget&district=${district}`}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'budget' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
-                            >
-                                {t('tab_budget')}
-                            </Link>
-                            <Link
-                                href={`/?tab=demographics&district=${district}`}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'demographics' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
-                            >
-                                {t('tab_demographics')}
-                            </Link>
-                            <Link
-                                href={`/?tab=business&district=${district}`}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'business' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
-                            >
-                                {t('tab_business')}
-                            </Link>
-                            <Link
-                                href={`/?tab=wastewater&district=${district}`}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'wastewater' ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
-                            >
-                                {t('tab_wastewater')}
-                            </Link>
+                        {/* Scalable Tab Switcher */}
+                        <div className="flex items-center gap-2">
+                            <div className="bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 flex shadow-inner overflow-hidden max-w-[300px] md:max-w-none">
+                                {NAV_ITEMS.filter(item => item.priority <= 4).map((item) => (
+                                    <Link
+                                        key={item.id}
+                                        href={`/?tab=${item.id}&district=${district}`}
+                                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === item.id ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}`}
+                                    >
+                                        {item.icon}
+                                        {t(item.labelKey)}
+                                    </Link>
+                                ))}
+                            </div>
+
+                            {/* Dropdown for More Items */}
+                            <div className="relative group">
+                                <button className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all text-xs font-bold ${NAV_ITEMS.some(item => item.id === activeTab && item.priority > 4) ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' : 'bg-slate-900/60 border-slate-700/50 text-slate-400 hover:text-white'}`}>
+                                    <ChevronDown className="w-4 h-4" />
+                                    <span>{t('nav_more')}</span>
+                                </button>
+
+                                {/* Premium Dropdown Menu */}
+                                <div className="absolute right-0 top-full mt-2 w-56 bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl py-2 z-[9999] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right group-hover:scale-100 scale-95 p-2 space-y-1">
+                                    {['society', 'infrastructure'].map((cat) => (
+                                        <div key={cat} className="space-y-1">
+                                            <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center justify-between">
+                                                <span>{t(`cat_${cat}`)}</span>
+                                                <div className="h-px flex-1 bg-slate-800 ml-3"></div>
+                                            </div>
+                                            {NAV_ITEMS.filter(item => item.category === cat && item.priority > 4).map((item) => (
+                                                <Link
+                                                    key={item.id}
+                                                    href={`/?tab=${item.id}&district=${district}`}
+                                                    className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === item.id ? 'bg-emerald-500/20 text-emerald-400' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}`}
+                                                >
+                                                    <div className={`p-1.5 rounded-lg ${activeTab === item.id ? 'bg-emerald-500 text-slate-900' : 'bg-slate-800 text-slate-400'}`}>
+                                                        {item.icon}
+                                                    </div>
+                                                    {t(item.labelKey)}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
 
                         <div className="h-8 w-px bg-slate-700/50 hidden sm:block"></div>
@@ -209,8 +227,12 @@ export default function DashboardClient({
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                             <BusinessMapWrapper district={district} />
                         </div>
-                    ) : (
+                    ) : activeTab === 'wastewater' ? (
                         <WastewaterView data={wastewaterData} />
+                    ) : activeTab === 'traffic' ? (
+                        <TrafficView district={district} />
+                    ) : (
+                        <BadestellenWrapper district={district} />
                     )
                 }
             </div>

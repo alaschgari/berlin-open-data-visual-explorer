@@ -29,3 +29,57 @@ body {
 .leaflet-interactive:focus {
   outline: none;
 }
+
+/* Custom Leaflet Popup Theme */
+.leaflet-popup-content-wrapper {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 1.5rem !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: auto !important;
+}
+
+.leaflet-popup-tip-container {
+  display: none !important;
+}
+
+.leaflet-popup-close-button {
+  color: #94a3b8 !important;
+  /* slate-400 */
+  padding: 12px !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #ffffff !important;
+}
+
+/* Force popup to top layer and align to middle-right with close proximity */
+.custom-badestellen-popup.leaflet-popup {
+  z-index: 2000 !important;
+  margin-left: 153px !important;
+}
+
+.custom-badestellen-popup .leaflet-popup-content-wrapper {
+  margin-top: 215px !important;
+}
+
+.leaflet-popup {
+  z-index: 2000 !important;
+}
+
+.leaflet-pane {
+  z-index: 400 !important;
+}
+
+.leaflet-marker-pane {
+  z-index: 600 !important;
+}
+
+.leaflet-popup-pane {
+  z-index: 2000 !important;
+}

@@ -8,7 +8,7 @@ import DashboardClient from '@/components/DashboardClient';
 export default async function Dashboard({ searchParams }: { searchParams: Promise<{ district?: string, tab?: string, budgetMode?: string }> }) {
   const resolvedSearchParams = await searchParams;
   const district = resolvedSearchParams.district || 'Berlin';
-  const activeTab = (resolvedSearchParams.tab || 'subsidies') as 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater';
+  const activeTab = (resolvedSearchParams.tab || 'subsidies') as 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen';
   const budgetMode = (resolvedSearchParams.budgetMode || 'historic') as 'historic' | 'explorer';
 
   // Data pre-fetching (SSR)
@@ -42,7 +42,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       districts={districts}
       enrichedData={enrichedData}
       timeline={timeline}
-      topChapters={topChapters}
+      topChapters={topChapters.map(c => ({ name: c.name, value: c.amount }))}
       initialSubsidiesMetrics={initialSubsidiesMetrics}
       initialSubsidiesList={initialSubsidiesList}
       taxMetrics={taxMetrics}

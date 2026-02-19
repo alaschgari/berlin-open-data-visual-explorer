@@ -20,7 +20,15 @@ export async function getTaxData(): Promise<TaxEntry[]> {
     return data;
 }
 
-export async function getTaxMetrics() {
+export interface TaxMetrics {
+    totalMonthly: number;
+    period: string;
+    byCategory: { name: string; value: number }[];
+    topSources: TaxEntry[];
+    allData: TaxEntry[];
+}
+
+export async function getTaxMetrics(): Promise<TaxMetrics> {
     if (!fs.existsSync(PROCESSED_PATH)) {
         return {
             totalMonthly: 0,

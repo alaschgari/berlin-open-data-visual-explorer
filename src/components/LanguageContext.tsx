@@ -17,6 +17,10 @@ const translations: Translations = {
     'brand_sub': { de: 'Public Services Analytics', en: 'Public Services Analytics' },
     'last_sync': { de: 'Stand', en: 'Sync' },
     'locale': { de: 'DE', en: 'EN' },
+    'nav_more': { de: 'Mehr', en: 'More' },
+    'cat_finance': { de: 'Finanzen', en: 'Finance' },
+    'cat_infrastructure': { de: 'Infrastruktur', en: 'Infrastructure' },
+    'cat_society': { de: 'Gesellschaft', en: 'Society' },
 
     // Tabs
     'tab_subsidies': { de: 'Subventionen', en: 'Subsidies' },
@@ -26,6 +30,8 @@ const translations: Translations = {
     'tab_demographics': { de: 'Demografie', en: 'Demographics' },
     'tab_business': { de: 'Gewerbe', en: 'Business' },
     'tab_wastewater': { de: 'Abwasser', en: 'Wastewater' },
+    'tab_badestellen': { de: 'Badestellen', en: 'Swimming Spots' },
+    'tab_traffic': { de: 'Verkehr', en: 'Traffic' },
 
     // Selectors
     'all_districts': { de: 'Alle Bezirke', en: 'All Districts' },
@@ -53,6 +59,8 @@ const translations: Translations = {
     'by_year': { de: 'Nach Jahr', en: 'By Year' },
     'by_area': { de: 'Nach Bereich', en: 'By Area' },
     'by_provider': { de: 'Nach Geber', en: 'By Provider' },
+    'by_district': { de: 'Nach Bezirk', en: 'By District' },
+    'by_status': { de: 'Nach Status', en: 'By Status' },
     'year_area': { de: 'Jahr + Bereich', en: 'Year + Area' },
     'year_label': { de: 'Jahr', en: 'Year' },
     'area_label': { de: 'Bereich', en: 'Area' },
@@ -137,7 +145,63 @@ const translations: Translations = {
     'theft_incidents': { de: 'Vorfälle', en: 'Incidents' },
     'theft_damage': { de: 'Schadenssumme', en: 'Total Damage' },
     'theft_heatmap': { de: 'Heatmap anzeigen', en: 'Show Heatmap' },
-    'theft_latest': { de: 'Aktuelle Vorfälle', en: 'Latest Incidents' }
+    'theft_latest': { de: 'Aktuelle Vorfälle', en: 'Latest Incidents' },
+
+    // Badestellen
+    'swim_title': { de: 'Berliner Badegewässer', en: 'Berlin Bathing Waters' },
+    'swim_subtitle': { de: 'Live-Qualität und Wassertemperatur der Badestellen', en: 'Live water quality and temperature' },
+    'swim_water_temp': { de: 'Wasser-Temp.', en: 'Water Temp' },
+    'swim_quality': { de: 'Wasserqualität', en: 'Water Quality' },
+    'swim_last_sample': { de: 'Letzte Probe', en: 'Last Sample' },
+    'swim_visibility': { de: 'Sichttiefe', en: 'Visibility' },
+    'swim_eco': { de: 'E. coli', en: 'E. coli' },
+    'swim_ente': { de: 'Enterokokken', en: 'Enterococci' },
+    'swim_view_details': { de: 'Profil & Details', en: 'Profile & Details' },
+    'swim_status_green': { de: 'Baden erlaubt', en: 'Swimming allowed' },
+    'swim_status_yellow': { de: 'Warnung', en: 'Warning' },
+    'swim_status_red': { de: 'Badeverbot', en: 'No swimming' },
+    'swim_loading': { de: 'Rufe Live-Daten ab...', en: 'Fetching live data...' },
+
+    // Traffic
+    'traffic_title': { de: 'Verkehrs-Analyse', en: 'Traffic Analysis' },
+    'traffic_subtitle': { de: 'Echtzeit-Verkehrsdaten von Telraam Sensoren (funktionieren nur bei Tageslicht)', en: 'Real-time traffic data from Telraam sensors (daylight only)' },
+    'traffic_intensity': { de: 'Verkehrsdichte', en: 'Traffic Intensity' },
+    'traffic_vru_safety': { de: 'Fuß/Rad Sicherheit', en: 'VRU Safety Index' },
+    'traffic_speed_hotspots': { de: 'Geschwindigkeits-Hotspots', en: 'Speed Hotspots' },
+    'traffic_temporal': { de: 'Zeitliches Profil', en: 'Temporal Profile' },
+    'traffic_modal_split': { de: 'Verkehrsmittelwahl', en: 'Modal Split' },
+    'traffic_v85': { de: 'v85 Geschwindigkeit', en: 'v85 Speed' },
+    'traffic_v85_explanation': {
+        de: 'Die Geschwindigkeit, die von 85% aller Fahrzeuge nicht überschritten wird. Ein Standardwert für den Verkehrsfluss.',
+        en: 'The speed that 85% of all vehicles do not exceed. A standard metric for traffic flow.'
+    },
+    'traffic_segments': { de: 'Straßenabschnitte', en: 'Road Segments' },
+    'traffic_loading': { de: 'Lade Verkehrsdaten...', en: 'Loading traffic data...' },
+    'traffic_live_api': { de: 'Live API', en: 'Live API' },
+    'traffic_no_data': { de: 'Keine Daten', en: 'No Data' },
+    'traffic_time_range': { de: 'Zeitraum', en: 'Time Range' },
+    'traffic_source': { de: 'Quelle', en: 'Source' },
+    'traffic_history_title': { de: 'Verlauf: Segment #', en: 'History: Segment #' },
+    'traffic_history_default': { de: 'Verkehrsverlauf (letzte 7 Tage)', en: 'Traffic History (Last 7 Days)' },
+    'traffic_segment_data': { de: 'Segment-Daten', en: 'Segment Data' },
+    'traffic_active': { de: 'aktiv', en: 'active' },
+    'traffic_search_placeholder': { de: 'Segment ID suchen...', en: 'Search Segment ID...' },
+    'traffic_group_speed': { de: 'Nach Geschwindigkeit gruppieren', en: 'Group by Speed' },
+    'traffic_group_district': { de: 'Nach Bezirk gruppieren', en: 'Group by District' },
+    'traffic_all_segments': { de: 'Alle Segmente', en: 'All Segments' },
+    'traffic_district': { de: 'Bezirk', en: 'District' },
+    'traffic_cars': { de: 'Autos', en: 'Cars' },
+    'traffic_bikes': { de: 'Fahrräder', en: 'Bikes' },
+    'traffic_peds': { de: 'Fußgänger', en: 'Pedestrians' },
+    'traffic_heavy': { de: 'LKW/Schwerlast', en: 'Heavy/Trucks' },
+    'traffic_speed_high': { de: 'Hoch (> 50 km/h)', en: 'High (> 50 km/h)' },
+    'traffic_speed_medium': { de: 'Mittel (30-50 km/h)', en: 'Medium (30-50 km/h)' },
+    'traffic_speed_low': { de: 'Niedrig (< 30 km/h)', en: 'Low (< 30 km/h)' },
+    'traffic_select_row': { de: 'Wähle eine Zeile, um das Segment auf der Karte hervorzuheben.', en: 'Select a row to highlight the segment on the map.' },
+    'traffic_unknown': { de: 'Unbekannt', en: 'Unknown' },
+    'traffic_select_segment': { de: 'Wähle ein Segment für den Verlauf', en: 'Select a segment to view traffic history' },
+    'traffic_night_gap': { de: 'Lücken nachts (kein Tageslicht)', en: 'Night gaps (no daylight)' },
+    'traffic_vol': { de: 'Vol', en: 'Vol' }
 };
 
 interface LanguageContextType {

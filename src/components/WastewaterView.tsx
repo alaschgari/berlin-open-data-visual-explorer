@@ -199,7 +199,7 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
                                     contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }}
                                     itemStyle={{ fontSize: '11px', fontWeight: 'bold' }}
                                     labelStyle={{ color: '#94a3b8', marginBottom: '4px', fontWeight: 'bold' }}
-                                    labelFormatter={(label: string) => new Date(label).toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}
+                                    labelFormatter={(label: any) => new Date(label).toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}
                                 />
                                 <Legend verticalAlign="top" height={36} iconType="circle" />
                                 {pathogens.map(p => (
@@ -259,8 +259,8 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
                                 <Tooltip
                                     contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }}
                                     itemStyle={{ fontSize: '11px', fontWeight: 'bold' }}
-                                    labelFormatter={(label: string) => new Date(label).toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}
-                                    formatter={(value: number, name: string) => {
+                                    labelFormatter={(label: any) => new Date(label).toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}
+                                    formatter={(value: any, name: any) => {
                                         if (name.includes('Durchfluss')) return [`${value.toLocaleString('de-DE')} Liter/Tag`, name];
                                         if (name.includes('Temp')) return [`${value} °C`, name];
                                         return [value, name];
