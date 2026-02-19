@@ -220,11 +220,11 @@ export default function PopulationMapClient({ district }: { district: string }) 
             <span style="font-size: 9px; color: #64748b; margin-left: 8px; text-transform: uppercase;">${districtName}</span>
         </div>
         <div style="display: grid; grid-template-columns: auto auto; gap: 8px; font-size: 12px;">
-          <span style="color: #64748b;">{t('pop_total')}:</span>
+          <span style="color: #64748b;">${t('pop_total')}:</span>
           <span style="font-weight: bold; text-align: right;">${pop ? pop.toLocaleString(locale) : 'N/A'}</span>
-          <span style="color: #64748b;">{language === 'de' ? 'Männer' : 'Men'}:</span>
+          <span style="color: #64748b;">${language === 'de' ? 'Männer' : 'Men'}:</span>
           <span style="font-weight: bold; text-align: right;">${data && data.E_EM != null ? Number(data.E_EM).toLocaleString(locale) : '-'}</span>
-          <span style="color: #64748b;">{language === 'de' ? 'Frauen' : 'Women'}:</span>
+          <span style="color: #64748b;">${language === 'de' ? 'Frauen' : 'Women'}:</span>
           <span style="font-weight: bold; text-align: right;">${data && data.E_EW != null ? Number(data.E_EW).toLocaleString(locale) : '-'}</span>
           <span style="color: #64748b;">ID:</span>
           <span style="text-align: right; font-family: monospace;">${feature.properties.PLR_ID}</span>
