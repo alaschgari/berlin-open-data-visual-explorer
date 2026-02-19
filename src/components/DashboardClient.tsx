@@ -15,8 +15,9 @@ import BusinessMapWrapper from '@/components/BusinessMapWrapper';
 import WastewaterView from '@/components/WastewaterView';
 import BadestellenWrapper from '@/components/BadestellenWrapper';
 import TrafficView from '@/components/TrafficView';
+import MarketsMapWrapper from '@/components/MarketsMapWrapper';
 import { WastewaterRecord } from '@/lib/wastewater';
-import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets } from 'lucide-react';
+import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets, ShoppingBag } from 'lucide-react';
 
 import { SubsidyMetrics } from '@/lib/subsidies-proxy';
 import { SubsidyRecord } from '@/lib/parser';
@@ -24,7 +25,7 @@ import { TaxMetrics } from '@/lib/taxes';
 
 interface DashboardClientProps {
     district: string;
-    activeTab: 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic';
+    activeTab: 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets';
     budgetMode: 'historic' | 'explorer';
     lastSync: Date | null;
     districts: string[];
@@ -52,7 +53,7 @@ interface DashboardClientProps {
     wastewaterData: WastewaterRecord[];
 }
 
-type TabType = 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic';
+type TabType = 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets';
 
 interface NavItem {
     id: TabType;
@@ -72,6 +73,7 @@ const NAV_ITEMS: NavItem[] = [
     { id: 'business', labelKey: 'tab_business', icon: <Building2 className="w-3.5 h-3.5" />, category: 'infrastructure', priority: 7 },
     { id: 'wastewater', labelKey: 'tab_wastewater', icon: <Droplets className="w-3.5 h-3.5" />, category: 'infrastructure', priority: 8 },
     { id: 'traffic', labelKey: 'tab_traffic', icon: <BarChart3 className="w-3.5 h-3.5" />, category: 'infrastructure', priority: 9 },
+    { id: 'markets', labelKey: 'tab_markets', icon: <ShoppingBag className="w-3.5 h-3.5" />, category: 'society', priority: 10 },
 ];
 
 export default function DashboardClient({
@@ -91,7 +93,7 @@ export default function DashboardClient({
     const { t } = useLanguage();
 
     return (
-        <main className="min-h-screen bg-[#0f172a] text-slate-200 p-4 md:p-8 font-[family-name:var(--font-geist-sans)]">
+        <main className="min-h-screen bg-[#0f172a] text-slate-200 p-4 md:p-8 font-[family-name:var(--font-geist-sans)]" aria-label={t('brand_name')}>
             <div className="max-w-7xl mx-auto space-y-8">
                 {/* Unified Premium Header */}
                 <header className="relative z-[2000] flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-2xl overflow-visible">
@@ -127,12 +129,15 @@ export default function DashboardClient({
 
                         {/* Scalable Tab Switcher */}
                         <div className="flex items-center gap-2">
-                            <div className="bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 flex shadow-inner max-w-[300px] md:max-w-none">
+                            <div className="bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 flex shadow-inner max-w-[300px] md:max-w-none" role="tablist" aria-label={t('nav_more')}>
                                 {NAV_ITEMS.filter(item => item.priority <= 4).map((item) => (
                                     <Link
                                         key={item.id}
                                         href={`/?tab=${item.id}&district=${district}`}
                                         className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === item.id ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}`}
+                                        role="tab"
+                                        aria-selected={activeTab === item.id}
+                                        aria-current={activeTab === item.id ? 'page' : undefined}
                                     >
                                         {item.icon}
                                         {t(item.labelKey)}
@@ -142,7 +147,11 @@ export default function DashboardClient({
 
                             {/* Dropdown for More Items */}
                             <div className="relative group">
-                                <button className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all text-xs font-bold ${NAV_ITEMS.some(item => item.id === activeTab && item.priority > 4) ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' : 'bg-slate-900/60 border-slate-700/50 text-slate-400 hover:text-white'}`}>
+                                <button
+                                    className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all text-xs font-bold ${NAV_ITEMS.some(item => item.id === activeTab && item.priority > 4) ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' : 'bg-slate-900/60 border-slate-700/50 text-slate-400 hover:text-white'}`}
+                                    aria-haspopup="true"
+                                    aria-label={t('nav_more')}
+                                >
                                     <ChevronDown className="w-4 h-4" />
                                     <span>{t('nav_more')}</span>
                                 </button>
@@ -160,6 +169,8 @@ export default function DashboardClient({
                                                     key={item.id}
                                                     href={`/?tab=${item.id}&district=${district}`}
                                                     className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === item.id ? 'bg-emerald-500/20 text-emerald-400' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}`}
+                                                    role="menuitem"
+                                                    aria-current={activeTab === item.id ? 'page' : undefined}
                                                 >
                                                     <div className={`p-1.5 rounded-lg ${activeTab === item.id ? 'bg-emerald-500 text-slate-900' : 'bg-slate-800 text-slate-400'}`}>
                                                         {item.icon}
@@ -183,16 +194,20 @@ export default function DashboardClient({
                     activeTab === 'budget' ? (
                         <div className="space-y-6">
                             {/* Sub-Tabs for Budget */}
-                            <div className="flex gap-4 border-b border-slate-700/50 pb-4">
+                            <div className="flex gap-4 border-b border-slate-700/50 pb-4" role="tablist" aria-label={t('tab_budget')}>
                                 <Link
                                     href={`/?tab=budget&district=${district}&budgetMode=historic`}
                                     className={`text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${budgetMode === 'historic' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-500 hover:text-white'}`}
+                                    role="tab"
+                                    aria-selected={budgetMode === 'historic'}
                                 >
                                     {t('budget_mode_historic')}
                                 </Link>
                                 <Link
                                     href={`/?tab=budget&district=${district}&budgetMode=explorer`}
                                     className={`text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${budgetMode === 'explorer' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-500 hover:text-white'}`}
+                                    role="tab"
+                                    aria-selected={budgetMode === 'explorer'}
                                 >
                                     {t('budget_mode_explorer')}
                                 </Link>
@@ -231,6 +246,10 @@ export default function DashboardClient({
                         <WastewaterView data={wastewaterData} />
                     ) : activeTab === 'traffic' ? (
                         <TrafficView district={district} />
+                    ) : activeTab === 'markets' ? (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <MarketsMapWrapper district={district} />
+                        </div>
                     ) : (
                         <BadestellenWrapper district={district} />
                     )

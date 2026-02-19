@@ -70,6 +70,7 @@ export default function TrafficMap({ district, data, isKeyMissing, highlightedSe
             style={{ height: '100%', width: '100%' }}
             className="z-0"
             ref={setMap}
+            aria-label="Traffic segments map"
         >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'

@@ -296,6 +296,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                         scrollWheelZoom={true}
                         style={{ height: '100%', width: '100%' }}
                         className="z-0"
+                        aria-label={language === 'de' ? 'Badestellen-Karte' : 'Bathing spots map'}
                     >
                         <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'

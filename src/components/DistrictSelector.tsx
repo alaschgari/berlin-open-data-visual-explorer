@@ -31,6 +31,7 @@ export default function DistrictSelector({ currentDistrict, districts, activeTab
             <select
                 value={currentDistrict}
                 onChange={handleChange}
+                aria-label={t('district_selector') || 'District selector'}
                 className="w-full bg-slate-900/80 border border-slate-700 rounded-xl pl-4 pr-10 py-3 text-slate-100 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/50 appearance-none cursor-pointer transition-all hover:bg-slate-900"
             >
                 {districts.map(d => (

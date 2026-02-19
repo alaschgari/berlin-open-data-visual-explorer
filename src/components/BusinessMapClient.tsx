@@ -495,6 +495,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                         center={[52.5200, 13.4050]}
                         zoom={11}
                         style={{ height: '100%', width: '100%', borderRadius: '1.5rem', background: '#0f172a' }}
+                        aria-label={language === 'de' ? 'Gewerbedaten-Karte' : 'Business data map'}
                     >
                         <TileLayer
                             attribution='&copy; <a href="https://carto.com/">CARTO</a>'
