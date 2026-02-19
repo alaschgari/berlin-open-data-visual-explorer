@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
-import { MapPin, ExternalLink, Clock, Calendar, ShoppingBag, Search, Accessibility, User } from 'lucide-react';
+import { MapContainer, TileLayer, CircleMarker, useMap } from 'react-leaflet';
+import { MapPin, ExternalLink, Clock, Calendar, ShoppingBag, Search, Accessibility, User, X } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useLanguage } from './LanguageContext';
@@ -293,13 +293,25 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                                         click: () => setSelectedMarket(market),
                                     }}
                                 >
-                                    <Popup className="custom-popup" maxWidth={320} offset={[0, -5]}>
-                                        <MarketPopupContent market={market} t={t} />
-                                    </Popup>
                                 </CircleMarker>
                             );
                         })}
                     </MapContainer>
+
+                    {/* Fixed Detail Panel - Top Right */}
+                    {selectedMarket && (
+                        <div className="absolute top-4 right-4 z-[1000] w-[320px] animate-in fade-in slide-in-from-right-4 duration-300">
+                            <div className="relative">
+                                <button
+                                    onClick={() => setSelectedMarket(null)}
+                                    className="absolute -top-2 -right-2 z-10 p-1.5 bg-slate-900 text-slate-400 hover:text-white rounded-full border border-slate-700 shadow-lg transition-colors"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                                <MarketPopupContent market={selectedMarket} t={t} />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -315,8 +327,8 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                                 key={`${market.properties.id}-${idx}`}
                                 onClick={() => handleMarketClick(market)}
                                 className={`text-left p-4 rounded-2xl border transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${isSelected
-                                        ? 'bg-emerald-500/10 border-emerald-500/50 shadow-lg shadow-emerald-500/10'
-                                        : 'bg-slate-900/40 border-slate-700/50 hover:border-slate-600'
+                                    ? 'bg-emerald-500/10 border-emerald-500/50 shadow-lg shadow-emerald-500/10'
+                                    : 'bg-slate-900/40 border-slate-700/50 hover:border-slate-600'
                                     }`}
                             >
                                 <div className="flex items-start gap-3">
