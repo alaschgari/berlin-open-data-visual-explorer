@@ -193,6 +193,7 @@ export default function TrafficView({ district }: TrafficViewProps) {
                         data={trafficData}
                         isKeyMissing={isKeyMissing}
                         highlightedSegmentId={highlightedSegmentId}
+                        onSegmentSelect={setHighlightedSegmentId}
                     />
                 </div>
 

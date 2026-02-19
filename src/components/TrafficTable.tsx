@@ -19,6 +19,17 @@ export default function TrafficTable({ features, onHighlight, highlightedId }: T
     const [sortField, setSortField] = useState<SortField>('v85');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
     const [groupBy, setGroupBy] = useState<'none' | 'speed_level' | 'district'>('none');
+    const tableContainerRef = React.useRef<HTMLDivElement>(null);
+
+    // Auto-scroll to highlighted segment
+    React.useEffect(() => {
+        if (highlightedId && tableContainerRef.current) {
+            const row = tableContainerRef.current.querySelector(`[data-segment-id="${highlightedId}"]`);
+            if (row) {
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    }, [highlightedId]);
 
     const handleSort = (field: SortField) => {
         if (sortField === field) {
@@ -124,7 +135,10 @@ export default function TrafficTable({ features, onHighlight, highlightedId }: T
             </div>
 
             {/* Table Content */}
-            <div className="overflow-y-auto flex-1 custom-scrollbar">
+            <div
+                ref={tableContainerRef}
+                className="overflow-y-auto flex-1 custom-scrollbar"
+            >
                 {Object.entries(groupedData).map(([groupName, groupFeatures]: [string, any]) => (
                     <div key={groupName} className="mb-2">
                         {groupBy !== 'none' && (
@@ -175,6 +189,7 @@ export default function TrafficTable({ features, onHighlight, highlightedId }: T
                                     return (
                                         <tr
                                             key={props.segment_id}
+                                            data-segment-id={props.segment_id}
                                             onClick={() => onHighlight(props.segment_id)}
                                             className={`group transition-all cursor-pointer ${isHighlighted
                                                 ? 'bg-indigo-500/20 hover:bg-indigo-500/30'

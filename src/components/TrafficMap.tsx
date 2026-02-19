@@ -19,9 +19,10 @@ interface TrafficMapProps {
     data: any;
     isKeyMissing?: boolean;
     highlightedSegmentId?: number | null;
+    onSegmentSelect?: (id: number) => void;
 }
 
-export default function TrafficMap({ district, data, isKeyMissing, highlightedSegmentId }: TrafficMapProps) {
+export default function TrafficMap({ district, data, isKeyMissing, highlightedSegmentId, onSegmentSelect }: TrafficMapProps) {
     const [segments, setSegments] = useState<any[]>([]);
     const [map, setMap] = useState<L.Map | null>(null);
 
@@ -77,7 +78,6 @@ export default function TrafficMap({ district, data, isKeyMissing, highlightedSe
             {segments.map((segment: any) => {
                 const geometry = segment.geometry;
                 const props = segment.properties;
-                const isHighlighted = highlightedSegmentId === props.segment_id;
 
                 // Handle MultiLineString (standard for Telraam)
                 if (geometry.type === 'MultiLineString') {
@@ -89,42 +89,11 @@ export default function TrafficMap({ district, data, isKeyMissing, highlightedSe
                             )}
                             pathOptions={getSegmentStyle(segment)}
                             eventHandlers={{
-                                click: (e) => {
-                                    e.target.openPopup();
+                                click: () => {
+                                    if (onSegmentSelect) onSegmentSelect(props.segment_id);
                                 }
                             }}
-                        >
-                            <Popup autoPan={false}>
-                                <div className="p-2 min-w-[150px]">
-                                    <h4 className="font-bold text-slate-900 mb-1">
-                                        Segment #{props.segment_id}
-                                        {isHighlighted && <span className="ml-2 text-xs text-indigo-600 bg-indigo-100 px-1 rounded">HOTSPOT</span>}
-                                    </h4>
-                                    <div className="space-y-1 text-xs text-slate-600">
-                                        <div className="flex justify-between">
-                                            <span>🚗 Cars:</span>
-                                            <span className="font-mono font-bold">{Math.round(props.car)}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span>🚲 Bikes:</span>
-                                            <span className="font-mono font-bold">{Math.round(props.bike)}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span>🚶 Peds:</span>
-                                            <span className="font-mono font-bold">{Math.round(props.pedestrian)}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span>🚛 Heavy:</span>
-                                            <span className="font-mono font-bold">{Math.round(props.heavy)}</span>
-                                        </div>
-                                        <div className="flex justify-between mt-2 pt-2 border-t border-slate-200">
-                                            <span>🏎️ Speed (v85):</span>
-                                            <span className="font-mono font-bold text-rose-500">{Math.round(props.v85)} km/h</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Popup>
-                        </Polyline>
+                        />
                     );
                 }
 
@@ -136,13 +105,12 @@ export default function TrafficMap({ district, data, isKeyMissing, highlightedSe
                             key={props.segment_id}
                             positions={positions}
                             pathOptions={getSegmentStyle(segment)}
-                        >
-                            <Popup>
-                                <div className="p-2">
-                                    <h4 className="font-bold text-slate-900">Segment #{props.segment_id}</h4>
-                                </div>
-                            </Popup>
-                        </Polyline>
+                            eventHandlers={{
+                                click: () => {
+                                    if (onSegmentSelect) onSegmentSelect(props.segment_id);
+                                }
+                            }}
+                        />
                     );
                 }
                 return null;
