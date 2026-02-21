@@ -68,6 +68,15 @@ body {
   margin-top: 215px !important;
 }
 
+@media (max-width: 640px) {
+  .custom-badestellen-popup.leaflet-popup {
+    margin-left: 0 !important;
+  }
+  .custom-badestellen-popup .leaflet-popup-content-wrapper {
+    margin-top: 0 !important;
+  }
+}
+
 .leaflet-popup {
   z-index: 2000 !important;
 }

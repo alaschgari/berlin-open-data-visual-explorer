@@ -1,3 +1,4 @@
+import TITLE_NAMES from './budget-titles';
 
 export const CHAPTER_NAMES: Record<string, string> = {
     "9540": "Zentrale Finanzangelegenheiten / Landeshauptkasse",
@@ -15,11 +16,6 @@ export const CHAPTER_NAMES: Record<string, string> = {
  * @returns The mapped name or "Unbekanntes Kapitel (Code)"
  */
 export function getChapterName(chapterCode: string): string {
-    // The chapter code might come in as "9540" or "09540" or "9540 Description"
-    // We need to extract the 4-digit code first.
-    // Based on previous data inspection, chapter is often "0624 Amtsgericht Neukölln" or similar.
-    // So we should try to match the first 4 digits.
-
     const match = chapterCode.match(/(\d{4})/);
     const cleanCode = match ? match[1] : chapterCode;
 
@@ -29,4 +25,15 @@ export function getChapterName(chapterCode: string): string {
     }
 
     return `Unbekanntes Kapitel (${cleanCode})`;
+}
+
+/**
+ * Returns a human-readable name for a budget title code.
+ * @param titleCode The 5-digit title code
+ * @returns The description or the original code if not mapped
+ */
+export function getTitleName(titleCode: string): string {
+    if (!titleCode) return titleCode;
+    const clean = titleCode.trim();
+    return TITLE_NAMES[clean as keyof typeof TITLE_NAMES] || titleCode;
 }

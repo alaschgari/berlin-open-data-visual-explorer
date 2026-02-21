@@ -17,8 +17,8 @@ export function RoadConditionChart({ data, year }: RoadConditionChartProps) {
     const yearLabel = year || 'Alle Jahre';
 
     return (
-        <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Infrastruktur: Straßenzustand vs. Tiefbau ({yearLabel})</h3>
+        <div className="bg-slate-900/50 rounded-2xl shadow-xl p-6 border border-slate-800">
+            <h3 className="text-lg font-semibold text-slate-100 mb-4">Infrastruktur: Straßenzustand vs. Tiefbau ({yearLabel})</h3>
             <p className="text-sm text-slate-500 mb-6">
                 Durchschnittsnote (1=Sehr gut, 5=Mangelhaft) im Vergleich zu Ausgaben im Tiefbau (Kapitel 3800).
             </p>

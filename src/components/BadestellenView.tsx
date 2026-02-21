@@ -286,8 +286,8 @@ export default function BadestellenView({ district }: { district?: string }) {
                                 onClick={() => fetchData(true)}
                                 disabled={cooldownRemaining > 0 || refreshing}
                                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all ${cooldownRemaining > 0
-                                        ? 'bg-slate-900/50 border-slate-700/50 text-slate-600 cursor-not-allowed'
-                                        : 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/20 active:scale-[0.98]'
+                                    ? 'bg-slate-900/50 border-slate-700/50 text-slate-600 cursor-not-allowed'
+                                    : 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/20 active:scale-[0.98]'
                                     }`}
                                 title={cooldownRemaining > 0 ? `${language === 'de' ? 'Verfügbar in' : 'Available in'} ${formatCooldown(cooldownRemaining)}` : ''}
                             >
@@ -395,7 +395,7 @@ export default function BadestellenView({ district }: { district?: string }) {
             {/* Detail Table */}
             < div className="bg-slate-800/50 rounded-3xl border border-slate-700/50 overflow-hidden backdrop-blur-xl shadow-xl" >
                 <div className="p-6 border-b border-slate-700/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <h3 className="text-lg font-bold text-white">Live-Daten Übersicht</h3>
+                    <h3 className="text-lg font-bold text-white">{t('swim_table_title')}</h3>
 
                     {/* Grouping Controls */}
                     <div className="flex gap-2">
@@ -414,7 +414,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                     </div>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
+                    <table className="w-full text-left text-sm min-w-[640px]">
                         <thead className="bg-slate-900/50 text-slate-400 uppercase text-[10px] font-black tracking-widest border-b border-slate-700/50">
                             <tr>
                                 <th

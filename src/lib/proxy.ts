@@ -12,6 +12,7 @@ export async function getCachedFinancialData() {
 }
 
 import { HISTORICAL_DATA } from './historical-data';
+import { getTitleName } from './budget-mappings';
 
 const PROCESSED_DIR = path.join(process.cwd(), 'data', 'processed');
 
@@ -33,7 +34,7 @@ export async function enrichMetricsWithHistory(data: any, district?: string) {
         if (hist) {
             const histBudget = hist.budget * 1000000;
             const histActual = hist.actual * 1000000;
-            if (data.budget < histBudget * 0.5 || data.actual < histActual * 0.5) {
+            if (data.budget < histBudget * 0.85 || data.actual < histActual * 0.85) {
                 return {
                     ...data,
                     budget: histBudget,
@@ -52,7 +53,7 @@ export async function enrichMetricsWithHistory(data: any, district?: string) {
             if (hist) {
                 const histBudget = hist.budget * 1000000;
                 const histActual = hist.actual * 1000000;
-                if (item.budget < histBudget * 0.5 || item.actual < histActual * 0.5) {
+                if (item.budget < histBudget * 0.85 || item.actual < histActual * 0.85) {
                     return {
                         ...item,
                         budget: histBudget,
@@ -263,13 +264,18 @@ export async function getChapterDetails(district: string, chapter: string) {
     const filtered = district === 'Berlin' ? data : data.filter(r => r.district === district);
     const chapterData = filtered.filter(r => r.chapter === chapter && r.year >= 2024);
 
-    return chapterData
-        .sort((a, b) => b.budget - a.budget)
-        .map(r => ({
-            title: r.title_code,
-            budget: r.budget,
-            actual: r.actual
-        }));
+    const byTitle: Record<string, { title: string, budget: number, actual: number }> = {};
+    chapterData.forEach(r => {
+        const titleName = getTitleName(r.title_code);
+        if (!byTitle[titleName]) {
+            byTitle[titleName] = { title: titleName, budget: 0, actual: 0 };
+        }
+        byTitle[titleName].budget += r.budget;
+        byTitle[titleName].actual += r.actual;
+    });
+
+    return Object.values(byTitle)
+        .sort((a, b) => b.budget - a.budget);
 }
 
 export async function getTimelineData(district: string) {
@@ -289,7 +295,7 @@ export async function getTimelineData(district: string) {
             const budgetVal = h.budget * 1000000;
             const actualVal = h.actual * 1000000;
 
-            if (!byYear[h.year] || byYear[h.year].budget < budgetVal * 0.5) {
+            if (!byYear[h.year] || byYear[h.year].budget < budgetVal * 0.85) {
                 byYear[h.year] = { budget: budgetVal, actual: actualVal };
             }
         });
@@ -301,8 +307,9 @@ export async function getTimelineData(district: string) {
         actual: byYear[parseInt(yearStr)].actual
     })).sort((a, b) => a.year - b.year);
 }
+
 export async function getLastSyncTime() {
-    const filePath = path.join(PROCESSED_DIR, 'budget_data.json');
+    const filePath = path.join(PROCESSED_DIR, 'financial_data.json');
     if (!fs.existsSync(filePath)) return null;
     const stats = fs.statSync(filePath);
     return stats.mtime;

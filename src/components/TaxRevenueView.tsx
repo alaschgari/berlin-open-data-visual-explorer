@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Text } from 'recharts';
 import { Building2, Landmark, LayoutGrid, Info, X } from 'lucide-react';
 import { getTaxDescription } from '@/lib/tax-descriptions';
 import { useLanguage } from './LanguageContext';
@@ -186,19 +186,37 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Top Sources Bar Chart */}
-                <div className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 shadow-inner">
+                <div className="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 shadow-inner">
                     <h2 className="text-xl font-bold text-slate-100 mb-6">Top 10 Einnahmequellen</h2>
                     <div className="h-[400px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={activeMetrics.topSources} layout="vertical" margin={{ left: 100, right: 30 }}>
-                                <XAxis type="number" hide />
+                            <BarChart
+                                key={`chart-${viewMode}`}
+                                data={activeMetrics.topSources.filter(s => s.monthlyAmount > 0)}
+                                layout="vertical"
+                                margin={{ left: 0, right: 30, top: 0, bottom: 0 }}
+                            >
+                                <XAxis type="number" hide domain={[0, 'auto']} />
                                 <YAxis
                                     dataKey="type"
                                     type="category"
-                                    width={100}
-                                    tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }}
+                                    width={140}
+                                    tick={(props: any) => (
+                                        <Text
+                                            {...props}
+                                            width={130}
+                                            fontSize={10}
+                                            fontWeight={600}
+                                            fill="#94a3b8"
+                                            verticalAnchor="middle"
+                                            textAnchor="end"
+                                        >
+                                            {props.payload.value}
+                                        </Text>
+                                    )}
                                     axisLine={false}
                                     tickLine={false}
+                                    interval={0}
                                 />
                                 <Tooltip
                                     cursor={{ fill: 'transparent' }}
@@ -233,7 +251,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                 </div>
 
                 {/* Category Breakdown Pie Chart */}
-                <div className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 shadow-inner flex flex-col">
+                <div className="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 shadow-inner flex flex-col">
                     <h2 className="text-xl font-bold text-slate-100 mb-6">{language === 'de' ? 'Verteilung' : 'Distribution'}</h2>
                     <div className="flex-1 flex items-center justify-center min-h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
@@ -246,9 +264,10 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                                     outerRadius={120}
                                     paddingAngle={5}
                                     dataKey="value"
+                                    stroke="none"
                                 >
                                     {activeMetrics.byCategory.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
                                     ))}
                                 </Pie>
                                 <Tooltip
@@ -282,7 +301,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
             </div>
 
             {/* Detailed Table */}
-            <div className="bg-slate-800/50 rounded-3xl border border-white/5 overflow-hidden">
+            <div className="bg-slate-800/50 rounded-3xl border border-slate-700/50 overflow-hidden">
                 <div className="p-6 border-b border-slate-700/50 flex justify-between items-center">
                     <h2 className="text-lg font-bold text-slate-100">{language === 'de' ? 'Detailansicht' : 'Detailed View'}: {viewMode === 'all' ? (language === 'de' ? 'Alle Steuern' : 'All Taxes') : viewMode === 'land' ? (language === 'de' ? 'Staatsebene (Land)' : 'State Level') : (language === 'de' ? 'Stadtebene (Gemeinde)' : 'Local Level')}</h2>
                 </div>

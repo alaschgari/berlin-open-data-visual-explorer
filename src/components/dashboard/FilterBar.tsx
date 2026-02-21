@@ -47,12 +47,12 @@ export function FilterBar({ years, districts }: FilterBarProps) {
     };
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow border border-slate-200 mb-6 flex flex-wrap gap-4 items-center">
+        <div className="bg-slate-900/50 p-6 rounded-2xl shadow-xl border border-slate-800 mb-8 flex flex-wrap gap-6 items-end backdrop-blur-md">
             <div>
-                <label htmlFor="metric-select" className="block text-sm font-medium text-slate-700 mb-1">Ansicht</label>
+                <label htmlFor="metric-select" className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Ansicht</label>
                 <select
                     id="metric-select"
-                    className="block w-full rounded-md border-slate-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm border"
+                    className="block w-full bg-slate-800 border-slate-700 rounded-xl py-2 pl-3 pr-10 text-sm text-slate-200 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all border font-medium"
                     defaultValue={searchParams.get('metric') || 'nominal'}
                     onChange={handleMetricChange}
                 >
@@ -62,10 +62,10 @@ export function FilterBar({ years, districts }: FilterBarProps) {
                 </select>
             </div>
             <div>
-                <label htmlFor="district-select" className="block text-sm font-medium text-slate-700 mb-1">Bezirk</label>
+                <label htmlFor="district-select" className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Bezirk</label>
                 <select
                     id="district-select"
-                    className="block w-full rounded-md border-slate-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm border"
+                    className="block w-full bg-slate-800 border-slate-700 rounded-xl py-2 pl-3 pr-10 text-sm text-slate-200 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all border font-medium"
                     defaultValue={searchParams.get('district') || 'All'}
                     onChange={handleDistrictChange}
                 >
@@ -79,10 +79,10 @@ export function FilterBar({ years, districts }: FilterBarProps) {
             </div>
 
             <div>
-                <label htmlFor="year-select" className="block text-sm font-medium text-slate-700 mb-1">Jahr</label>
+                <label htmlFor="year-select" className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Jahr</label>
                 <select
                     id="year-select"
-                    className="block w-full rounded-md border-slate-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm border"
+                    className="block w-full bg-slate-800 border-slate-700 rounded-xl py-2 pl-3 pr-10 text-sm text-slate-200 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all border font-medium"
                     defaultValue={searchParams.get('year') || ''}
                     onChange={handleYearChange}
                 >
@@ -96,13 +96,13 @@ export function FilterBar({ years, districts }: FilterBarProps) {
             </div>
 
             <form onSubmit={handleSearchSubmit} className="flex-1">
-                <label htmlFor="search-input" className="block text-sm font-medium text-slate-700 mb-1">Suchbegriffe</label>
+                <label htmlFor="search-input" className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Suchbegriffe</label>
                 <div className="relative">
                     <input
                         type="text"
                         name="search"
                         id="search-input"
-                        className="block w-full rounded-md border-slate-300 py-2 pl-3 pr-10 text-base border focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        className="block w-full bg-slate-800 border-slate-700 rounded-xl py-2 pl-3 pr-10 text-sm text-slate-200 border focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium"
                         placeholder="Nach Haushaltstiteln suchen..."
                         defaultValue={searchParams.get('search') || ''}
                     />

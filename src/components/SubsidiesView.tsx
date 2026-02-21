@@ -482,12 +482,12 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
             {/* Compact Summary Bar (Stats & Meta combined) */}
-            <div className="bg-slate-800/40 px-6 py-4 rounded-3xl border border-slate-700/50 flex flex-wrap items-center justify-between gap-6 backdrop-blur-md shadow-xl">
-                <div className="flex items-center gap-8">
+            <div className="bg-slate-800/40 px-4 sm:px-6 py-4 rounded-3xl border border-slate-700/50 flex flex-wrap items-center justify-between gap-4 sm:gap-6 backdrop-blur-md shadow-xl">
+                <div className="grid grid-cols-2 gap-4 sm:flex sm:items-center sm:gap-8 w-full sm:w-auto">
                     <div className="flex flex-col">
                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">{t('total_volume')}</span>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-black text-emerald-400 tracking-tighter">
+                            <span className="text-xl sm:text-2xl font-black text-emerald-400 tracking-tighter">
                                 {(Number(activeMetrics?.totalAmount || metrics?.totalAmount || 0) / 1000000).toLocaleString(locale, { maximumFractionDigits: 1 })}
                             </span>
                             <span className="text-xs font-bold text-emerald-500/60 uppercase">{t('mio_euro')}</span>
@@ -496,34 +496,34 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                     <div className="w-px h-10 bg-slate-700/50 hidden sm:block"></div>
                     <div className="flex flex-col">
                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">{t('count_subsidies')}</span>
-                        <span className="text-2xl font-black text-blue-400 tracking-tighter">
+                        <span className="text-xl sm:text-2xl font-black text-blue-400 tracking-tighter">
                             {Number(activeMetrics?.totalCount || metrics?.totalCount || 0).toLocaleString(locale)}
                         </span>
                     </div>
                     <div className="w-px h-10 bg-slate-700/50 hidden lg:block"></div>
                     <div className="flex flex-col">
                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">{t('count_recipients')}</span>
-                        <span className="text-2xl font-black text-purple-400 tracking-tighter">
+                        <span className="text-xl sm:text-2xl font-black text-purple-400 tracking-tighter">
                             {Number(activeMetrics?.recipientCount || metrics?.recipientCount || 0).toLocaleString(locale)}
                         </span>
                     </div>
                     <div className="w-px h-10 bg-slate-700/50 hidden lg:block"></div>
                     <div className="flex flex-col">
                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">{t('count_providers')}</span>
-                        <span className="text-2xl font-black text-amber-400 tracking-tighter">
+                        <span className="text-xl sm:text-2xl font-black text-amber-400 tracking-tighter">
                             {Number(activeMetrics?.providerCount || metrics?.providerCount || 0).toLocaleString(locale)}
                         </span>
                     </div>
                     <div className="w-px h-10 bg-slate-700/50 hidden lg:block"></div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col col-span-2 sm:col-span-1">
                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">{t('time_period')}</span>
-                        <span className="text-2xl font-black text-slate-300 tracking-tighter">
+                        <span className="text-xl sm:text-2xl font-black text-slate-300 tracking-tighter">
                             {(activeMetrics || metrics)?.minYear} — {(activeMetrics || metrics)?.maxYear}
                         </span>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
                     <a
                         href="https://www.berlin.de/sen/finanzen/service/zuwendungsdatenbank/"
                         target="_blank"
@@ -538,7 +538,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                         </svg>
                     </a>
                     <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/5 rounded-lg border border-emerald-500/10">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
                         <span className="text-[9px] font-bold text-emerald-500/70 uppercase tracking-widest leading-none">
                             {t('stand')}: 08.02.2026
                         </span>
@@ -548,7 +548,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Column 1: Top Recipients */}
-                <div className="bg-slate-800/50 p-6 rounded-3xl border border-slate-700 shadow-inner flex flex-col h-[600px]">
+                <div className="bg-slate-800/50 p-4 sm:p-6 rounded-3xl border border-slate-700 shadow-inner flex flex-col h-[400px] lg:h-[600px]">
                     <div className="flex items-center justify-between mb-5 gap-4">
                         <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">{t('top_recipients')}</h2>
                         <div className="relative flex-1 max-w-[180px]">

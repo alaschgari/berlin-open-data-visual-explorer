@@ -18,8 +18,8 @@ export function SocialCorrelationChart({ data, year }: SocialCorrelationChartPro
     const yearLabel = year || 'Alle Jahre';
 
     return (
-        <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Korrelation: Budget vs. Arbeitslosigkeit ({yearLabel})</h3>
+        <div className="bg-slate-900/50 rounded-2xl shadow-xl p-6 border border-slate-800">
+            <h3 className="text-lg font-semibold text-slate-100 mb-4">Korrelation: Budget vs. Arbeitslosigkeit ({yearLabel})</h3>
             <p className="text-sm text-slate-500 mb-6">
                 Gibt ein Bezirk mehr Geld aus, wo der soziale Bedarf (gemessen an Arbeitslosigkeit) höher ist?
             </p>
@@ -40,7 +40,7 @@ export function SocialCorrelationChart({ data, year }: SocialCorrelationChartPro
                             if (active && payload && payload.length) {
                                 const data = payload[0].payload;
                                 return (
-                                    <div className="bg-white p-2 border border-slate-200 shadow rounded">
+                                    <div className="bg-slate-900 border border-slate-700 shadow-2xl p-3 rounded-xl">
                                         <p className="font-bold">{data.district}</p>
                                         <p>Arbeitslosigkeit: {data.unemploymentRate}%</p>
                                         <p>Ausgaben ({yearLabel}): €{data.spendingPerCapita}</p>

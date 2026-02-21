@@ -33,6 +33,24 @@ const translations: Translations = {
     'tab_badestellen': { de: 'Badestellen', en: 'Swimming Spots' },
     'tab_traffic': { de: 'Verkehr', en: 'Traffic' },
 
+    // Hub
+    'hub_title': { de: 'Berlin Open Data', en: 'Berlin Open Data' },
+    'hub_subtitle': { de: 'Analysieren und verstehen Sie die Daten der Hauptstadt in Echtzeit.', en: 'Analyze and understand the capital\'s data in real-time.' },
+    'hub_search_placeholder': { de: 'Nach Modulen oder Themen suchen...', en: 'Search for modules or topics...' },
+    'hub_highlight_tag': { de: 'Im Fokus', en: 'In Focus' },
+    'back_to_hub': { de: 'Zurück zur Übersicht', en: 'Back to Overview' },
+
+    'desc_subsidies': { de: 'Förderungen und Zuschüsse des Landes.', en: 'Funding and grants from the state.' },
+    'desc_taxes': { de: 'Steuereinnahmen und -entwicklung.', en: 'Tax revenue and development.' },
+    'desc_budget': { de: 'Verteilung und Planung der Haushaltsgelder.', en: 'Distribution and planning of budget funds.' },
+    'desc_theft': { de: 'Hotspots und Statistiken zum Fahrraddiebstahl.', en: 'Hotspots and statistics for bicycle theft.' },
+    'desc_demographics': { de: 'Einwohnerdichte, Alter und Struktur.', en: 'Population density, age and structure.' },
+    'desc_badestellen': { de: 'Wasserqualität der lokalen Gewässer.', en: 'Water quality of local waters.' },
+    'desc_business': { de: 'Lokales Gewerbe und Betriebsstruktur.', en: 'Local business and company structure.' },
+    'desc_wastewater': { de: 'Abwasserbelastung und Gesundheitsdaten.', en: 'Wastewater pollution and health data.' },
+    'desc_traffic': { de: 'Verkehrsaufkommen und -analysen.', en: 'Traffic volume and analyses.' },
+    'desc_markets': { de: 'Standorte der Berliner Wochenmärkte.', en: 'Locations of Berlin\'s weekly markets.' },
+
     // Selectors
     'all_districts': { de: 'Alle Bezirke', en: 'All Districts' },
 
@@ -175,6 +193,7 @@ const translations: Translations = {
     'swim_eco': { de: 'E. coli', en: 'E. coli' },
     'swim_ente': { de: 'Enterokokken', en: 'Enterococci' },
     'swim_view_details': { de: 'Profil & Details', en: 'Profile & Details' },
+    'swim_table_title': { de: 'Live-Daten Übersicht', en: 'Live Data Overview' },
     'swim_status_green': { de: 'Baden erlaubt', en: 'Swimming allowed' },
     'swim_status_yellow': { de: 'Warnung', en: 'Warning' },
     'swim_status_red': { de: 'Badeverbot', en: 'No swimming' },

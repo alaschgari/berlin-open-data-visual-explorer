@@ -13,8 +13,8 @@ interface ExpensesChartProps {
 
 export function ExpensesChart({ data }: ExpensesChartProps) {
     return (
-        <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Budgetentwicklung über die Jahre</h3>
+        <div className="bg-slate-900/50 rounded-2xl shadow-xl p-6 border border-slate-800">
+            <h3 className="text-lg font-semibold text-slate-100 mb-4">Budgetentwicklung über die Jahre</h3>
             <div className="h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart

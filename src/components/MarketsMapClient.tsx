@@ -100,14 +100,31 @@ const MarketPopupContent = ({ market, t }: { market: MarketFeature; t: (key: str
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 mb-4">
-                <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50">
+            <div className="grid grid-cols-2 gap-2 mb-4 items-start">
+                <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 flex flex-col min-h-full">
                     <span className="text-[9px] text-slate-500 uppercase font-black tracking-widest block mb-1 opacity-80">{t('markets_days')}</span>
-                    <span className="text-sm font-bold text-white">{d.tage}</span>
+                    <span className="text-sm font-bold text-white leading-tight">{d.tage}</span>
                 </div>
-                <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50">
-                    <span className="text-[9px] text-slate-500 uppercase font-black tracking-widest block mb-1 opacity-80">{t('markets_times')}</span>
-                    <span className="text-sm font-bold text-white">{d.zeiten}</span>
+                <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 flex flex-col min-h-full">
+                    <span className="text-[9px] text-slate-500 uppercase font-black tracking-widest block mb-2 opacity-80">{t('markets_times')}</span>
+                    <div className="flex flex-col gap-1.5 min-h-0 flex-1">
+                        {d.zeiten.split('\n').map(l => l.trim()).filter(Boolean).map((line, i) => {
+                            const isClosed = line.toLowerCase().includes('geschloss');
+                            return (
+                                <div key={i} className={`flex items-start gap-1.5 p-1.5 rounded border leading-tight ${isClosed
+                                    ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                                    : 'bg-slate-900/50 border-slate-700/50 text-slate-300'
+                                    }`}>
+                                    {isClosed ? (
+                                        <X className="w-3 h-3 shrink-0 mt-[2px] opacity-80" />
+                                    ) : (
+                                        <Clock className="w-3 h-3 shrink-0 mt-[2px] opacity-80" />
+                                    )}
+                                    <span className={`text-[11px] break-words flex-1 ${isClosed ? 'font-medium' : 'font-bold'}`}>{line}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 
@@ -345,20 +362,41 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">
                                             {d.bezirk}
                                         </p>
-                                        <div className="flex flex-wrap gap-1.5">
-                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-800/60 rounded-md border border-slate-700/50 text-[10px] font-bold text-slate-400">
-                                                <Calendar className="w-2.5 h-2.5" />
-                                                {d.tage}
-                                            </span>
-                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-800/60 rounded-md border border-slate-700/50 text-[10px] font-bold text-slate-400">
-                                                <Clock className="w-2.5 h-2.5" />
-                                                {d.zeiten}
-                                            </span>
-                                            {d.barrierefreiheit === 'Ja' && (
-                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 rounded-md border border-emerald-500/30 text-[10px] font-bold text-emerald-400">
-                                                    <Accessibility className="w-2.5 h-2.5" />
-                                                    ✓
+                                        <div className="flex flex-col gap-2">
+                                            <div className="flex flex-wrap gap-1.5">
+                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-800/60 rounded-md border border-slate-700/50 text-[10px] font-bold text-slate-400">
+                                                    <Calendar className="w-2.5 h-2.5" />
+                                                    {d.tage}
                                                 </span>
+                                                {d.barrierefreiheit === 'Ja' && (
+                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 rounded-md border border-emerald-500/30 text-[10px] font-bold text-emerald-400">
+                                                        <Accessibility className="w-2.5 h-2.5" />
+                                                        ✓
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {d.zeiten && (
+                                                <div className="flex flex-col gap-1 mt-1 items-start">
+                                                    {d.zeiten.split('\n').map(l => l.trim()).filter(Boolean).map((line, i) => {
+                                                        const isClosed = line.toLowerCase().includes('geschloss');
+                                                        return (
+                                                            <div key={i} className={`flex items-start gap-1.5 px-2 py-1.5 rounded-md border w-fit ${isClosed
+                                                                    ? 'bg-rose-500/10 border-rose-500/20'
+                                                                    : 'bg-slate-800/30 border-slate-700/40'
+                                                                }`}>
+                                                                {isClosed ? (
+                                                                    <X className="w-3 h-3 mt-[2px] shrink-0 text-rose-400/80" />
+                                                                ) : (
+                                                                    <Clock className="w-3 h-3 mt-[2px] shrink-0 text-slate-400" />
+                                                                )}
+                                                                <span className={`leading-[1.3] break-words ${isClosed
+                                                                        ? 'font-medium text-rose-400/90 text-[10px]'
+                                                                        : 'font-bold text-slate-300 text-[10px]'
+                                                                    }`}>{line}</span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
                                             )}
                                         </div>
                                     </div>

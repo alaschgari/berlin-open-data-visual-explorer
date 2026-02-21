@@ -5,12 +5,12 @@ export default function DemoFeatures() {
     return (
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Beneficiaries */}
-            <div className="bg-white p-6 rounded-lg shadow border border-slate-200 opacity-90">
+            <div className="bg-slate-900/50 p-6 rounded-2xl shadow-xl border border-slate-800 backdrop-blur-md">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                    <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg">
                         <Users className="w-5 h-5" />
                     </div>
-                    <h3 className="font-semibold text-slate-900">Zuwendungsempfänger</h3>
+                    <h3 className="font-semibold text-slate-100 uppercase tracking-tight">Zuwendungsempfänger</h3>
                 </div>
                 <ul className="space-y-3">
                     <li className="flex justify-between text-sm">
@@ -30,16 +30,16 @@ export default function DemoFeatures() {
             </div>
 
             {/* Investments */}
-            <div className="bg-white p-6 rounded-lg shadow border border-slate-200 opacity-90">
+            <div className="bg-slate-900/50 p-6 rounded-2xl shadow-xl border border-slate-800 backdrop-blur-md">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-amber-100 text-amber-600 rounded-lg">
+                    <div className="p-2 bg-amber-500/10 text-amber-400 rounded-lg">
                         <Building className="w-5 h-5" />
                     </div>
-                    <h3 className="font-semibold text-slate-900">Investitionsplanung</h3>
+                    <h3 className="font-semibold text-slate-100 uppercase tracking-tight">Investitionsplanung</h3>
                 </div>
                 <div className="space-y-4">
                     <div className="border-l-2 border-green-500 pl-3">
-                        <p className="text-sm font-medium text-slate-900">Sanierung Rathaus</p>
+                        <p className="text-sm font-medium text-slate-100">Sanierung Rathaus</p>
                         <p className="text-xs text-slate-500">2023-2025 • €4.5M Total</p>
                     </div>
                     <div className="border-l-2 border-blue-500 pl-3">
@@ -51,12 +51,12 @@ export default function DemoFeatures() {
             </div>
 
             {/* Personnel */}
-            <div className="bg-white p-6 rounded-lg shadow border border-slate-200 opacity-90">
+            <div className="bg-slate-900/50 p-6 rounded-2xl shadow-xl border border-slate-800 backdrop-blur-md">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                    <div className="p-2 bg-purple-500/10 text-purple-400 rounded-lg">
                         <Briefcase className="w-5 h-5" />
                     </div>
-                    <h3 className="font-semibold text-slate-900">Stellenplan (VZÄ)</h3>
+                    <h3 className="font-semibold text-slate-100 uppercase tracking-tight">Stellenplan (VZÄ)</h3>
                 </div>
                 <div className="flex items-end gap-2 h-32 mt-2">
                     {[2020, 2021, 2022, 2023, 2024].map((y, i) => (
@@ -65,7 +65,7 @@ export default function DemoFeatures() {
                                 className="w-full bg-purple-200 rounded-t-sm hover:bg-purple-300 transition-all relative"
                                 style={{ height: `${40 + i * 10}%` }}
                             >
-                                <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity">
                                     {1400 + i * 50}
                                 </span>
                             </div>

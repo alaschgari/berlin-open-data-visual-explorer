@@ -5,7 +5,7 @@ import { getChapterDetails } from '@/lib/proxy';
 
 interface Chapter {
     name: string;
-    amount: number;
+    value: number;
 }
 
 interface Detail {
@@ -54,7 +54,7 @@ export default function BudgetChapters({ initialChapters, district }: { initialC
                                 : chapter.name}
                         </span>
                         <span className="text-slate-100 font-bold whitespace-nowrap">
-                            {(chapter.amount / 1000000).toFixed(0)} Mio.
+                            {((chapter.value || 0) / 1000000).toFixed(0)} Mio.
                         </span>
                     </button>
                     <div
@@ -62,7 +62,7 @@ export default function BudgetChapters({ initialChapters, district }: { initialC
                         onClick={() => toggleChapter(chapter.name)}
                     >
                         <div
-                            style={{ width: `${(chapter.amount / initialChapters[0].amount) * 100}%` }}
+                            style={{ width: `${initialChapters[0]?.value ? ((chapter.value || 0) / initialChapters[0].value) * 100 : 0}%` }}
                             className="bg-emerald-500 h-full group-hover:bg-emerald-400 transition-all rounded-full"
                         />
                     </div>
@@ -80,7 +80,7 @@ export default function BudgetChapters({ initialChapters, district }: { initialC
                                     <div className="w-full bg-slate-800 h-0.5 rounded-full">
                                         <div
                                             className="bg-blue-500/50 h-full rounded-full"
-                                            style={{ width: `${Math.min(100, (detail.budget / chapter.amount) * 100)}%` }}
+                                            style={{ width: `${chapter.value ? Math.min(100, (detail.budget / chapter.value) * 100) : 0}%` }}
                                         />
                                     </div>
                                 </div>

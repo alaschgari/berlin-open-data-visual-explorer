@@ -16,8 +16,9 @@ import WastewaterView from '@/components/WastewaterView';
 import BadestellenWrapper from '@/components/BadestellenWrapper';
 import TrafficView from '@/components/TrafficView';
 import MarketsMapWrapper from '@/components/MarketsMapWrapper';
+import HubView from '@/components/HubView';
 import { WastewaterRecord } from '@/lib/wastewater';
-import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets, ShoppingBag } from 'lucide-react';
+import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets, ShoppingBag, LayoutGrid } from 'lucide-react';
 
 import { SubsidyMetrics } from '@/lib/subsidies-proxy';
 import { SubsidyRecord } from '@/lib/parser';
@@ -25,7 +26,7 @@ import { TaxMetrics } from '@/lib/taxes';
 
 interface DashboardClientProps {
     district: string;
-    activeTab: 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets';
+    activeTab: 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets';
     budgetMode: 'historic' | 'explorer';
     lastSync: Date | null;
     districts: string[];
@@ -53,7 +54,7 @@ interface DashboardClientProps {
     wastewaterData: WastewaterRecord[];
 }
 
-type TabType = 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets';
+type TabType = 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets';
 
 interface NavItem {
     id: TabType;
@@ -108,85 +109,31 @@ export default function DashboardClient({
                             <h1 className="text-2xl font-black bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent tracking-tight leading-none mb-1.5">
                                 {t('brand_name')}
                             </h1>
-                            <div className="flex items-center gap-3">
-                                <p className="text-slate-500 font-bold text-[10px] uppercase tracking-wider">{t('brand_sub')}</p>
-                                {lastSync && (
-                                    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                                        <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></div>
-                                        <span className="text-[9px] font-bold text-emerald-500/80 uppercase tracking-widest whitespace-nowrap">
-                                            {t('last_sync')}: {lastSync.toLocaleString(t('locale') === 'DE' ? 'de-DE' : 'en-GB', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
+                            <p className="text-slate-500 font-bold text-[10px] uppercase tracking-wider">{t('brand_sub')}</p>
                         </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4 items-center">
+                    <div className="flex flex-wrap gap-3 items-center justify-end">
                         <LanguageToggle />
 
                         <div className="h-8 w-px bg-slate-700/50 hidden sm:block"></div>
 
-                        {/* Scalable Tab Switcher */}
-                        <div className="flex items-center gap-2">
-                            <div className="bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 flex shadow-inner max-w-[300px] md:max-w-none" role="tablist" aria-label={t('nav_more')}>
-                                {NAV_ITEMS.filter(item => item.priority <= 4).map((item) => (
-                                    <Link
-                                        key={item.id}
-                                        href={`/?tab=${item.id}&district=${district}`}
-                                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === item.id ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}`}
-                                        role="tab"
-                                        aria-selected={activeTab === item.id}
-                                        aria-current={activeTab === item.id ? 'page' : undefined}
-                                    >
-                                        {item.icon}
-                                        {t(item.labelKey)}
-                                    </Link>
-                                ))}
-                            </div>
-
-                            {/* Dropdown for More Items */}
-                            <div className="relative group">
-                                <button
-                                    className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all text-xs font-bold ${NAV_ITEMS.some(item => item.id === activeTab && item.priority > 4) ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' : 'bg-slate-900/60 border-slate-700/50 text-slate-400 hover:text-white'}`}
-                                    aria-haspopup="true"
-                                    aria-label={t('nav_more')}
+                        {activeTab !== 'hub' && (
+                            <>
+                                <Link
+                                    href={`/?tab=hub&district=${district}`}
+                                    className="flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl border border-slate-700/50 hover:border-slate-600 transition-all font-bold text-xs shadow-inner w-full sm:w-auto"
                                 >
-                                    <ChevronDown className="w-4 h-4" />
-                                    <span>{t('nav_more')}</span>
-                                </button>
+                                    <LayoutGrid className="w-4 h-4" />
+                                    <span>{t('back_to_hub')}</span>
+                                </Link>
+                                <div className="h-8 w-px bg-slate-700/50 hidden sm:block"></div>
+                            </>
+                        )}
 
-                                {/* Premium Dropdown Menu */}
-                                <div className="absolute right-0 top-full mt-2 w-56 bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl py-2 z-[9999] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right group-hover:scale-100 scale-95 p-2 space-y-1">
-                                    {['society', 'infrastructure'].map((cat) => (
-                                        <div key={cat} className="space-y-1">
-                                            <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center justify-between">
-                                                <span>{t(`cat_${cat}`)}</span>
-                                                <div className="h-px flex-1 bg-slate-800 ml-3"></div>
-                                            </div>
-                                            {NAV_ITEMS.filter(item => item.category === cat && item.priority > 4).map((item) => (
-                                                <Link
-                                                    key={item.id}
-                                                    href={`/?tab=${item.id}&district=${district}`}
-                                                    className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === item.id ? 'bg-emerald-500/20 text-emerald-400' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}`}
-                                                    role="menuitem"
-                                                    aria-current={activeTab === item.id ? 'page' : undefined}
-                                                >
-                                                    <div className={`p-1.5 rounded-lg ${activeTab === item.id ? 'bg-emerald-500 text-slate-900' : 'bg-slate-800 text-slate-400'}`}>
-                                                        {item.icon}
-                                                    </div>
-                                                    {t(item.labelKey)}
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                        <div className="w-full sm:w-auto">
+                            <DistrictSelector currentDistrict={district} districts={districts} activeTab={activeTab} />
                         </div>
-
-                        <div className="h-8 w-px bg-slate-700/50 hidden sm:block"></div>
-
-                        <DistrictSelector currentDistrict={district} districts={districts} activeTab={activeTab} />
                     </div>
                 </header>
 
@@ -235,23 +182,25 @@ export default function DashboardClient({
                     ) : activeTab === 'theft' ? (
                         <BicycleTheftMap district={district} />
                     ) : activeTab === 'demographics' ? (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                            <PopulationMapWrapper district={district} />
-                        </div>
+                        <PopulationMapWrapper district={district} />
                     ) : activeTab === 'business' ? (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                            <BusinessMapWrapper district={district} />
-                        </div>
+                        <BusinessMapWrapper district={district} />
                     ) : activeTab === 'wastewater' ? (
                         <WastewaterView data={wastewaterData} />
                     ) : activeTab === 'traffic' ? (
                         <TrafficView district={district} />
                     ) : activeTab === 'markets' ? (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                            <MarketsMapWrapper district={district} />
-                        </div>
-                    ) : (
+                        <MarketsMapWrapper district={district} />
+                    ) : activeTab === 'badestellen' ? (
                         <BadestellenWrapper district={district} />
+                    ) : (
+                        <HubView
+                            district={district}
+                            navItems={NAV_ITEMS}
+                            budgetVolume={enrichedData?.budget}
+                            subsidiesCount={initialSubsidiesMetrics?.totalCount}
+                            taxRevenue={taxMetrics?.totalMonthly}
+                        />
                     )
                 }
             </div>

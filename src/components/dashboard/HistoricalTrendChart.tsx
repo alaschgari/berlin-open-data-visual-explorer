@@ -15,8 +15,8 @@ interface HistoricalTrendChartProps {
 
 export function HistoricalTrendChart({ data }: HistoricalTrendChartProps) {
     return (
-        <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Langzeittrend (2010 - Heute)</h3>
+        <div className="bg-slate-900/50 rounded-2xl shadow-xl p-6 border border-slate-800">
+            <h3 className="text-lg font-semibold text-slate-100 mb-4">Langzeittrend (2010 - Heute)</h3>
             <p className="text-sm text-slate-500 mb-6">
                 Entwicklung des Berliner Haushalts über die letzten 15 Jahre (inkl. historischer Daten aus PDF-Berichten).
             </p>

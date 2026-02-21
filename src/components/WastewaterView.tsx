@@ -167,7 +167,7 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
             {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Trend Chart */}
-                <div className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 shadow-inner">
+                <div className="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 shadow-inner">
                     <h2 className="text-xl font-bold text-slate-100 mb-2">Virenlast-Verlauf</h2>
                     <p className="text-slate-500 text-sm mb-8">Mittlere Konzentration (Kopien/ml)</p>
 
@@ -224,7 +224,7 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
                 </div>
 
                 {/* Metrics Chart */}
-                <div className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 shadow-inner">
+                <div className="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 shadow-inner">
                     <h2 className="text-xl font-bold text-slate-100 mb-2">Abwasser-Parameter</h2>
                     <p className="text-slate-500 text-sm mb-8">Einfluss von Durchflussmenge und Temperatur</p>
 
