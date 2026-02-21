@@ -1,36 +1,181 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏙️ Berlin Open Data – Visual Explorer
 
-## Getting Started
+> **🇩🇪 Deutsch** | [🇬🇧 English](#-berlin-open-data--visual-explorer-english)
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🇩🇪 Berlin Open Data – Visual Explorer (Deutsch)
+
+Ein interaktives Dashboard zur Visualisierung öffentlicher Berliner Daten. Die Anwendung aggregiert offizielle Datensätze des Landes Berlin und stellt sie übersichtlich, filterbar und zweisprachig (Deutsch/Englisch) dar.
+
+### ✨ Funktionen
+
+| Modul | Beschreibung |
+|---|---|
+| 🏦 **Haushalt** | Historische Haushalts­daten und Budgetvergleiche nach Bezirk und Kapitel |
+| 💰 **Subventionen** | Durchsuchbare Tabelle aller Berliner Fördermittel­empfänger |
+| 👥 **Demografie** | Bevölkerungskarte und Altersstruktur nach LOR-Planungsräumen |
+| 🚗 **Verkehr** | Aktuelle Verkehrs­belastung und historische Verläufe |
+| 🏪 **Gewerbedaten** | Unternehmens­karte mit Branchen­filter |
+| 💵 **Steuereinnahmen** | Entwicklung der Berliner Steuereinnahmen |
+| 🚰 **Abwasser** | Abwasser­kennzahlen im Zeitverlauf |
+| 🚲 **Fahrraddiebstahl** | Interaktive Karte der Fahrraddiebstähle nach Bezirk |
+| 🛒 **Wochenmärkte** | Karte aller Wochenmärkte in Berlin |
+| 🏊 **Badestellen** | Wasserqualität an Berliner Badestellen mit Live-Daten |
+
+### 🗂️ Projektstruktur
+
+```
+src/
+├── app/            # Next.js App Router (Seiten & API-Routen)
+├── components/     # React-Komponenten (Views, Karten, Charts)
+├── hooks/          # Custom React Hooks
+└── lib/            # Datenabruf, Parsing, Hilfsfunktionen
+
+data/
+└── processed/      # Vorverarbeitete JSON-Datensätze (lokal, nicht in Git)
+
+scripts/            # Datenpipeline-Skripte (Sync, Verarbeitung)
+public/             # Statische Assets und GeoJSON-Dateien
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🚀 Lokale Entwicklung
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Voraussetzungen:** Node.js ≥ 18, npm
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Repository klonen
+git clone https://github.com/alaschgari/berlin-open-data-visual-explorer.git
+cd berlin-open-data-visual-explorer
 
-## Learn More
+# Abhängigkeiten installieren
+npm install
 
-To learn more about Next.js, take a look at the following resources:
+# Entwicklungsserver starten
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Die App ist dann unter [http://localhost:3000](http://localhost:3000) erreichbar.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### ⚙️ Verfügbare Scripts
 
-## Deploy on Vercel
+| Befehl | Beschreibung |
+|---|---|
+| `npm run dev` | Entwicklungsserver starten |
+| `npm run build` | Produktions­build erstellen |
+| `npm run start` | Produktions­server starten |
+| `npm run lint` | Code-Analyse mit ESLint |
+| `npm run sync` | Berliner Open-Data-Quellen synchronisieren |
+| `npm run update-theft` | Fahrraddiebstahl-Daten aktualisieren |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 🌐 Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Das Projekt ist für **Vercel** optimiert. Einfach das Repository verbinden und Vercel erkennt Next.js automatisch.
+
+```bash
+# Oder via Vercel CLI:
+npx vercel
+```
+
+> ⚠️ **Umgebungsvariablen:** Alle Einträge aus `.env.local` müssen im Vercel-Dashboard unter *Settings → Environment Variables* hinterlegt werden.
+
+### 🛠️ Tech Stack
+
+- **Framework:** [Next.js 15](https://nextjs.org) (App Router, SSR)
+- **Sprache:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **Karten:** Leaflet / React-Leaflet
+- **Charts:** Recharts, D3.js
+- **Daten:** Berliner Open-Data-Portal, Live-APIs
+
+---
+
+---
+
+## 🇬🇧 Berlin Open Data – Visual Explorer (English)
+
+An interactive dashboard for visualising Berlin's public open data. The application aggregates official datasets from the Federal State of Berlin and presents them in a clear, filterable, and bilingual (German/English) interface.
+
+### ✨ Features
+
+| Module | Description |
+|---|---|
+| 🏦 **Budget** | Historical budget data and comparisons by district and chapter |
+| 💰 **Subsidies** | Searchable table of all Berlin subsidy recipients |
+| 👥 **Demographics** | Population map and age structure by LOR planning areas |
+| 🚗 **Traffic** | Current traffic load and historical trends |
+| 🏪 **Business** | Company map with industry filters |
+| 💵 **Tax Revenue** | Development of Berlin's tax revenues over time |
+| 🚰 **Wastewater** | Wastewater statistics over time |
+| 🚲 **Bicycle Theft** | Interactive map of bicycle thefts by district |
+| 🛒 **Markets** | Map of all weekly markets in Berlin |
+| 🏊 **Bathing Spots** | Water quality at Berlin bathing spots with live data |
+
+### 🗂️ Project Structure
+
+```
+src/
+├── app/            # Next.js App Router (pages & API routes)
+├── components/     # React components (views, maps, charts)
+├── hooks/          # Custom React hooks
+└── lib/            # Data fetching, parsing, utilities
+
+data/
+└── processed/      # Pre-processed JSON datasets (local, not in Git)
+
+scripts/            # Data pipeline scripts (sync, processing)
+public/             # Static assets and GeoJSON files
+```
+
+### 🚀 Local Development
+
+**Requirements:** Node.js ≥ 18, npm
+
+```bash
+# Clone the repository
+git clone https://github.com/alaschgari/berlin-open-data-visual-explorer.git
+cd berlin-open-data-visual-explorer
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+```
+
+The app will be available at [http://localhost:3000](http://localhost:3000).
+
+### ⚙️ Available Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start the development server |
+| `npm run build` | Create a production build |
+| `npm run start` | Start the production server |
+| `npm run lint` | Lint code with ESLint |
+| `npm run sync` | Sync Berlin open data sources |
+| `npm run update-theft` | Update bicycle theft data |
+
+### 🌐 Deployment
+
+The project is optimised for **Vercel**. Simply connect the repository and Vercel will automatically detect Next.js.
+
+```bash
+# Or via Vercel CLI:
+npx vercel
+```
+
+> ⚠️ **Environment Variables:** All entries from `.env.local` must be added in the Vercel dashboard under *Settings → Environment Variables*.
+
+### 🛠️ Tech Stack
+
+- **Framework:** [Next.js 15](https://nextjs.org) (App Router, SSR)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **Maps:** Leaflet / React-Leaflet
+- **Charts:** Recharts, D3.js
+- **Data:** Berlin Open Data Portal, live APIs
+
+### 📄 License
+
+This project uses publicly available data from the [Berlin Open Data Portal](https://daten.berlin.de). The source code is provided as-is for educational and civic purposes.
