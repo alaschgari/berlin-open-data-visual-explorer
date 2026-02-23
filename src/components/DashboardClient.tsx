@@ -143,20 +143,20 @@ export default function DashboardClient({
                             {/* Sub-Tabs for Budget */}
                             <div className="flex gap-4 border-b border-slate-700/50 pb-4" role="tablist" aria-label={t('tab_budget')}>
                                 <Link
-                                    href={`/?tab=budget&district=${district}&budgetMode=historic`}
-                                    className={`text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${budgetMode === 'historic' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-500 hover:text-white'}`}
-                                    role="tab"
-                                    aria-selected={budgetMode === 'historic'}
-                                >
-                                    {t('budget_mode_historic')}
-                                </Link>
-                                <Link
                                     href={`/?tab=budget&district=${district}&budgetMode=explorer`}
                                     className={`text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${budgetMode === 'explorer' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-500 hover:text-white'}`}
                                     role="tab"
                                     aria-selected={budgetMode === 'explorer'}
                                 >
                                     {t('budget_mode_explorer')}
+                                </Link>
+                                <Link
+                                    href={`/?tab=budget&district=${district}&budgetMode=historic`}
+                                    className={`text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${budgetMode === 'historic' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-500 hover:text-white'}`}
+                                    role="tab"
+                                    aria-selected={budgetMode === 'historic'}
+                                >
+                                    {t('budget_mode_historic')}
                                 </Link>
                             </div>
 

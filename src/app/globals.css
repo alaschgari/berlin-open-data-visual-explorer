@@ -32,11 +32,15 @@ body {
 
 /* Custom Leaflet Popup Theme */
 .leaflet-popup-content-wrapper {
-  background: transparent !important;
-  color: inherit !important;
-  box-shadow: none !important;
+  background: rgb(15, 23, 42) !important;
+  /* solid slate-900 */
+  color: #f1f5f9 !important;
+  /* slate-100 */
+  opacity: 1 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5) !important;
   padding: 0 !important;
-  border-radius: 1.5rem !important;
+  border-radius: 1.25rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .leaflet-popup-content {
@@ -72,6 +76,7 @@ body {
   .custom-badestellen-popup.leaflet-popup {
     margin-left: 0 !important;
   }
+
   .custom-badestellen-popup .leaflet-popup-content-wrapper {
     margin-top: 0 !important;
   }

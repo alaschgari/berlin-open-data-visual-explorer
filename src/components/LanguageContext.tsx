@@ -142,6 +142,16 @@ const translations: Translations = {
     'bn': { de: 'Mrd.', en: 'Bn' },
     'loading_map': { de: 'Lade Kartendaten...', en: 'Loading map data...' },
     'error_map': { de: 'Fehler beim Laden der Karte', en: 'Error loading map' },
+    'district_label': { de: 'Bezirk', en: 'District' },
+    'status_label': { de: 'Status', en: 'Status' },
+    'entries_label': { de: 'Einträge', en: 'entries' },
+    'yes': { de: 'Ja', en: 'Yes' },
+    'no': { de: 'Nein', en: 'No' },
+    'unknown': { de: 'Unbekannt', en: 'Unknown' },
+    'rank': { de: 'Rang', en: 'Rank' },
+    'value': { de: 'Wert', en: 'Value' },
+    'visualization': { de: 'Visualisierung', en: 'Visualization' },
+    'sorted_by': { de: 'Sortiert nach', en: 'Sorted by' },
 
     // Population / Demographics
     'pop_title': { de: 'Demografische Analyse', en: 'Demographic Analysis' },
@@ -153,6 +163,34 @@ const translations: Translations = {
     'pop_top_10': { de: 'Top 10 Planungsräume', en: 'Top 10 Planning Areas' },
     'pop_select_district': { de: 'Wähle einen Bezirk', en: 'Select a District' },
     'pop_click_info': { de: 'Klicke auf die Karte für Details', en: 'Click on map for details' },
+    'pop_kita': { de: 'Kita-Alter (1-6)', en: 'Preschool (1-6)' },
+    'pop_school': { de: 'Schulalter (6-15)', en: 'School (6-15)' },
+    'pop_seniors': { de: 'Senioren (65+)', en: 'Seniors (65+)' },
+    'pop_women_ratio': { de: 'Frauenanteil', en: 'Women share' },
+    'pop_men': { de: 'Männer', en: 'Men' },
+    'pop_women': { de: 'Frauen', en: 'Women' },
+    'pop_districts_loaded': { de: 'Planungsräume geladen', en: 'districts loaded' },
+    'pop_legend_vlow': { de: 'Sehr gering', en: 'Very Low' },
+    'pop_legend_low': { de: 'Gering', en: 'Low' },
+    'pop_legend_normal': { de: 'Normal', en: 'Moderate' },
+    'pop_legend_elevated': { de: 'Erhöht', en: 'Elevated' },
+    'pop_legend_high': { de: 'Hoch', en: 'High' },
+    'pop_legend_vhigh': { de: 'Sehr hoch', en: 'Very High' },
+    'pop_area': { de: 'Planungsraum', en: 'Area / District' },
+    'pop_source_note': {
+        de: 'Quelle: Einwohnerregister Berlin (EWR) am 31.12.2024. Geodaten: ODIS Berlin 2021.',
+        en: 'Source: Residents Register Berlin (EWR) as of 31.12.2024. Geo data: ODIS Berlin 2021.'
+    },
+    'pop_disclaimer': {
+        de: 'Hinweis: Die Daten spiegeln den amtlichen Stand zum Jahresende 2024 wider.',
+        en: 'Note: Data reflects official status as of end 2024.'
+    },
+    'pop_kiez_analysis': { de: 'Kiez-Analyse • Demografie', en: 'Neighborhood Analysis • Demographics' },
+    'pop_neighborhood_district': { de: 'Kiez / Planungsraum', en: 'Neighborhood / District' },
+    'pop_click_for_analysis': {
+        de: 'Klicke auf die Karte, um detaillierte demografische Analysen für einen Kiez zu erhalten.',
+        en: 'Click on the map to receive detailed demographic analyses for a neighborhood.'
+    },
 
     // Business
     'biz_title': { de: 'Unternehmens-Landschaft', en: 'Business Landscape' },
@@ -165,6 +203,46 @@ const translations: Translations = {
     'biz_companies': { de: 'Unternehmen', en: 'Companies' },
     'biz_employees': { de: 'Beschäftigte', en: 'Employees' },
     'biz_top_locs': { de: 'Top Standorte (LOR)', en: 'Top Locations (LOR)' },
+    'biz_industry': { de: 'Gewerbe', en: 'Business' },
+    'biz_hits': { de: 'Treffer', en: 'Hits' },
+    'biz_top_industry': { de: 'Top Branche', en: 'Top Industry' },
+    'biz_no_info': { de: 'Keine Angabe', en: 'No info' },
+    'biz_years_old': { de: 'Jahre alt', en: 'years old' },
+    'biz_stability_score': { de: 'Stabilitäts-Score', en: 'Stability Score' },
+    'biz_stability_high': { de: 'Hoch', en: 'High' },
+    'biz_stability_medium': { de: 'Mittel', en: 'Medium' },
+    'biz_stability_low': { de: 'Niedrig', en: 'Low' },
+    'biz_startup_hub': { de: 'Startup-Hub', en: 'Startup Hub' },
+    'biz_operations': { de: 'Betriebe', en: 'Operations' },
+    'biz_avg_age': { de: 'Ø Alter', en: 'Average Age' },
+    'biz_benchmark_vs': { de: 'Benchmark vs.', en: 'Benchmark vs.' },
+    'biz_hit_count': { de: 'Trefferanzahl', en: 'Number of hits' },
+    'biz_industry_count': { de: 'Anzahl Gewerbe', en: 'Number of businesses' },
+    'biz_postcode': { de: 'PLZ', en: 'Postcode' },
+    'biz_branch': { de: 'Branche', en: 'Industry' },
+    'biz_type': { de: 'Gewerbeart', en: 'Business Type' },
+    'biz_age': { de: 'Alter', en: 'Age' },
+    'biz_no_entries': { de: 'Keine passenden Einträge gefunden.', en: 'No matching entries found.' },
+    'biz_show_hits_limit': { de: 'Zeige die ersten 100 von {count} Treffern • Benutze die Suche zum Eingrenzen', en: 'Showing first 100 of {count} hits • Use search to narrow down' },
+    'biz_companies_count': { de: 'Unternehmen', en: 'Companies' },
+    'biz_retail': { de: 'Handel', en: 'Retail' },
+    'biz_all': { de: 'Alle', en: 'All' },
+    'biz_compare': { de: 'Vergleich', en: 'Compare' },
+    'biz_point_mode': { de: 'POI Modus (Punkte)', en: 'POI Mode (Points)' },
+    'biz_kiez_analysis': { de: 'Kiez-Analyse • Gewerbe', en: 'Neighborhood Analysis • Business' },
+    'biz_stability_label': { de: 'Stabilitäts-Score', en: 'Stability Score' },
+    'biz_startup_label': { de: 'Startup-Hub', en: 'Startup Hub' },
+    'biz_benchmark_label': { de: 'Benchmark vs.', en: 'Benchmark vs.' },
+    'biz_reset_filter': { de: 'Filter zurücksetzen', en: 'Reset Filter' },
+    'biz_maturity': { de: 'Marktreife (Mitarbeiter)', en: 'Market Maturity (Employees)' },
+    'biz_top_industries': { de: 'Top Branchen', en: 'Top Industries' },
+    'biz_explore_data': { de: 'Gewerbedaten erkunden', en: 'Explore business data' },
+    'biz_click_for_analysis': {
+        de: 'Klicke auf die Karte, um die wirtschaftliche Struktur eines Kiezes zu analysieren.',
+        en: 'Click on the map to analyze the economic structure of a neighborhood.'
+    },
+    'biz_show_on_map': { de: 'Auf ganzer Karte anzeigen', en: 'Show on map' },
+    'biz_source_label': { de: 'Quelle', en: 'Source' },
 
     // Taxes
     'tax_title': { de: 'Steuereinnahmen', en: 'Tax Revenue' },
@@ -182,6 +260,11 @@ const translations: Translations = {
     'theft_damage': { de: 'Schadenssumme', en: 'Total Damage' },
     'theft_heatmap': { de: 'Heatmap anzeigen', en: 'Show Heatmap' },
     'theft_latest': { de: 'Aktuelle Vorfälle', en: 'Latest Incidents' },
+    'theft_type_bicycle': { de: 'Fahrraddiebstahl', en: 'Bicycle Theft' },
+    'theft_type_car': { de: 'Kfz-Diebstahl', en: 'Car Theft' },
+    'theft_time': { de: 'Tatzeit', en: 'Time' },
+    'theft_type_label': { de: 'Typ', en: 'Type' },
+    'theft_detail_label': { de: 'Detail', en: 'Detail' },
 
     // Badestellen
     'swim_title': { de: 'Berliner Badegewässer', en: 'Berlin Bathing Waters' },
@@ -198,6 +281,10 @@ const translations: Translations = {
     'swim_status_yellow': { de: 'Warnung', en: 'Warning' },
     'swim_status_red': { de: 'Badeverbot', en: 'No swimming' },
     'swim_loading': { de: 'Rufe Live-Daten ab...', en: 'Fetching live data...' },
+    'swim_temp_label': { de: 'Temperatur', en: 'Temperature' },
+    'swim_status_good': { de: 'Gut (Grün)', en: 'Good (Green)' },
+    'swim_status_warning': { de: 'Warnung (Gelb)', en: 'Warning (Yellow)' },
+    'swim_status_ban': { de: 'Badeverbot (Rot)', en: 'No swimming (Red)' },
 
     // Traffic
     'traffic_title': { de: 'Verkehrs-Analyse', en: 'Traffic Analysis' },
@@ -252,7 +339,10 @@ const translations: Translations = {
     'markets_loading': { de: 'Lade Marktdaten...', en: 'Loading market data...' },
     'markets_search': { de: 'Markt suchen...', en: 'Search markets...' },
     'markets_website': { de: 'Website besuchen', en: 'Visit Website' },
-    'markets_count': { de: 'Märkte', en: 'Markets' }
+    'markets_count': { de: 'Märkte', en: 'Markets' },
+    'markets_closed': { de: 'Geschlossen', en: 'Closed' },
+    'markets_map_label': { de: 'Märkte-Karte', en: 'Markets map' },
+    'traffic_map_label': { de: 'Verkehrssegment-Karte', en: 'Traffic segments map' }
 };
 
 interface LanguageContextType {

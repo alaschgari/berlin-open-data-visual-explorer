@@ -95,9 +95,9 @@ export async function getBadestellenLive(): Promise<BadestelleFeature[]> {
 /**
  * Maps the status image filename to a human-readable status and color.
  */
-export function getStatusFromImage(image: string): { label: string; color: string } {
-    if (image.startsWith('gruen')) return { label: 'Gut (Grün)', color: '#10b981' };
-    if (image.startsWith('gelb')) return { label: 'Warnung (Gelb)', color: '#f59e0b' };
-    if (image.startsWith('rot')) return { label: 'Badeverbot (Rot)', color: '#ef4444' };
-    return { label: 'Unbekannt', color: '#6b7280' };
+export function getStatusFromImage(image: string): { labelKey: string; color: string } {
+    if (image.startsWith('gruen')) return { labelKey: 'swim_status_good', color: '#10b981' };
+    if (image.startsWith('gelb')) return { labelKey: 'swim_status_warning', color: '#f59e0b' };
+    if (image.startsWith('rot')) return { labelKey: 'swim_status_ban', color: '#ef4444' };
+    return { labelKey: 'swim_status_unknown', color: '#6b7280' };
 }

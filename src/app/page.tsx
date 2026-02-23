@@ -9,7 +9,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const resolvedSearchParams = await searchParams;
   const district = resolvedSearchParams.district || 'Berlin';
   const activeTab = (resolvedSearchParams.tab || 'hub') as 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets';
-  const budgetMode = (resolvedSearchParams.budgetMode || 'historic') as 'historic' | 'explorer';
+  const budgetMode = (resolvedSearchParams.budgetMode || 'explorer') as 'historic' | 'explorer';
 
   // Data pre-fetching (SSR)
   const data = await getDistrictMetrics(district);

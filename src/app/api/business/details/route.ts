@@ -31,6 +31,7 @@ export async function GET(request: Request) {
                             postcode: data.postcode,
                             employees: data.employees_range,
                             branch: data.ihk_branch_desc || '',
+                            top_branch: data.branch_top_level_desc || '',
                             type: data.business_type,
                             age: data.business_age,
                             planungsraum: data.Planungsraum,

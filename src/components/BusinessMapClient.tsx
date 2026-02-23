@@ -55,6 +55,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
 
     const locale = language === 'de' ? 'de-DE' : 'en-GB';
     const [businessDetails, setBusinessDetails] = useState<any[]>([]);
+    const [compareDetails, setCompareDetails] = useState<any[]>([]);
     const [loadingDetails, setLoadingDetails] = useState(false);
     const [chartFilter, setChartFilter] = useState<string | null>(null);
 
@@ -240,7 +241,11 @@ export default function BusinessMapClient({ district }: { district: string }) {
 
         // Chart filter (e.g. from clicking sidebar)
         if (chartFilter) {
-            filtered = filtered.filter(b => b.branch.includes(chartFilter) || b.employees === chartFilter);
+            filtered = filtered.filter(b =>
+                (b.branch && b.branch.includes(chartFilter)) ||
+                (b.top_branch && b.top_branch.includes(chartFilter)) ||
+                b.employees === chartFilter
+            );
         }
 
         // Sorting
@@ -250,8 +255,8 @@ export default function BusinessMapClient({ district }: { district: string }) {
                 let bVal = b[sortConfig.key];
 
                 if (sortConfig.key === 'age') {
-                    aVal = aVal || 0;
-                    bVal = bVal || 0;
+                    aVal = Number(aVal) || 0;
+                    bVal = Number(bVal) || 0;
                 }
 
                 if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
@@ -266,17 +271,37 @@ export default function BusinessMapClient({ district }: { district: string }) {
     const stats = useMemo(() => {
         if (!Array.isArray(businessDetails) || !businessDetails.length) return null;
 
-        const ages = businessDetails.map(b => b.age).filter(a => a !== null);
-        const avgAge = ages.reduce((a, b) => a + b, 0) / ages.length;
-        const startups = businessDetails.filter(b => (b.age || 0) < 3 && (b.branch.includes('IT') || b.branch.includes('Software') || b.branch.includes('Information'))).length;
+        const ages = businessDetails.map(b => Number(b.age)).filter(a => !isNaN(a) && a !== null);
+        const avgAge = ages.length > 0 ? ages.reduce((a, b) => a + b, 0) / ages.length : 0;
+        const startups = businessDetails.filter(b => {
+            const age = Number(b.age);
+            return !isNaN(age) && age < 3 && (b.branch && (b.branch.includes('IT') || b.branch.includes('Software') || b.branch.includes('Information')));
+        }).length;
 
         return {
             avgAge: avgAge.toFixed(1),
-            stability: avgAge > 15 ? 'Hoch' : avgAge > 8 ? 'Mittel' : 'Niedrig',
-            startupDensity: (startups / businessDetails.length * 100).toFixed(1),
-            isStartupHub: startups > 5 && (startups / businessDetails.length) > 0.05
+            stability: ages.length === 0 ? t('biz_no_info') : avgAge > 15 ? t('biz_stability_high') : avgAge > 8 ? t('biz_stability_medium') : t('biz_stability_low'),
+            startupDensity: businessDetails.length > 0 ? (startups / businessDetails.length * 100).toFixed(1) : "0.0",
+            isStartupHub: businessDetails.length > 0 ? (startups > 5 && (startups / businessDetails.length) > 0.05) : false
         };
-    }, [businessDetails]);
+    }, [businessDetails, t]);
+
+    const compareStats = useMemo(() => {
+        if (!Array.isArray(compareDetails) || !compareDetails.length) return null;
+
+        const ages = compareDetails.map(b => Number(b.age)).filter(a => !isNaN(a) && a !== null);
+        const avgAge = ages.length > 0 ? ages.reduce((a, b) => a + b, 0) / ages.length : 0;
+
+        const startups = compareDetails.filter(b => {
+            const age = Number(b.age);
+            return !isNaN(age) && age < 3 && (b.branch && (b.branch.includes('IT') || b.branch.includes('Software') || b.branch.includes('Information')));
+        }).length;
+
+        return {
+            avgAge: avgAge.toFixed(1),
+            startupDensity: (startups / compareDetails.length * 100).toFixed(1)
+        };
+    }, [compareDetails]);
 
     const exportToCSV = () => {
         const headers = ["Postleitzahl", "Branche", "Mitarbeiter", "Gewerbeart", "Alter"];
@@ -401,10 +426,10 @@ export default function BusinessMapClient({ district }: { district: string }) {
                     <span style="font-size: 9px; color: #64748b; margin-left: 8px; text-transform: uppercase;">${districtName}</span>
                 </div>
                 <div style="display: grid; grid-template-columns: auto auto; gap: 8px; font-size: 12px; color: #334155;">
-                    <span style="color: #64748b;">${searchResult ? 'Treffer:' : 'Gewerbe:'}</span>
-                    <span style="font-weight: bold; text-align: right;">${count.toLocaleString('de-DE')}</span>
+                    <span style="color: #64748b;">${searchResult ? t('biz_hits') : t('biz_industry')}:</span>
+                    <span style="font-weight: bold; text-align: right;">${count.toLocaleString(locale)}</span>
                     ${!searchResult ? `
-                    <span style="color: #64748b;">Top Branche:</span>
+                    <span style="color: #64748b;">${t('biz_top_industry')}:</span>
                     <span style="font-weight: bold; text-align: right; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                         ${data ? Object.entries(data.branches).sort((a: any, b: any) => b[1] - a[1])[0]?.[0] || '-' : '-'}
                     </span>
@@ -413,16 +438,10 @@ export default function BusinessMapClient({ district }: { district: string }) {
             </div>
         `;
 
-        if (isPointMode) {
-            // Simplified tooltip for POI mode
-            const simpleContent = `
-                <div style="font-family: sans-serif; padding: 2px 4px; font-weight: bold; font-size: 11px; color: #1e293b;">
-                    ${feature.properties.PLR_NAME} <span style="font-weight: normal; opacity: 0.7;">(${districtName})</span>
-                </div>
-            `;
-            layer.bindTooltip(simpleContent, { sticky: true, direction: 'top', opacity: 0.9, className: 'simple-tooltip' });
-        } else {
+        if (!isPointMode) {
             layer.bindTooltip(tooltipContent, { sticky: true, direction: 'top', opacity: 0.95 });
+        } else {
+            layer.unbindTooltip();
         }
 
         layer.on({
@@ -441,18 +460,28 @@ export default function BusinessMapClient({ district }: { district: string }) {
                     color: '#334155'
                 });
             },
-            click: (e: any) => {
+            click: async (e: any) => {
+                const clickedPlrId = String(feature.properties.PLR_ID);
                 if (isCompareMode && selectedFeature) {
                     setCompareFeature({
                         ...feature,
-                        business: businessData?.byLor[plrId]
+                        business: businessData?.byLor[clickedPlrId]
                     });
+
+                    try {
+                        const res = await fetch(`/api/business/details?lorId=${clickedPlrId}`);
+                        const data = await res.json();
+                        setCompareDetails(data);
+                    } catch (err) {
+                        console.error("Failed to fetch compare details", err);
+                    }
                 } else {
                     setSelectedFeature({
                         ...feature,
-                        business: businessData?.byLor[plrId]
+                        business: businessData?.byLor[clickedPlrId]
                     });
                     setCompareFeature(null);
+                    setCompareDetails([]);
                     setIsSidepanelOpen(true);
                 }
             }
@@ -483,9 +512,16 @@ export default function BusinessMapClient({ district }: { district: string }) {
                 <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                     <span className="flex items-center gap-2 bg-slate-900/50 px-3 py-1.5 rounded-lg border border-white/5">
                         <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                        Stand: {new Date().toLocaleDateString('de-DE')}
+                        {language === 'de' ? 'Stand' : 'Status'}: 13.09.2025
                     </span>
-                    <span className="hidden sm:inline-block opacity-50">Quelle: IHK Berlin (Open Data)</span>
+                    <a
+                        href="https://daten.berlin.de/datensaetze/gewerbedaten-ihkberlin"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hidden sm:inline-block opacity-50 hover:opacity-100 transition-opacity underline decoration-slate-500/30 underline-offset-4"
+                    >
+                        {t('biz_source_label')}: IHK Berlin (Open Data)
+                    </a>
                 </div>
             </div>
 
@@ -504,7 +540,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                         <FitBounds data={filteredGeoJson} />
                         {filteredGeoJson && (
                             <GeoJSON
-                                key={`${selectedTheme}-${district}-${businessData ? 'ready' : 'loading'}-${globalBranchSearch}-${searchResult ? 'results' : 'no-results'}`}
+                                key={`${selectedTheme}-${district}-${businessData ? 'ready' : 'loading'}-${globalBranchSearch}-${isCompareMode ? 'compare' : 'single'}-${selectedFeature?.properties.PLR_ID || 'none'}-${searchResult ? 'results' : 'no-results'}-${isPointMode ? 'point' : 'area'}`}
                                 data={filteredGeoJson}
                                 style={style}
                                 onEachFeature={onEachFeature}
@@ -524,27 +560,38 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                 color="#ffffff"
                                                 weight={1}
                                                 fillOpacity={1}
-                                                className="drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+                                                bubblingMouseEvents={false}
+                                                eventHandlers={{
+                                                    mouseover: (e) => {
+                                                        e.target.setRadius(5);
+                                                        e.target.setStyle({ weight: 2 });
+                                                    },
+                                                    mouseout: (e) => {
+                                                        e.target.setRadius(3);
+                                                        e.target.setStyle({ weight: 1 });
+                                                    },
+                                                }}
+                                                className="cursor-pointer"
                                             >
                                                 <Tooltip sticky>
                                                     <div className="text-xs font-bold">{b.branch}</div>
                                                     <div className="text-[10px] opacity-70">{b.employees}</div>
                                                 </Tooltip>
                                                 <Popup>
-                                                    <div className="text-slate-900 text-xs font-sans p-1 min-w-[200px]">
-                                                        <h3 className="font-bold mb-2 text-sm border-b pb-1 border-slate-200 leading-tight">{b.branch}</h3>
+                                                    <div className="text-white text-xs font-sans p-1 min-w-[200px]">
+                                                        <h3 className="font-bold mb-2 text-sm border-b pb-1 border-white/10 leading-tight">{b.branch}</h3>
                                                         <div className="grid grid-cols-[16px_1fr] gap-x-2 gap-y-1.5 items-start">
-                                                            <Users className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
+                                                            <Users className="w-3.5 h-3.5 text-slate-400 mt-0.5" />
                                                             <span>{b.employees || (language === 'de' ? 'Keine Angabe' : 'No info')}</span>
 
-                                                            <Building2 className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
+                                                            <Building2 className="w-3.5 h-3.5 text-slate-400 mt-0.5" />
                                                             <span className="leading-tight">{b.type || (language === 'de' ? 'Keine Angabe' : 'No info')}</span>
 
-                                                            <Calendar className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
+                                                            <Calendar className="w-3.5 h-3.5 text-slate-400 mt-0.5" />
                                                             <span>{b.age ? (language === 'de' ? `${b.age} Jahre alt` : `${b.age} years old`) : (language === 'de' ? 'Keine Angabe' : 'No info')}</span>
 
-                                                            <MapPin className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
-                                                            <span>{b.postcode} {b.city || 'Berlin'}</span>
+                                                            <MapPin className="w-3.5 h-3.5 text-emerald-400 mt-0.5" />
+                                                            <span className="text-slate-300">{b.postcode} {b.city || 'Berlin'}</span>
                                                         </div>
                                                     </div>
                                                 </Popup>
@@ -569,24 +616,35 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                 color="#ffffff"
                                                 weight={1}
                                                 fillOpacity={1}
-                                                className="drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+                                                bubblingMouseEvents={false}
+                                                eventHandlers={{
+                                                    mouseover: (e) => {
+                                                        e.target.setRadius(6);
+                                                        e.target.setStyle({ weight: 2 });
+                                                    },
+                                                    mouseout: (e) => {
+                                                        e.target.setRadius(4);
+                                                        e.target.setStyle({ weight: 1 });
+                                                    },
+                                                }}
+                                                className="cursor-pointer"
                                             >
                                                 <Tooltip sticky>{p.branch}</Tooltip>
                                                 <Popup>
-                                                    <div className="text-slate-900 text-xs font-sans p-1 min-w-[200px]">
-                                                        <h3 className="font-bold mb-2 text-sm border-b pb-1 border-slate-200 leading-tight">{p.branch}</h3>
+                                                    <div className="text-white text-xs font-sans p-1 min-w-[200px]">
+                                                        <h3 className="font-bold mb-2 text-sm border-b pb-1 border-white/10 leading-tight">{p.branch}</h3>
                                                         <div className="grid grid-cols-[16px_1fr] gap-x-2 gap-y-1.5 items-start">
-                                                            <Users className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
+                                                            <Users className="w-3.5 h-3.5 text-slate-400 mt-0.5" />
                                                             <span>{p.employees || (language === 'de' ? 'Keine Angabe' : 'No info')}</span>
 
-                                                            <Building2 className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
+                                                            <Building2 className="w-3.5 h-3.5 text-slate-400 mt-0.5" />
                                                             <span className="leading-tight">{p.type || (language === 'de' ? 'Keine Angabe' : 'No info')}</span>
 
-                                                            <Calendar className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
+                                                            <Calendar className="w-3.5 h-3.5 text-slate-400 mt-0.5" />
                                                             <span>{p.age ? (language === 'de' ? `${p.age} Jahre alt` : `${p.age} years old`) : (language === 'de' ? 'Keine Angabe' : 'No info')}</span>
 
-                                                            <MapPin className="w-3.5 h-3.5 text-slate-500 mt-0.5" />
-                                                            <span>{p.postcode} {p.city || 'Berlin'}</span>
+                                                            <MapPin className="w-3.5 h-3.5 text-emerald-400 mt-0.5" />
+                                                            <span className="text-slate-300">{p.postcode} {p.city || 'Berlin'}</span>
                                                         </div>
                                                     </div>
                                                 </Popup>
@@ -601,10 +659,10 @@ export default function BusinessMapClient({ district }: { district: string }) {
                     <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-3 p-1.5 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-700 shadow-2xl z-[1000] w-[90%] md:w-auto overflow-x-auto no-scrollbar">
                         <div className="flex gap-1 border-r border-slate-700 pr-2 mr-1 shrink-0">
                             {[
-                                { id: 'total', icon: Building2, label: language === 'de' ? 'Alle' : 'All' },
+                                { id: 'total', icon: Building2, label: t('biz_all') },
                                 { id: 'gastro', icon: Store, label: 'Gastro' },
                                 { id: 'tech', icon: Factory, label: 'Tech' },
-                                { id: 'retail', icon: PlusCircle, label: language === 'de' ? 'Handel' : 'Retail' },
+                                { id: 'retail', icon: PlusCircle, label: t('biz_retail') },
                             ].map((t) => (
                                 <button
                                     key={t.id}
@@ -619,13 +677,13 @@ export default function BusinessMapClient({ district }: { district: string }) {
                         </div>
                         <button
                             onClick={() => {
+                                if (isCompareMode) setCompareFeature(null);
                                 setIsCompareMode(!isCompareMode);
-                                if (!isCompareMode) setCompareFeature(null);
                             }}
                             className={`p-2.5 rounded-xl transition-all flex items-center gap-2 border ${isCompareMode ? 'bg-emerald-500 border-emerald-500 text-slate-900 shadow-lg' : 'bg-slate-800 border-white/5 text-slate-400 hover:text-white'}`}
                         >
                             <Scale className="w-4 h-4" />
-                            <span className="text-[10px] font-bold uppercase tracking-tight hidden sm:inline">Vergleich</span>
+                            <span className="text-[10px] font-bold uppercase tracking-tight hidden sm:inline">{t('biz_compare')}</span>
                         </button>
 
                         <div className="h-6 w-[1px] bg-slate-700 mx-1" />
@@ -655,7 +713,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                 <button
                                     onClick={() => setIsPointMode(!isPointMode)}
                                     className={`p-2 rounded-xl border transition-all ${isPointMode ? 'bg-rose-500 border-rose-500 text-white' : 'bg-slate-800 border-white/5 text-slate-400'}`}
-                                    title="POI Modus (Punkte)"
+                                    title={t('biz_point_mode')}
                                 >
                                     <MapPin className="w-3.5 h-3.5" />
                                 </button>
@@ -666,7 +724,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                     {/* Map Legend */}
                     <div className="absolute bottom-6 left-6 bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-700 shadow-2xl z-[1000] min-w-[160px]">
                         <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-700 pb-2">
-                            {searchResult ? 'Trefferanzahl' : 'Anzahl Gewerbe'}
+                            {searchResult ? t('biz_hit_count') : t('biz_industry_count')}
                         </h4>
                         <div className="flex flex-col gap-1.5">
                             {(() => {
@@ -721,7 +779,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                             <div className="p-6 border-b border-slate-700/50 flex justify-between items-start">
                                 <div>
                                     <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1 block">
-                                        Kiez-Analyse • Gewerbe
+                                        {t('biz_kiez_analysis')}
                                     </span>
                                     <h2 className="text-xl font-bold text-white leading-tight">{selectedFeature.properties.PLR_NAME}</h2>
                                     <p className="text-xs text-slate-500 font-mono mt-1">ID: {selectedFeature.properties.PLR_ID}</p>
@@ -733,27 +791,57 @@ export default function BusinessMapClient({ district }: { district: string }) {
 
                             <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-slate-800/40 p-4 rounded-2xl border border-white/5 relative overflow-hidden group">
-                                        <div className="absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-10 transition-opacity">
-                                            <TrendingUp className="w-16 h-16 text-white" />
+                                    {/* Stability Score Card */}
+                                    <div className={`p-4 rounded-2xl border relative overflow-hidden group transition-all duration-300 ${!stats ? 'bg-slate-800/40 border-white/5' :
+                                        stats.stability === t('biz_stability_high') ? 'bg-emerald-500/10 border-emerald-500/20 shadow-lg shadow-emerald-500/5' :
+                                            stats.stability === t('biz_stability_medium') ? 'bg-amber-500/10 border-amber-500/20 shadow-lg shadow-amber-500/5' :
+                                                stats.stability === t('biz_stability_low') ? 'bg-rose-500/10 border-rose-500/20 shadow-lg shadow-rose-500/5' :
+                                                    'bg-slate-800/40 border-white/5'
+                                        }`}>
+                                        <div className="absolute -right-2 -bottom-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                                            <TrendingUp className={`w-16 h-16 ${!stats ? 'text-slate-600' :
+                                                stats.stability === t('biz_stability_high') ? 'text-emerald-500' :
+                                                    stats.stability === t('biz_stability_medium') ? 'text-amber-500' :
+                                                        stats.stability === t('biz_stability_low') ? 'text-rose-500' :
+                                                            'text-slate-600'
+                                                }`} />
                                         </div>
-                                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Stabilitäts-Score</p>
-                                        <div className="flex items-baseline gap-2">
-                                            <p className="text-2xl font-bold text-white">{stats?.stability || '-'}</p>
-                                            <span className="text-[10px] text-slate-500 font-medium">({stats?.avgAge} J.)</span>
+                                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">{t('biz_stability_label')}</p>
+                                        <div className="flex flex-col gap-0.5 relative z-10">
+                                            <p className={`text-xl font-black leading-tight ${!stats ? 'text-slate-400' :
+                                                stats.stability === t('biz_stability_high') ? 'text-emerald-400' :
+                                                    stats.stability === t('biz_stability_medium') ? 'text-amber-400' :
+                                                        stats.stability === t('biz_stability_low') ? 'text-rose-400' :
+                                                            'text-white'
+                                                }`}>
+                                                {stats?.stability || '-'}
+                                            </p>
+                                            {stats && stats.stability !== t('biz_no_info') && (
+                                                <span className="text-[10px] text-slate-500 font-bold whitespace-nowrap">
+                                                    {stats.avgAge} {t('biz_years_old')}
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
-                                    <div className={`p-4 rounded-2xl border relative overflow-hidden group transition-all ${stats?.isStartupHub ? 'bg-emerald-500/10 border-emerald-500/20 shadow-lg shadow-emerald-500/5' : 'bg-slate-800/40 border-white/5'}`}>
-                                        <div className="absolute -right-2 -bottom-2 opacity-10">
-                                            <Zap className={`w-16 h-16 ${stats?.isStartupHub ? 'text-emerald-500' : 'text-slate-600'}`} />
+
+                                    {/* Startup Hub Card */}
+                                    <div className={`p-4 rounded-2xl border relative overflow-hidden group transition-all duration-300 ${stats?.isStartupHub ? 'bg-blue-500/10 border-blue-500/20 shadow-lg shadow-blue-500/5' : 'bg-slate-800/40 border-white/5'}`}>
+                                        <div className="absolute -right-2 -bottom-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                                            <Zap className={`w-16 h-16 ${stats?.isStartupHub ? 'text-blue-500' : 'text-slate-600'}`} />
                                         </div>
-                                        <div className="flex items-center gap-1.5 mb-1">
-                                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Startup-Hub</p>
-                                            {stats?.isStartupHub && <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />}
+                                        <div className="flex items-center gap-1.5 mb-1.5">
+                                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{t('biz_startup_label')}</p>
+                                            {stats?.isStartupHub && <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />}
                                         </div>
-                                        <div className="flex items-baseline gap-2">
-                                            <p className={`text-2xl font-bold ${stats?.isStartupHub ? 'text-emerald-400' : 'text-slate-400'}`}>{stats?.isStartupHub ? 'Ja' : 'Nein'}</p>
-                                            <span className="text-[10px] text-slate-500 font-medium">{stats?.startupDensity}% IT</span>
+                                        <div className="flex flex-col gap-0.5 relative z-10">
+                                            <p className={`text-xl font-black leading-tight ${stats?.isStartupHub ? 'text-blue-400' : 'text-slate-400'}`}>
+                                                {stats?.isStartupHub ? t('yes') : t('no')}
+                                            </p>
+                                            {stats && (
+                                                <span className="text-[10px] text-slate-500 font-bold">
+                                                    {stats.startupDensity}% IT-Anteil
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -765,7 +853,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                 <div className="p-1.5 bg-amber-500/20 rounded">
                                                     <Scale className="w-3 h-3 text-amber-500" />
                                                 </div>
-                                                <p className="text-[10px] font-bold text-amber-500 uppercase tracking-wider">Benchmark vs. {compareFeature.properties.PLR_NAME}</p>
+                                                <p className="text-[10px] font-bold text-amber-500 uppercase tracking-wider">{t('biz_benchmark_label')} {compareFeature.properties.PLR_NAME}</p>
                                             </div>
                                             <button onClick={() => setCompareFeature(null)} className="text-amber-500/50 hover:text-amber-500">
                                                 <CloseIcon className="w-3 h-3" />
@@ -773,21 +861,25 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                         </div>
                                         <div className="space-y-3">
                                             {[
-                                                { label: 'Betriebe', val1: selectedFeature.business?.count || 0, val2: compareFeature.business?.count || 0 },
-                                                { label: 'Gastro', val1: (selectedFeature.business?.branches['Gastronomie'] || 0), val2: (compareFeature.business?.branches['Gastronomie'] || 0) },
-                                                { label: 'Ø Alter', val1: parseFloat(stats?.avgAge || '0'), val2: 12.5 } // Placeholder for 2nd age
+                                                { label: t('biz_operations'), val1: selectedFeature.business?.count || 0, val2: compareFeature.business?.count || 0 },
+                                                { label: t('biz_startup_label'), val1: parseFloat(stats?.startupDensity || '0'), val2: parseFloat(compareStats?.startupDensity || '0') },
+                                                { label: t('biz_avg_age'), val1: parseFloat(stats?.avgAge || '0'), val2: parseFloat(compareStats?.avgAge || '0') }
                                             ].map((row, i) => (
                                                 <div key={i} className="flex flex-col gap-1">
                                                     <div className="flex justify-between text-[10px] items-center">
                                                         <span className="text-slate-400 font-medium">{row.label}</span>
                                                         <div className="flex gap-3">
-                                                            <span className="text-white font-bold">{row.val1}</span>
-                                                            <span className="text-amber-500 opacity-50 font-bold">{row.val2}</span>
+                                                            <span className="text-white font-bold">
+                                                                {i === 1 ? `${row.val1}%` : row.val1}
+                                                            </span>
+                                                            <span className="text-amber-500 opacity-50 font-bold">
+                                                                {i === 1 ? `${row.val2}%` : row.val2}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                     <div className="h-1 bg-slate-800 rounded-full flex overflow-hidden">
-                                                        <div style={{ width: `${(row.val1 / (row.val1 + row.val2)) * 100}%` }} className="h-full bg-amber-500" />
-                                                        <div style={{ width: `${(row.val2 / (row.val1 + row.val2)) * 100}%` }} className="h-full bg-slate-600" />
+                                                        <div style={{ width: `${row.val1 + row.val2 > 0 ? (row.val1 / (row.val1 + row.val2)) * 100 : 50}%` }} className="h-full bg-amber-500" />
+                                                        <div style={{ width: `${row.val1 + row.val2 > 0 ? (row.val2 / (row.val1 + row.val2)) * 100 : 50}%` }} className="h-full bg-slate-600" />
                                                     </div>
                                                 </div>
                                             ))}
@@ -795,47 +887,11 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                     </div>
                                 )}
 
-                                <div>
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2">
-                                            <ChevronRight className="w-3 h-3 text-amber-500" />
-                                            Marktreife (Mitarbeiter)
-                                        </h3>
-                                        {chartFilter && (
-                                            <button onClick={() => setChartFilter(null)} className="text-[8px] uppercase font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
-                                                Reset Filter
-                                            </button>
-                                        )}
-                                    </div>
-                                    <div className="h-48 w-full group cursor-pointer">
-                                        {(() => {
-                                            const ranges = selectedFeature.business?.employeeRanges || {};
-                                            const chartData = Object.entries(ranges).map(([name, val]: [string, any]) => ({ name, val }))
-                                                .sort((a, b) => b.val - a.val)
-                                                .slice(0, 5);
-
-                                            return (
-                                                <ResponsiveContainer width="100%" height="100%">
-                                                    <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} onClick={(data) => data && setChartFilter(data.activeLabel ? String(data.activeLabel) : null)}>
-                                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#64748b' } as any} />
-                                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#64748b' } as any} />
-                                                        <RechartsTooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: 10 }} />
-                                                        <Bar dataKey="val" radius={[4, 4, 0, 0]}>
-                                                            {chartData.map((entry, index) => (
-                                                                <Cell key={`cell-${index}`} fill={chartFilter === entry.name ? '#fbbf24' : '#f59e0b'} fillOpacity={chartFilter && chartFilter !== entry.name ? 0.3 : 1} />
-                                                            ))}
-                                                        </Bar>
-                                                    </BarChart>
-                                                </ResponsiveContainer>
-                                            );
-                                        })()}
-                                    </div>
-                                </div>
 
                                 <div>
                                     <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-4 flex items-center gap-2">
                                         <ChevronRight className="w-3 h-3 text-amber-500" />
-                                        Top Branchen
+                                        {t('biz_top_industries')}
                                     </h3>
                                     <div className="space-y-3">
                                         {Object.entries(selectedFeature.business?.branches || {})
@@ -853,7 +909,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                         </div>
                                                         <div className="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
                                                             <div
-                                                                style={{ width: `${(val / selectedFeature.business.count) * 100}%` }}
+                                                                style={{ width: `${selectedFeature.business.count > 0 ? (val / selectedFeature.business.count) * 100 : 0}%` }}
                                                                 className={`h-full transition-all ${chartFilter === name ? 'bg-amber-400' : 'bg-amber-500'}`}
                                                             ></div>
                                                         </div>
@@ -864,7 +920,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                             setGlobalBranchSearch(name);
                                                         }}
                                                         className="p-1.5 bg-slate-800 rounded-lg text-slate-500 hover:text-emerald-500 hover:bg-emerald-500/10 transition-all border border-transparent hover:border-emerald-500/20 opacity-0 group-hover/row:opacity-100"
-                                                        title="Auf ganzer Karte anzeigen"
+                                                        title={t('biz_show_on_map')}
                                                     >
                                                         <Crosshair className="w-3 h-3" />
                                                     </button>
@@ -880,8 +936,8 @@ export default function BusinessMapClient({ district }: { district: string }) {
                             <div className="w-16 h-16 bg-slate-800 rounded-3xl flex items-center justify-center mb-6 border border-white/5">
                                 <Briefcase className="w-8 h-8 text-slate-600" />
                             </div>
-                            <h3 className="text-lg font-bold text-slate-300">Gewerbedaten erkunden</h3>
-                            <p className="text-sm text-slate-500 mt-2 leading-relaxed">Klicke auf die Karte, um die wirtschaftliche Struktur eines Kiezes zu analysieren.</p>
+                            <h3 className="text-lg font-bold text-slate-300">{t('biz_explore_data')}</h3>
+                            <p className="text-sm text-slate-500 mt-2 leading-relaxed">{t('biz_click_for_analysis')}</p>
                         </div>
                     )}
                 </div>
@@ -993,22 +1049,22 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                 <tr className="bg-slate-800/40 border-b border-slate-700/50 text-slate-400 font-black uppercase tracking-widest text-[10px]">
                                     <th className="px-6 py-4 cursor-pointer hover:text-white transition-colors" onClick={() => toggleSort('postcode')}>
                                         <div className="flex items-center gap-2">
-                                            Postleitzahl
+                                            {t('biz_postcode')}
                                             {sortConfig?.key === 'postcode' && (sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />)}
                                         </div>
                                     </th>
-                                    <th className="px-6 py-4">Planungsraum</th>
+                                    <th className="px-6 py-4">{t('pop_area')}</th>
                                     <th className="px-6 py-4 cursor-pointer hover:text-white transition-colors" onClick={() => toggleSort('branch')}>
                                         <div className="flex items-center gap-2">
-                                            Branche
+                                            {t('biz_branch')}
                                             {sortConfig?.key === 'branch' && (sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />)}
                                         </div>
                                     </th>
-                                    <th className="px-6 py-4">Mitarbeiter</th>
-                                    <th className="px-6 py-4">Gewerbeart</th>
+                                    <th className="px-6 py-4">{t('biz_employees')}</th>
+                                    <th className="px-6 py-4">{t('biz_type')}</th>
                                     <th className="px-6 py-4 text-right cursor-pointer hover:text-white transition-colors" onClick={() => toggleSort('age')}>
                                         <div className="flex items-center justify-end gap-2">
-                                            Alter
+                                            {t('biz_age')}
                                             {sortConfig?.key === 'age' && (sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />)}
                                         </div>
                                     </th>
@@ -1035,11 +1091,11 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                     <div className="flex items-center gap-2">
                                                         <ChevronRight className={`w-4 h-4 text-emerald-500 transition-transform ${expandedGroups[groupKey] ? 'rotate-90' : ''}`} />
                                                         <span className="text-sm font-bold text-white italic opacity-60 mr-1">
-                                                            {groupBy === 'branch' ? 'Branche' : groupBy === 'postcode' ? 'PLZ' : groupBy === 'type' ? 'Typ' : 'Größe'}:
+                                                            {groupBy === 'branch' ? t('biz_branch') : groupBy === 'postcode' ? t('biz_postcode') : groupBy === 'type' ? t('biz_type') : t('size')}:
                                                         </span>
                                                         <span className="text-sm font-bold text-white">{groupKey}</span>
                                                         <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-[10px] text-emerald-400 border border-emerald-500/20 ml-auto">
-                                                            {items.length} Unternehmen
+                                                            {items.length} {t('biz_companies_count')}
                                                         </span>
                                                     </div>
                                                 </td>
@@ -1056,7 +1112,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                 ) : (
                                     <tr>
                                         <td colSpan={6} className="px-6 py-12 text-center text-slate-500 text-sm italic">
-                                            Keine passenden Einträge gefunden.
+                                            {t('biz_no_entries')}
                                         </td>
                                     </tr>
                                 )}
@@ -1066,7 +1122,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                     {!groupBy && processedBusinesses.length > 100 && (
                         <div className="p-4 bg-slate-800/20 border-t border-slate-700/50 text-center">
                             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                                Zeige die ersten 100 von {processedBusinesses.length} Treffern • Benutze die Suche zum Eingrenzen
+                                {t('biz_show_hits_limit').replace('{count}', processedBusinesses.length.toString())}
                             </p>
                         </div>
                     )}

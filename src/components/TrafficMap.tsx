@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Polyline, Popup, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { useLanguage } from './LanguageContext';
 
 // Fix for Leaflet icon issues
 // @ts-ignore
@@ -23,6 +24,7 @@ interface TrafficMapProps {
 }
 
 export default function TrafficMap({ district, data, isKeyMissing, highlightedSegmentId, onSegmentSelect }: TrafficMapProps) {
+    const { t } = useLanguage();
     const [segments, setSegments] = useState<any[]>([]);
     const [map, setMap] = useState<L.Map | null>(null);
 
@@ -70,7 +72,7 @@ export default function TrafficMap({ district, data, isKeyMissing, highlightedSe
             style={{ height: '100%', width: '100%' }}
             className="z-0"
             ref={setMap}
-            aria-label="Traffic segments map"
+            aria-label={t('traffic_map_label')}
         >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'

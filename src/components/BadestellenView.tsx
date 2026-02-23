@@ -75,7 +75,7 @@ const SpotPopupContent = ({ spot, t }: { spot: BadestelleFeature; t: any }) => {
                         }}
                     ></div>
                     <span className="text-xs font-black tracking-tight" style={{ color: status.color }}>
-                        {status.label}
+                        {t(status.labelKey)}
                     </span>
                 </div>
                 <div className="flex flex-col items-end">
@@ -203,8 +203,8 @@ export default function BadestellenView({ district }: { district?: string }) {
                     valA = parseFloat(a.properties.data.temp) || 0;
                     valB = parseFloat(b.properties.data.temp) || 0;
                 } else if (sortBy === 'status') {
-                    valA = getStatusFromImage(a.properties.data.farbe).label;
-                    valB = getStatusFromImage(b.properties.data.farbe).label;
+                    valA = getStatusFromImage(a.properties.data.farbe).labelKey;
+                    valB = getStatusFromImage(b.properties.data.farbe).labelKey;
                 } else if (sortBy === 'date') {
                     valA = a.properties.data.dat;
                     valB = b.properties.data.dat;
@@ -223,7 +223,7 @@ export default function BadestellenView({ district }: { district?: string }) {
         baseData.forEach(item => {
             let key = '';
             if (groupBy === 'district') key = item.properties.data.bezirk;
-            else if (groupBy === 'status') key = getStatusFromImage(item.properties.data.farbe).label;
+            else if (groupBy === 'status') key = getStatusFromImage(item.properties.data.farbe).labelKey;
 
             if (!groups[key]) groups[key] = [];
             groups[key].push(item);
@@ -431,7 +431,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                                     onClick={() => toggleSort('bezirk')}
                                 >
                                     <div className="flex items-center gap-2">
-                                        Bezirk
+                                        {t('district_label')}
                                         <ChevronDown className={`w-3 h-3 transition-transform ${sortBy === 'bezirk' ? (sortOrder === 'desc' ? 'rotate-180 text-emerald-500' : 'text-emerald-500') : 'opacity-0 group-hover:opacity-50'}`} />
                                     </div>
                                 </th>
@@ -440,7 +440,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                                     onClick={() => toggleSort('temp')}
                                 >
                                     <div className="flex items-center gap-2">
-                                        Temperatur
+                                        {t('swim_temp_label')}
                                         <ChevronDown className={`w-3 h-3 transition-transform ${sortBy === 'temp' ? (sortOrder === 'desc' ? 'rotate-180 text-emerald-500' : 'text-emerald-500') : 'opacity-0 group-hover:opacity-50'}`} />
                                     </div>
                                 </th>
@@ -449,7 +449,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                                     onClick={() => toggleSort('status')}
                                 >
                                     <div className="flex items-center gap-2">
-                                        Status
+                                        {t('status_label')}
                                         <ChevronDown className={`w-3 h-3 transition-transform ${sortBy === 'status' ? (sortOrder === 'desc' ? 'rotate-180 text-emerald-500' : 'text-emerald-500') : 'opacity-0 group-hover:opacity-50'}`} />
                                     </div>
                                 </th>
@@ -458,7 +458,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                                     onClick={() => toggleSort('date')}
                                 >
                                     <div className="flex items-center gap-2">
-                                        Letzte Probe
+                                        {t('swim_last_sample')}
                                         <ChevronDown className={`w-3 h-3 transition-transform ${sortBy === 'date' ? (sortOrder === 'desc' ? 'rotate-180 text-emerald-500' : 'text-emerald-500') : 'opacity-0 group-hover:opacity-50'}`} />
                                     </div>
                                 </th>
@@ -483,7 +483,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                                                         </span>
                                                     </div>
                                                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
-                                                        {item.count} Einträge
+                                                        {item.count} {t('entries_label')}
                                                     </span>
                                                 </div>
                                             </td>
@@ -508,9 +508,11 @@ export default function BadestellenView({ district }: { district?: string }) {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-1.5 mb-2">
                                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: status.color }}></div>
-                                                <span className="font-medium" style={{ color: status.color }}>{status.label}</span>
+                                                <span className="text-[10px] font-black tracking-widest uppercase" style={{ color: status.color }}>
+                                                    {t(status.labelKey)}
+                                                </span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-slate-500 tabular-nums">{spot.properties.data.dat}</td>

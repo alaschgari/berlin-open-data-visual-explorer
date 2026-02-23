@@ -1,0 +1,611 @@
+
+> berlin-open-data@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.0-canary.31 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.178.20:3000
+- Environments: .env.local
+✓ Ready in 350ms
+- Experiments (use with caution):
+  ✓ useCache
+
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET / 200 in 2.1s (compile: 498ms, render: 1578ms)
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET /?tab=business&district=Berlin 200 in 829ms (compile: 3ms, render: 826ms)
+ GET /api/business 200 in 145ms (compile: 67ms, render: 77ms)
+ GET /api/lor 200 in 164ms (compile: 48ms, render: 117ms)
+ GET /api/business 200 in 19ms (compile: 1253µs, render: 17ms)
+ GET /api/lor 200 in 278ms (compile: 2ms, render: 276ms)
+ GET /api/business/details?lorId=09501838 200 in 1683ms (compile: 28ms, render: 1655ms)
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseover (src/components/BusinessMapClient.tsx:565:70)
+  563 |                                                 bubblingMouseEvents={false}
+  564 |                                                 eventHandlers={{
+> 565 |                                                     mouseover: () => setIsHoveringPoint(true),
+      |                                                                      ^
+  566 |                                                     mouseout: () => setIsHoveringPoint(false),
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+[browser] Uncaught ReferenceError: setIsHoveringPoint is not defined
+    at NewClass.mouseout (src/components/BusinessMapClient.tsx:566:69)
+  564 |                                                 eventHandlers={{
+  565 |                                                     mouseover: () => setIsHoveringPoint(true),
+> 566 |                                                     mouseout: () => setIsHoveringPoint(false),
+      |                                                                     ^
+  567 |                                                 }}
+  568 |                                                 className="transition-all hover:scale-125 hover:stroke-white hover:stroke-[2px]"
+  569 |                                             >
+✓ Compiled in 879ms
+⚠ Fast Refresh had to perform a full reload when ./src/components/LanguageContext.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+✓ Compiled in 138ms
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET /?tab=business&district=Berlin 200 in 1609ms (compile: 145ms, render: 1465ms)
+ GET /api/business 200 in 43ms (compile: 7ms, render: 36ms)
+ GET /api/business 200 in 63ms (compile: 1820µs, render: 61ms)
+ GET /api/lor 200 in 121ms (compile: 4ms, render: 118ms)
+ GET /api/lor 200 in 242ms (compile: 1265µs, render: 240ms)
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET /?tab=business&district=Berlin 200 in 1186ms (compile: 5ms, render: 1181ms)
+ GET /api/business 200 in 44ms (compile: 5ms, render: 39ms)
+ GET /api/business 200 in 77ms (compile: 4ms, render: 73ms)
+ GET /api/lor 200 in 133ms (compile: 2ms, render: 130ms)
+ GET /api/lor 200 in 250ms (compile: 1286µs, render: 249ms)
+ GET /api/business/details?lorId=09501838 200 in 1752ms (compile: 3ms, render: 1749ms)
+✓ Compiled in 34ms
+✓ Compiled in 23ms
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET /?tab=business&district=Berlin 200 in 1255ms (compile: 8ms, render: 1247ms)
+ GET /api/business 200 in 35ms (compile: 4ms, render: 31ms)
+ GET /api/business 200 in 70ms (compile: 1870µs, render: 68ms)
+ GET /api/lor 200 in 113ms (compile: 1790µs, render: 111ms)
+ GET /api/lor 200 in 253ms (compile: 2ms, render: 250ms)
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET /?tab=business&district=Berlin 200 in 941ms (compile: 1574µs, render: 940ms)
+ GET /api/business 200 in 29ms (compile: 3ms, render: 26ms)
+ GET /api/lor 200 in 101ms (compile: 1172µs, render: 99ms)
+ GET /api/business 200 in 70ms (compile: 2ms, render: 68ms)
+ GET /api/lor 200 in 219ms (compile: 1623µs, render: 217ms)
+ GET /api/business/details?lorId=09501838 200 in 1722ms (compile: 2ms, render: 1719ms)
+ GET /api/business/details?lorId=09401329 200 in 1642ms (compile: 3ms, render: 1639ms)
+ GET /api/business/details?lorId=09501737 200 in 1596ms (compile: 4ms, render: 1592ms)
+ GET /api/business/details?lorId=05400943 200 in 1731ms (compile: 4ms, render: 1727ms)
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET /?tab=hub&district=Berlin 200 in 973ms (compile: 7ms, render: 966ms)
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET /?tab=wastewater&district=Berlin 200 in 886ms (compile: 4ms, render: 883ms)
+[browser] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[browser] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[browser] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[browser] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET /?tab=wastewater&district=Charlottenburg-Wilmersdorf 200 in 754ms (compile: 3ms, render: 751ms)
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET /?tab=wastewater&district=Berlin 200 in 870ms (compile: 3ms, render: 867ms)
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET /?tab=hub&district=Berlin 200 in 858ms (compile: 1642µs, render: 856ms)
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET /?tab=business&district=Berlin 200 in 885ms (compile: 1292µs, render: 884ms)
+ GET /api/business 200 in 31ms (compile: 5ms, render: 26ms)
+ GET /api/business 200 in 64ms (compile: 1329µs, render: 62ms)
+ GET /api/lor 200 in 100ms (compile: 1865µs, render: 98ms)
+ GET /api/lor 200 in 236ms (compile: 1566µs, render: 234ms)
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET /?tab=business&district=Spandau 200 in 689ms (compile: 3ms, render: 687ms)
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+[getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
+[getFinancialData] Parsed 249626 records
+ GET /?tab=business&district=Berlin 200 in 816ms (compile: 1830µs, render: 814ms)

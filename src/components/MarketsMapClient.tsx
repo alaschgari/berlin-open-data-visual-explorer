@@ -282,7 +282,7 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                         scrollWheelZoom={true}
                         style={{ height: '100%', width: '100%' }}
                         className="z-0"
-                        aria-label={language === 'de' ? 'Märkte-Karte' : 'Markets map'}
+                        aria-label={t('markets_map_label')}
                     >
                         <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -381,8 +381,8 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                                                         const isClosed = line.toLowerCase().includes('geschloss');
                                                         return (
                                                             <div key={i} className={`flex items-start gap-1.5 px-2 py-1.5 rounded-md border w-fit ${isClosed
-                                                                    ? 'bg-rose-500/10 border-rose-500/20'
-                                                                    : 'bg-slate-800/30 border-slate-700/40'
+                                                                ? 'bg-rose-500/10 border-rose-500/20'
+                                                                : 'bg-slate-800/30 border-slate-700/40'
                                                                 }`}>
                                                                 {isClosed ? (
                                                                     <X className="w-3 h-3 mt-[2px] shrink-0 text-rose-400/80" />
@@ -390,8 +390,8 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                                                                     <Clock className="w-3 h-3 mt-[2px] shrink-0 text-slate-400" />
                                                                 )}
                                                                 <span className={`leading-[1.3] break-words ${isClosed
-                                                                        ? 'font-medium text-rose-400/90 text-[10px]'
-                                                                        : 'font-bold text-slate-300 text-[10px]'
+                                                                    ? 'font-medium text-rose-400/90 text-[10px]'
+                                                                    : 'font-bold text-slate-300 text-[10px]'
                                                                     }`}>{line}</span>
                                                             </div>
                                                         );

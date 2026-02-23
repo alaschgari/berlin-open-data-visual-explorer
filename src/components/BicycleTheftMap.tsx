@@ -386,131 +386,155 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="bg-slate-800/50 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6">
+      <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-2xl space-y-8">
+        {/* Top Row: Title and Main Selectors */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="flex flex-col">
             <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+              <h2 className="text-2xl font-black bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent tracking-tight">
                 {t('theft_title')}
               </h2>
-              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-full border border-slate-700/50">
+              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Live Data</span>
+                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest leading-none">Live</span>
               </div>
               {dataStatus && (
-                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-full border border-white/5">
+                <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-full border border-slate-700/50">
                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{t('last_sync')}: {dataStatus}</span>
                 </div>
               )}
             </div>
-            <p className="text-slate-400 mt-1 text-sm flex items-center gap-2">
+            <p className="text-slate-400 mt-1.5 text-xs font-medium flex items-center gap-2">
               {t('theft_subtitle')}
               <span className="w-1 h-1 rounded-full bg-slate-700"></span>
-              <span className="text-slate-500 font-medium">({diffDays} {language === 'de' ? 'Tage' : 'Days'})</span>
+              <span className="text-slate-500 italic opacity-80">({diffDays} {language === 'de' ? 'Tage' : 'Days'})</span>
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {/* Category Switcher */}
-            <div className="flex items-center bg-slate-900/80 p-1 rounded-xl border border-slate-700 shadow-inner">
+            {/* Category Switcher with Icons */}
+            <div className="flex items-center bg-slate-900/60 p-1 rounded-2xl border border-slate-700/50 shadow-inner">
               <button
                 onClick={() => setTheftType('bicycle')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${theftType === 'bicycle' ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${theftType === 'bicycle' ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}`}
               >
+                <span>🚲</span>
                 {language === 'de' ? 'Fahrrad' : 'Bicycle'}
               </button>
               <button
                 onClick={() => setTheftType('car')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${theftType === 'car' ? 'bg-rose-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${theftType === 'car' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}`}
               >
+                <span>🚗</span>
                 {language === 'de' ? 'Kfz' : 'Car'}
               </button>
               <button
                 onClick={() => setTheftType('both')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${theftType === 'both' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${theftType === 'both' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}`}
               >
+                <span>📊</span>
                 {language === 'de' ? 'Beide' : 'Both'}
               </button>
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center bg-slate-900/80 p-1 rounded-xl border border-slate-700 shadow-inner">
-              <button
-                onClick={() => setShowHeatmap(!showHeatmap)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${showHeatmap
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                  }`}
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                </svg>
-                {showHeatmap ? 'Marker' : 'Heatmap'}
-              </button>
-              <button
-                onClick={handleExport}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Export
-              </button>
-
+            {/* Date Range Group */}
+            <div className="flex items-center bg-slate-900/60 p-1 rounded-2xl border border-slate-700/50 shadow-inner group">
+              <div className="flex items-center px-2 py-1.5 gap-2">
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="bg-transparent text-white text-xs font-bold outline-none cursor-pointer focus:text-emerald-400 transition-colors"
+                />
+                <span className="text-slate-600 font-black">─</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="bg-transparent text-white text-xs font-bold outline-none cursor-pointer focus:text-emerald-400 transition-colors"
+                />
+              </div>
             </div>
+          </div>
+        </div>
 
-            {/* Date Range */}
-            <div className="flex items-center bg-slate-900/80 px-3 py-1.5 rounded-xl border border-slate-700 shadow-inner gap-2">
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="bg-transparent text-white text-xs outline-none focus:ring-0 cursor-pointer"
-              />
-              <span className="text-slate-600 font-bold">-</span>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="bg-transparent text-white text-xs outline-none focus:ring-0 cursor-pointer"
-              />
-            </div>
-
-            {/* Metrics */}
-            <div className="flex items-center gap-2 lg:ml-2">
-              <div className="bg-slate-900/80 px-3 py-1.5 rounded-xl border border-slate-700 shadow-inner min-w-[80px]">
-                <span className="text-[9px] text-slate-500 uppercase font-black tracking-tighter block">Gesamt</span>
-                <span className="text-sm font-bold text-white leading-none">{filteredData.length.toLocaleString()}</span>
+        {/* Bottom Row: Analytics & Global Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr,auto] gap-6 items-center pt-2 border-t border-slate-700/30">
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Metric Blocks */}
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="bg-slate-900/80 px-4 py-2.5 rounded-2xl border border-slate-700/50 flex flex-col min-w-[140px]">
+                <div className="flex justify-between items-start mb-0.5">
+                  <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Vorfälle</span>
+                </div>
+                <span className="text-lg font-black text-white leading-none">{filteredData.length.toLocaleString()}</span>
+                <span className="text-[9px] text-slate-600 font-bold mt-1.5 tabular-nums">
+                  {new Date(debouncedStartDate).toLocaleDateString(locale, { day: '2-digit', month: '2-digit' })} - {new Date(debouncedEndDate).toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                </span>
               </div>
 
               {prevYearData.length > 0 && (
-                <div className="bg-slate-900/80 px-3 py-1.5 rounded-xl border border-slate-700 shadow-inner min-w-[80px]">
-                  <span className="text-[9px] text-slate-500 uppercase font-black tracking-tighter block">vs. Vorjahr</span>
+                <div className="bg-slate-900/80 px-4 py-2.5 rounded-2xl border border-slate-700/50 flex flex-col min-w-[140px]">
+                  <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest mb-0.5">vs. Vorjahr</span>
                   {(() => {
                     const diff = prevYearData.length > 0 ? ((filteredData.length - prevYearData.length) / prevYearData.length) * 100 : 0;
+                    const prevStart = new Date(debouncedStartDate);
+                    const prevEnd = new Date(debouncedEndDate);
+                    prevStart.setFullYear(prevStart.getFullYear() - 1);
+                    prevEnd.setFullYear(prevEnd.getFullYear() - 1);
+
                     return (
-                      <span className={`text-sm font-bold leading-none ${diff > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
-                        {diff > 0 ? '+' : ''}{diff.toFixed(1)}%
-                      </span>
+                      <>
+                        <span className={`text-lg font-black leading-none ${diff > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                          {diff > 0 ? '↑' : '↓'} {Math.abs(diff).toFixed(1)}%
+                        </span>
+                        <span className="text-[9px] text-slate-600 font-bold mt-1.5 tabular-nums">
+                          {prevStart.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' })} - {prevEnd.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                        </span>
+                      </>
                     );
                   })()}
                 </div>
               )}
 
-              <div className={`bg-slate-900/80 px-3 py-1.5 rounded-xl border border-white/5 shadow-inner min-w-[80px]`}>
-                <span className={`text-[9px] uppercase font-black tracking-tighter block ${theftType === 'car' ? 'text-rose-400/50' : theftType === 'bicycle' ? 'text-emerald-400/50' : 'text-blue-400/50'
-                  }`}>Schaden</span>
-                <span className={`text-sm font-bold leading-none ${theftType === 'car' ? 'text-rose-400' : theftType === 'bicycle' ? 'text-emerald-400' : 'text-blue-400'
-                  }`}>
+              <div className="bg-slate-900/80 px-4 py-2.5 rounded-2xl border border-slate-700/50 flex flex-col min-w-[110px]">
+                <span className={`text-[10px] uppercase font-black tracking-widest mb-0.5 ${theftType === 'car' ? 'text-rose-400/70' : theftType === 'bicycle' ? 'text-emerald-400/70' : 'text-blue-400/70'}`}>Schadenssumme</span>
+                <span className={`text-lg font-black leading-none ${theftType === 'car' ? 'text-rose-400' : theftType === 'bicycle' ? 'text-emerald-400' : 'text-blue-400'}`}>
                   {(() => {
                     const totalAmount = filteredData.reduce((acc, curr) => acc + curr.amount, 0);
                     return totalAmount >= 1000
-                      ? `${Math.round(totalAmount / 1000).toLocaleString('de-DE')}k €`
+                      ? `${(totalAmount / 1000).toLocaleString('de-DE', { maximumFractionDigits: 1 })}k €`
                       : `${totalAmount.toLocaleString('de-DE')} €`;
                   })()}
                 </span>
               </div>
             </div>
+          </div>
+
+          {/* Action Group */}
+          <div className="flex items-center bg-slate-900/60 p-1 rounded-2xl border border-slate-700/50 shadow-inner h-fit">
+            <button
+              onClick={() => setShowHeatmap(!showHeatmap)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${showHeatmap
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              </svg>
+              {showHeatmap ? 'Marker' : 'Heatmap'}
+            </button>
+            <div className="w-px h-4 bg-slate-700 mx-1"></div>
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export
+            </button>
           </div>
         </div>
       </div>
@@ -555,8 +579,8 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
               }}
             />
           )}
-          {/* Heatmap Layer or Markers */}
-          {showHeatmap ? (
+          {/* Heatmap Layer - Rendered behind markers */}
+          {showHeatmap && (
             <Pane name="heatmap" style={{ zIndex: 500 }}>
               {filteredData.map((theft) => (
                 <CircleMarker
@@ -572,7 +596,6 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                   interactive={false}
                 />
               ))}
-              {/* Core of the heat */}
               {filteredData.map((theft) => (
                 <CircleMarker
                   key={`core-${theft.id}`}
@@ -588,51 +611,53 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                 />
               ))}
             </Pane>
-          ) : (
-            <Pane name="markers" style={{ zIndex: 600 }}>
-              {data.map((theft) => (
-                <CircleMarker
-                  key={theft.id}
-                  center={[theft.lat, theft.lng]}
-                  radius={6}
-                  pathOptions={{
-                    color: theft.category === 'bicycle' ? '#10b981' : '#f43f5e',
-                    fillColor: theft.category === 'bicycle' ? '#10b981' : '#f43f5e',
-                    fillOpacity: 0.8,
-                    weight: 1
-                  }}
-                >
-                  <Popup className="custom-popup">
-                    <div className="p-2 min-w-[200px]">
-                      <h3 className="font-bold text-slate-900 text-sm mb-2">
-                        {theft.category === 'bicycle' ? `🚲 ${language === 'de' ? 'Fahrraddiebstahl' : 'Bicycle Theft'}` : `🚗 ${language === 'de' ? 'Kfz-Diebstahl' : 'Car Theft'}`}
-                      </h3>
-                      <div className="space-y-1 text-xs text-slate-600">
-                        <div className="flex justify-between gap-4">
-                          <span>{language === 'de' ? 'Tatzeit' : 'Time'}:</span>
-                          <span className="font-medium">
-                            {new Date(theft.date).toLocaleDateString(locale)} • {String(theft.hour ?? 0).padStart(2, '0')}:00 {language === 'de' ? 'Uhr' : ''}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>{t('amount_label')}:</span>
-                          <span className="font-medium text-slate-900">{theft.amount.toLocaleString(locale)} €</span>
-                        </div>
-                        <div className="flex justify-between gap-4">
-                          <span>{language === 'de' ? 'Typ/Gut' : 'Type'}:</span>
-                          <span className="font-medium truncate max-w-[150px]" title={theft.type}>{theft.type}</span>
-                        </div>
-                        <div className="flex justify-between gap-4">
-                          <span>{language === 'de' ? 'Detail' : 'Detail'}:</span>
-                          <span className="font-medium truncate max-w-[150px]" title={theft.details}>{theft.details}</span>
-                        </div>
+          )}
+
+          {/* Markers Layer - Always visible and interactive */}
+          <Pane name="markers" style={{ zIndex: 600 }}>
+            {filteredData.map((theft) => (
+              <CircleMarker
+                key={theft.id}
+                center={[theft.lat, theft.lng]}
+                radius={6}
+                pathOptions={{
+                  color: theft.category === 'bicycle' ? '#10b981' : '#f43f5e',
+                  fillColor: theft.category === 'bicycle' ? '#10b981' : '#f43f5e',
+                  fillOpacity: showHeatmap ? 0.4 : 0.8, // Slightly more transparent when heatmap is on
+                  weight: 1
+                }}
+              >
+                <Popup className="custom-popup">
+                  <div className="p-3 min-w-[220px]">
+                    <h3 className="font-bold text-white text-sm mb-3 flex items-center gap-2">
+                      <span>{theft.category === 'bicycle' ? '🚲' : '🚗'}</span>
+                      {theft.category === 'bicycle' ? t('theft_type_bicycle') : t('theft_type_car')}
+                    </h3>
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between gap-4 border-b border-white/5 pb-1.5">
+                        <span className="text-slate-400">{t('theft_time')}:</span>
+                        <span className="font-bold text-slate-200">
+                          {new Date(theft.date).toLocaleDateString(locale)} • {String(theft.hour ?? 0).padStart(2, '0')}:00
+                        </span>
+                      </div>
+                      <div className="flex justify-between gap-4 border-b border-white/5 pb-1.5">
+                        <span className="text-slate-400">{t('amount_label')}:</span>
+                        <span className="font-black text-emerald-400">{theft.amount.toLocaleString(locale)} €</span>
+                      </div>
+                      <div className="flex justify-between gap-4 border-b border-white/5 pb-1.5">
+                        <span className="text-slate-400">{t('theft_type_label')}:</span>
+                        <span className="font-bold text-slate-200 truncate max-w-[140px]" title={theft.type}>{theft.type}</span>
+                      </div>
+                      <div className="flex justify-between gap-4 items-start">
+                        <span className="text-slate-400 shrink-0">{t('theft_detail_label')}:</span>
+                        <span className="font-bold text-slate-200 text-right line-clamp-2 leading-relaxed" title={theft.details}>{theft.details}</span>
                       </div>
                     </div>
-                  </Popup>
-                </CircleMarker>
-              ))}
-            </Pane>
-          )}
+                  </div>
+                </Popup>
+              </CircleMarker>
+            ))}
+          </Pane>
         </MapContainer>
       </div>
 
