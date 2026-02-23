@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import path from 'path';
-import fs from 'fs';
 import zlib from 'zlib';
+
+const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/alaschgari/berlin-open-data-visual-explorer/main/data/processed/business_search_index.json.gz';
 
 // Cache the search index in memory
 let cachedSearchIndex: any[] | null = null;
@@ -19,15 +19,19 @@ export async function GET(request: Request) {
 
     try {
         if (!isCacheLoaded) {
-            const filePath = path.join(process.cwd(), 'data/processed', 'business_search_index.json.gz');
-            if (fs.existsSync(filePath)) {
-                const compressedContent = fs.readFileSync(filePath);
-                const fileContent = zlib.gunzipSync(compressedContent).toString('utf8');
-                cachedSearchIndex = JSON.parse(fileContent);
-                isCacheLoaded = true;
-            } else {
-                return NextResponse.json({ error: 'Search index not found' }, { status: 500 });
+            const response = await fetch(GITHUB_RAW_URL, {
+                next: { revalidate: 3600 } // Cache for 1 hour to prevent GitHub rate limits
+            });
+
+            if (!response.ok) {
+                return NextResponse.json({ error: 'Search index not found on GitHub' }, { status: 500 });
             }
+
+            const arrayBuffer = await response.arrayBuffer();
+            const compressedContent = Buffer.from(arrayBuffer);
+            const fileContent = zlib.gunzipSync(compressedContent).toString('utf8');
+            cachedSearchIndex = JSON.parse(fileContent);
+            isCacheLoaded = true;
         }
 
         const results: any[] = [];
@@ -57,7 +61,7 @@ export async function GET(request: Request) {
             totalMatched: Object.values(lorCounts).reduce((a, b) => a + b, 0)
         });
     } catch (error) {
-        console.error('Error reading business search data:', error);
+        console.error('Error fetching business search data:', error);
         return NextResponse.json({ error: 'Failed to search business data' }, { status: 500 });
     }
 }
