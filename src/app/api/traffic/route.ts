@@ -3,13 +3,7 @@ import { getSnapshotBBoxString } from '@/lib/traffic';
 
 const TELRAAM_API_URL = 'https://telraam-api.net/v1';
 
-// Simple in-memory cache
-interface CacheEntry {
-    data: any;
-    timestamp: number;
-}
-const cache: Record<string, CacheEntry> = {};
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL_MS = 300; // 5 minutes in Next.js revalidate value
 
 async function fetchTrafficSnapshot(area: string, timeOffsetHours: number) {
     // Format time as YYYY-MM-DD HH:MM:00 (UTC)
@@ -28,7 +22,8 @@ async function fetchTrafficSnapshot(area: string, timeOffsetHours: number) {
             area: area,
             time: timeString,
             contents: "full"
-        })
+        }),
+        next: { revalidate: CACHE_TTL_MS }
     });
 
     if (response.status === 429) {
@@ -50,15 +45,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const district = searchParams.get('district') || 'Berlin';
 
-    // Create a cache key based on the params
-    const cacheKey = `traffic_${district}`;
-
-    // Check cache
-    const cached = cache[cacheKey];
-    if (cached && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
-        console.log(`[API] Serving from cache: ${cached.data?.features?.length || 0} features`);
-        return NextResponse.json(cached.data);
-    }
+    // No in-memory cache checks; handled by Next.js edge caching automatically
 
     try {
         const area = getSnapshotBBoxString(district);
@@ -74,8 +61,6 @@ export async function GET(request: NextRequest) {
                 return NextResponse.json({ error: 'API Key missing or invalid' }, { status: 401 });
             }
             if ((error as Error).message === 'API_RATE_LIMIT') {
-                // If rate limited, try to return stale cache if available, else error
-                if (cached) return NextResponse.json(cached.data);
                 return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
             }
             console.error('T-1 fetch failed:', error);
@@ -90,7 +75,6 @@ export async function GET(request: NextRequest) {
                 }
             } catch (error) {
                 if ((error as Error).message === 'API_RATE_LIMIT') {
-                    if (cached) return NextResponse.json(cached.data);
                     if (data) return NextResponse.json(data); // Return T-1 empty result if T-2 rate limits
                     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
                 }
@@ -102,11 +86,6 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Failed to fetch traffic data' }, { status: 500 });
         }
 
-        // Update cache
-        cache[cacheKey] = {
-            data: data,
-            timestamp: Date.now()
-        };
 
         return NextResponse.json(data);
 

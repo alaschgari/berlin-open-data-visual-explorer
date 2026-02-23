@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs/promises';
 
+export const revalidate = 86400; // 24 hours
+
 export async function GET() {
     try {
         const filePath = path.join(process.cwd(), 'data', 'processed', 'demographics_2024.json');

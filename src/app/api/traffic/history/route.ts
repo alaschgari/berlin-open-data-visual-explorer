@@ -32,6 +32,7 @@ export async function GET(request: Request) {
                 time_start: formatTime(startDate),
                 time_end: formatTime(endDate),
             }),
+            next: { revalidate: 3600 } // 1 hour cache
         });
 
         if (!response.ok) {

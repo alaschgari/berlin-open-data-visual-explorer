@@ -38,7 +38,9 @@ export interface BadestelleFeature {
  */
 export async function getBadestellenLive(): Promise<BadestelleFeature[]> {
     try {
-        const response = await fetch(BADESTELLEN_CSV_URL);
+        const response = await fetch(BADESTELLEN_CSV_URL, {
+            next: { revalidate: 10800 } // 3 hours
+        });
         if (!response.ok) throw new Error(`CSV fetch failed: ${response.statusText}`);
 
         const csvText = await response.text();
