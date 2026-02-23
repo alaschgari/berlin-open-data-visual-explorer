@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import path from 'path';
-import fs from 'fs';
+import zlib from 'zlib';
+
+const GITHUB_RAW_BASE_URL = 'https://raw.githubusercontent.com/alaschgari/berlin-open-data-visual-explorer/main/data/processed/lor_details';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -11,19 +12,27 @@ export async function GET(request: Request) {
     }
 
     try {
-        const filePath = path.join(process.cwd(), 'data/processed/lor_details', `${lorId}.json`);
+        const response = await fetch(`${GITHUB_RAW_BASE_URL}/${lorId}.json.gz`, {
+            next: { revalidate: 7776000 } // Cache for 3 months (90 days) since data rarely updates
+        });
 
-        if (!fs.existsSync(filePath)) {
+        if (response.status === 404) {
             // It's possible a valid LOR just has no businesses, or the file wasn't generated. Return empty array.
             return NextResponse.json([]);
         }
 
-        const fileContent = fs.readFileSync(filePath, 'utf8');
+        if (!response.ok) {
+            throw new Error(`Failed to fetch from GitHub: ${response.statusText}`);
+        }
+
+        const arrayBuffer = await response.arrayBuffer();
+        const compressedContent = Buffer.from(arrayBuffer);
+        const fileContent = zlib.gunzipSync(compressedContent).toString('utf8');
         const data = JSON.parse(fileContent);
 
         return NextResponse.json(data);
     } catch (error) {
-        console.error('Error reading business details:', error);
+        console.error('Error fetching business details from GitHub:', error);
         return NextResponse.json({ error: 'Failed to load business details' }, { status: 500 });
     }
 }

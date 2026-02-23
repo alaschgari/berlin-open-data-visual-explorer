@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     try {
         if (!isCacheLoaded) {
             const response = await fetch(GITHUB_RAW_URL, {
-                next: { revalidate: 3600 } // Cache for 1 hour to prevent GitHub rate limits
+                next: { revalidate: 7776000 } // Cache for 3 months (90 days) since data rarely updates
             });
 
             if (!response.ok) {
