@@ -1,14 +1,15 @@
-
 import { NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
-import { parse } from 'papaparse';
+
+// Cache the search index in memory
+let cachedSearchIndex: any[] | null = null;
+let isCacheLoaded = false;
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q');
     const limit = parseInt(searchParams.get('limit') || '500');
-
     const districtId = searchParams.get('districtId');
 
     if (!query) {
@@ -16,61 +17,45 @@ export async function GET(request: Request) {
     }
 
     try {
-        const filePath = path.join(process.cwd(), 'data/raw', 'IHKBerlin_Gewerbedaten.csv');
-        const fileStream = fs.createReadStream(filePath);
+        if (!isCacheLoaded) {
+            const filePath = path.join(process.cwd(), 'data/processed', 'business_search_index.json');
+            if (fs.existsSync(filePath)) {
+                const fileContent = fs.readFileSync(filePath, 'utf8');
+                cachedSearchIndex = JSON.parse(fileContent);
+                isCacheLoaded = true;
+            } else {
+                return NextResponse.json({ error: 'Search index not found' }, { status: 500 });
+            }
+        }
 
         const results: any[] = [];
         const lorCounts: Record<string, number> = {};
         const lowercaseQuery = query.toLowerCase();
 
-        return new Promise<NextResponse>((resolve) => {
-            parse(fileStream, {
-                header: true,
-                skipEmptyLines: true,
-                step: (row) => {
-                    const data: any = row.data;
-                    const branch = (data.ihk_branch_desc || '').toLowerCase();
+        if (cachedSearchIndex) {
+            for (const item of cachedSearchIndex) {
+                const branch = (item.branch || '').toLowerCase();
 
-                    if (branch.includes(lowercaseQuery)) {
-                        const lorId = data.planungsraum_id;
-                        lorCounts[lorId] = (lorCounts[lorId] || 0) + 1;
+                if (branch.includes(lowercaseQuery)) {
+                    const lorId = item.lorId;
+                    lorCounts[lorId] = (lorCounts[lorId] || 0) + 1;
 
-                        // Check if we should add this point to results
-                        // If districtId is provided, ONLY add points from that district
-                        // If no districtId, add points until limit
-                        const matchesDistrict = !districtId || (lorId && lorId.startsWith(districtId));
+                    const matchesDistrict = !districtId || (lorId && lorId.startsWith(districtId));
 
-                        if (matchesDistrict && results.length < limit) {
-                            results.push({
-                                id: data.opendata_id,
-                                lat: parseFloat(data.latitude),
-                                lng: parseFloat(data.longitude),
-                                branch: data.ihk_branch_desc,
-                                employees: data.employees_range,
-                                type: data.business_type,
-                                age: data.business_age,
-                                city: data.city,
-                                postcode: data.postcode,
-                                lorId: data.planungsraum_id
-                            });
-                        }
+                    if (matchesDistrict && results.length < limit) {
+                        results.push(item);
                     }
-                },
-                complete: () => {
-                    resolve(NextResponse.json({
-                        points: results,
-                        lorCounts: lorCounts,
-                        totalMatched: Object.values(lorCounts).reduce((a, b) => a + b, 0)
-                    }));
-                },
-                error: (error: any) => {
-                    console.error('Error searching businesses:', error);
-                    resolve(NextResponse.json({ error: 'Failed to search businesses' }, { status: 500 }));
                 }
-            });
+            }
+        }
+
+        return NextResponse.json({
+            points: results,
+            lorCounts: lorCounts,
+            totalMatched: Object.values(lorCounts).reduce((a, b) => a + b, 0)
         });
     } catch (error) {
-        console.error('Error reading business data:', error);
-        return NextResponse.json({ error: 'Failed to load business data' }, { status: 500 });
+        console.error('Error reading business search data:', error);
+        return NextResponse.json({ error: 'Failed to search business data' }, { status: 500 });
     }
 }

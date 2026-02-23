@@ -609,3 +609,26 @@
 [getFinancialData] Reading from /Users/alaschgari/berlin-open-data/data/processed/financial_data.json
 [getFinancialData] Parsed 249626 records
  GET /?tab=business&district=Berlin 200 in 816ms (compile: 1830µs, render: 814ms)
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+▲ Next.js 16.2.0-canary.31 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.178.20:3000
+- Environments: .env.local
+✓ Ready in 36.3min
+⚠ Invalid next.config.ts options detected: 
+⚠     Unrecognized key(s) in object: 'outputFileTracingIncludes' at "experimental"
+⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+⚠ `experimental.outputFileTracingIncludes` has been moved to `outputFileTracingIncludes`. Please update your next.config.ts file accordingly.
+- Experiments (use with caution):
+  ? outputFileTracingIncludes (invalid experimental key)
+  ✓ useCache
+
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+▲ Next.js 16.2.0-canary.31 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.178.20:3000
+- Environments: .env.local
+✓ Ready in 37.7min
+- Experiments (use with caution):
+  ✓ useCache
+

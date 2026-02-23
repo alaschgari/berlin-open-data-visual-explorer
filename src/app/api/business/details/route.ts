@@ -1,8 +1,6 @@
-
 import { NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
-import { parse } from 'papaparse';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -13,42 +11,17 @@ export async function GET(request: Request) {
     }
 
     try {
-        const filePath = path.join(process.cwd(), 'data/raw', 'IHKBerlin_Gewerbedaten.csv');
-        const fileStream = fs.createReadStream(filePath);
+        const filePath = path.join(process.cwd(), 'data/processed/lor_details', `${lorId}.json`);
 
-        const results: any[] = [];
+        if (!fs.existsSync(filePath)) {
+            // It's possible a valid LOR just has no businesses, or the file wasn't generated. Return empty array.
+            return NextResponse.json([]);
+        }
 
-        return new Promise<NextResponse>((resolve) => {
-            parse(fileStream, {
-                header: true,
-                skipEmptyLines: true,
-                step: (row) => {
-                    const data: any = row.data;
-                    if (data.planungsraum_id === lorId) {
-                        results.push({
-                            id: data.opendata_id,
-                            city: data.city,
-                            postcode: data.postcode,
-                            employees: data.employees_range,
-                            branch: data.ihk_branch_desc || '',
-                            top_branch: data.branch_top_level_desc || '',
-                            type: data.business_type,
-                            age: data.business_age,
-                            planungsraum: data.Planungsraum,
-                            lat: parseFloat(data.latitude),
-                            lng: parseFloat(data.longitude)
-                        });
-                    }
-                },
-                complete: () => {
-                    resolve(NextResponse.json(results));
-                },
-                error: (error: any) => {
-                    console.error('Error parsing business details:', error);
-                    resolve(NextResponse.json({ error: 'Failed to parse business details' }, { status: 500 }));
-                }
-            });
-        });
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        const data = JSON.parse(fileContent);
+
+        return NextResponse.json(data);
     } catch (error) {
         console.error('Error reading business details:', error);
         return NextResponse.json({ error: 'Failed to load business details' }, { status: 500 });
