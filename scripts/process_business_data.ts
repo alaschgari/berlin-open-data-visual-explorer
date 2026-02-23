@@ -1,12 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import pkg from 'papaparse';
+import zlib from 'zlib';
 const { parse } = pkg;
 
 const DATA_URL = 'https://media.githubusercontent.com/media/IHKBerlin/IHKBerlin_Gewerbedaten/refs/heads/master/data/IHKBerlin_Gewerbedaten.csv';
 const RAW_FILE = path.join(process.cwd(), 'data/raw/IHKBerlin_Gewerbedaten.csv');
-const PROCESSED_FILE = path.join(process.cwd(), 'data/processed/business_aggregated.json');
-const SEARCH_INDEX_FILE = path.join(process.cwd(), 'data/processed/business_search_index.json');
+const PROCESSED_FILE = path.join(process.cwd(), 'data/processed/business_aggregated.json.gz');
+const SEARCH_INDEX_FILE = path.join(process.cwd(), 'data/processed/business_search_index.json.gz');
 const LOR_DETAILS_DIR = path.join(process.cwd(), 'data/processed/lor_details');
 
 async function downloadData() {
@@ -111,21 +112,21 @@ async function processData() {
 
             // Save Aggregated File
             fs.mkdirSync(path.dirname(PROCESSED_FILE), { recursive: true });
-            fs.writeFileSync(PROCESSED_FILE, JSON.stringify(aggregatedResults));
+            fs.writeFileSync(PROCESSED_FILE, zlib.gzipSync(JSON.stringify(aggregatedResults)));
             console.log(`Saved aggregated data to ${PROCESSED_FILE}`);
 
             // Save Search Index
-            fs.writeFileSync(SEARCH_INDEX_FILE, JSON.stringify(searchIndex));
+            fs.writeFileSync(SEARCH_INDEX_FILE, zlib.gzipSync(JSON.stringify(searchIndex)));
             console.log(`Saved search index to ${SEARCH_INDEX_FILE} (${(fs.statSync(SEARCH_INDEX_FILE).size / (1024 * 1024)).toFixed(2)} MB)`);
 
             // Save Individual LOR Detail Files
             fs.mkdirSync(LOR_DETAILS_DIR, { recursive: true });
             let lortCount = 0;
             for (const [lor, items] of Object.entries(lorDetails)) {
-                fs.writeFileSync(path.join(LOR_DETAILS_DIR, `${lor}.json`), JSON.stringify(items));
+                fs.writeFileSync(path.join(LOR_DETAILS_DIR, `${lor}.json.gz`), zlib.gzipSync(JSON.stringify(items)));
                 lortCount++;
             }
-            console.log(`Saved ${lortCount} individual LOR detail files to ${LOR_DETAILS_DIR}`);
+            console.log(`Saved ${lortCount} individual compressed LOR detail files to ${LOR_DETAILS_DIR}`);
         }
     });
 }

@@ -5,9 +5,9 @@ const nextConfig: NextConfig = {
     useCache: true, // Enable "use cache" directive
   },
   outputFileTracingIncludes: {
-    '/api/business/details': ['./data/processed/lor_details/**/*'],
-    '/api/business/search': ['./data/processed/business_search_index.json'],
-    '/api/business': ['./data/processed/business_aggregated.json']
+    '/api/business/details': ['./data/processed/lor_details/**/*.gz'],
+    '/api/business/search': ['./data/processed/business_search_index.json.gz'],
+    '/api/business': ['./data/processed/business_aggregated.json.gz']
   }
 };
 

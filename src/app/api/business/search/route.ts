@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
+import zlib from 'zlib';
 
 // Cache the search index in memory
 let cachedSearchIndex: any[] | null = null;
@@ -18,9 +19,10 @@ export async function GET(request: Request) {
 
     try {
         if (!isCacheLoaded) {
-            const filePath = path.join(process.cwd(), 'data/processed', 'business_search_index.json');
+            const filePath = path.join(process.cwd(), 'data/processed', 'business_search_index.json.gz');
             if (fs.existsSync(filePath)) {
-                const fileContent = fs.readFileSync(filePath, 'utf8');
+                const compressedContent = fs.readFileSync(filePath);
+                const fileContent = zlib.gunzipSync(compressedContent).toString('utf8');
                 cachedSearchIndex = JSON.parse(fileContent);
                 isCacheLoaded = true;
             } else {

@@ -1,13 +1,14 @@
-
 import { NextResponse } from 'next/server';
 import path from 'path';
-import fs from 'fs/promises';
+import fs from 'fs';
+import zlib from 'zlib';
 
 export async function GET() {
     try {
-        const filePath = path.join(process.cwd(), 'data/processed', 'business_aggregated.json');
-        const content = await fs.readFile(filePath, 'utf8');
-        const data = JSON.parse(content);
+        const filePath = path.join(process.cwd(), 'data/processed', 'business_aggregated.json.gz');
+        const compressedContent = fs.readFileSync(filePath);
+        const fileContent = zlib.gunzipSync(compressedContent).toString('utf8');
+        const data = JSON.parse(fileContent);
         return NextResponse.json(data);
     } catch (error) {
         console.error('Error reading business data:', error);
