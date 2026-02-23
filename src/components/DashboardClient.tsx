@@ -203,6 +203,11 @@ export default function DashboardClient({
                         />
                     )
                 }
+
+                {/* Global Footer */}
+                <footer className="pt-8 pb-4 text-center text-slate-500 text-xs font-medium">
+                    {t('built_by')} <a href="https://github.com/alaschgari" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 transition-colors">@alaschgari</a>
+                </footer>
             </div>
         </main>
     );

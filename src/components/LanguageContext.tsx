@@ -17,6 +17,7 @@ const translations: Translations = {
     'brand_sub': { de: 'Public Services Analytics', en: 'Public Services Analytics' },
     'last_sync': { de: 'Stand', en: 'Sync' },
     'locale': { de: 'DE', en: 'EN' },
+    'built_by': { de: 'Entwickelt von', en: 'Developed by' },
     'nav_more': { de: 'Mehr', en: 'More' },
     'cat_finance': { de: 'Finanzen', en: 'Finance' },
     'cat_infrastructure': { de: 'Infrastruktur', en: 'Infrastructure' },
