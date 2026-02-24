@@ -98,33 +98,54 @@ export async function fetchBerlinData() {
   }
 }
 
-async function downloadResource(resource: CkanResource, datasetTitle: string) {
-  try {
-    if (!resource.url || !resource.name || !resource.format) {
-      console.warn(`Skipping resource with missing data: ${datasetTitle}`);
-      return;
+async function downloadResource(resource: CkanResource, datasetTitle: string, maxRetries: number = 3) {
+  if (!resource.url || !resource.name || !resource.format) {
+    console.warn(`Skipping resource with missing data: ${datasetTitle}`);
+    return;
+  }
+
+  const safeTitle = datasetTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  const safeResourceName = resource.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  const filename = `${safeTitle}_${safeResourceName}.${resource.format.toLowerCase()}`;
+  const filePath = path.join(DATA_DIR, filename);
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      if (attempt > 1) {
+        console.log(`Retrying resource: ${resource.name} (${resource.format}) [Attempt ${attempt}/${maxRetries}]`);
+      } else {
+        console.log(`Downloading resource: ${resource.name} (${resource.format})`);
+      }
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
+
+      const response = await fetch(resource.url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        if (response.status === 404 || response.status === 410) {
+          console.error(`Status ${response.status} for ${resource.url} - Skipping.`);
+          return;
+        }
+        throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      fs.writeFileSync(filePath, buffer);
+      console.log(`Saved to ${filePath}`);
+      return; // Success
+    } catch (error: any) {
+      const waitTimeMs = 2000 * Math.pow(2, attempt - 1);
+      console.warn(`Error on attempt ${attempt} for ${resource.name}: ${error.message}. Retrying in ${waitTimeMs}ms...`);
+      if (attempt === maxRetries) {
+        console.error(`Failed to download ${resource.name} after ${maxRetries} attempts.`);
+        return;
+      }
+      await new Promise(resolve => setTimeout(resolve, waitTimeMs));
     }
-    console.log(`Downloading resource: ${resource.name} (${resource.format})`);
-
-    const response = await fetch(resource.url);
-    if (!response.ok) {
-      console.error(`Failed to download ${resource.url}: ${response.statusText}`);
-      return;
-    }
-
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    // Sanitize filenames
-    const safeTitle = datasetTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-    const safeResourceName = resource.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-    const filename = `${safeTitle}_${safeResourceName}.${resource.format.toLowerCase()}`;
-    const filePath = path.join(DATA_DIR, filename);
-
-    fs.writeFileSync(filePath, buffer);
-    console.log(`Saved to ${filePath}`);
-  } catch (error) {
-    console.error(`Error saving resource ${resource.name}:`, error);
   }
 }
 
