@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import zlib from 'zlib';
-
-const GITHUB_RAW_BASE_URL = 'https://raw.githubusercontent.com/alaschgari/berlin-open-data-visual-explorer/main/data/processed/lor_details';
+import { supabase } from '@/lib/supabase';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -12,27 +10,34 @@ export async function GET(request: Request) {
     }
 
     try {
-        const response = await fetch(`${GITHUB_RAW_BASE_URL}/${lorId}.json.gz`, {
-            next: { revalidate: 7776000 } // Cache for 3 months (90 days) since data rarely updates
-        });
+        // Query all businesses in this LOR
+        const { data, error } = await supabase
+            .from('businesses')
+            .select('*')
+            .eq('lor_id', lorId);
 
-        if (response.status === 404) {
-            // It's possible a valid LOR just has no businesses, or the file wasn't generated. Return empty array.
-            return NextResponse.json([]);
+        if (error) {
+            console.error('Error fetching business details from Supabase:', error);
+            return NextResponse.json({ error: 'Failed to load business details' }, { status: 500 });
         }
 
-        if (!response.ok) {
-            throw new Error(`Failed to fetch from GitHub: ${response.statusText}`);
-        }
+        // Map to the expected format
+        const formattedData = (data || []).map(d => ({
+            id: d.id,
+            city: d.city,
+            postcode: d.postcode,
+            employees: d.employees,
+            branch: d.branch,
+            top_branch: d.top_branch,
+            type: d.type,
+            age: d.age,
+            lat: d.lat,
+            lng: d.lng
+        }));
 
-        const arrayBuffer = await response.arrayBuffer();
-        const compressedContent = Buffer.from(arrayBuffer);
-        const fileContent = zlib.gunzipSync(compressedContent).toString('utf8');
-        const data = JSON.parse(fileContent);
-
-        return NextResponse.json(data);
+        return NextResponse.json(formattedData);
     } catch (error) {
-        console.error('Error fetching business details from GitHub:', error);
+        console.error('Error fetching business details:', error);
         return NextResponse.json({ error: 'Failed to load business details' }, { status: 500 });
     }
 }

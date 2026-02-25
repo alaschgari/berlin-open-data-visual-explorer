@@ -1,26 +1,26 @@
 import { NextResponse } from 'next/server';
-import zlib from 'zlib';
-
-const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/alaschgari/berlin-open-data-visual-explorer/main/data/processed/business_aggregated.json.gz';
+import { supabase } from '@/lib/supabase';
 
 export async function GET() {
     try {
-        const response = await fetch(GITHUB_RAW_URL, {
-            next: { revalidate: 7776000 } // Cache for 3 months (90 days) since data rarely updates
-        });
+        const { data, error } = await supabase
+            .from('business_by_lor')
+            .select('*');
 
-        if (!response.ok) {
-            throw new Error(`Failed to fetch from GitHub: ${response.statusText}`);
+        if (error) {
+            console.error('Error fetching business data:', error);
+            return NextResponse.json({ error: 'Failed to load business data' }, { status: 500 });
         }
 
-        const arrayBuffer = await response.arrayBuffer();
-        const compressedContent = Buffer.from(arrayBuffer);
-        const fileContent = zlib.gunzipSync(compressedContent).toString('utf8');
-        const data = JSON.parse(fileContent);
+        // Convert back to the expected format
+        const byLor: Record<string, any> = {};
+        data.forEach(row => {
+            byLor[row.lor_id] = row.data;
+        });
 
-        return NextResponse.json(data);
+        return NextResponse.json({ byLor });
     } catch (error) {
-        console.error('Error fetching business data from GitHub:', error);
+        console.error('Error fetching business data:', error);
         return NextResponse.json({ error: 'Failed to load business data' }, { status: 500 });
     }
 }

@@ -46,9 +46,8 @@ async function main() {
         const deduplicatedFinancial = Array.from(uniqueFinancialRecords.values());
         console.log(`Deduplicated from ${financialRecords.length} to ${deduplicatedFinancial.length} records.`);
 
-        // Strip the 'title' field because the column doesn't exist in Supabase yet 
-        // and we handle it dynamically in the API route.
-        const recordsToPush = deduplicatedFinancial.map(({ title, ...rest }) => rest);
+        // Push records with all fields (including the new 'title' column)
+        const recordsToPush = deduplicatedFinancial;
 
         console.log(`Pushing ${recordsToPush.length} financial records to Supabase...`);
         // Use upsert with a large batch size
