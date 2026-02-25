@@ -33,27 +33,38 @@ export async function GET(request: Request) {
             });
         }
 
-        // Stage 2: Fetch detailed points for the map (limited for performance)
-        let pointsQuery = supabase
-            .from('businesses')
-            .select('id, lat, lng, branch, employees, type, age, city, postcode, lor_id')
-            .ilike('branch', `%${query}%`)
-            .limit(limit);
+        // Stage 2: Fetch detailed points for the map
+        // Supabase has a default limit of 1000. We'll fetch in parallel chunks to get more.
+        const CHUNK_SIZE = 1000;
+        const totalChunks = Math.min(5, Math.ceil(limit / CHUNK_SIZE)); // Fetch up to 5000 records
 
-        if (districtId) {
-            pointsQuery = pointsQuery.like('lor_id', `${districtId}%`);
+        const fetchPromises = [];
+        for (let i = 0; i < totalChunks; i++) {
+            let chunkQuery = supabase
+                .from('businesses')
+                .select('id, lat, lng, branch, employees, type, age, city, postcode, lor_id')
+                .ilike('branch', `%${query}%`)
+                .range(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE - 1);
+
+            if (districtId) {
+                chunkQuery = chunkQuery.like('lor_id', `${districtId}%`);
+            }
+            fetchPromises.push(chunkQuery);
         }
 
-        const { data: pointsData, error: pointsError } = await pointsQuery;
+        const chunkResults = await Promise.all(fetchPromises);
+        let allPoints: any[] = [];
 
-        if (pointsError) {
-            console.error('Error fetching business points:', pointsError);
-        }
-
-        const results = pointsData || [];
+        chunkResults.forEach(({ data, error }) => {
+            if (error) {
+                console.error('Error fetching business chunk:', error);
+            } else if (data) {
+                allPoints = [...allPoints, ...data];
+            }
+        });
 
         return NextResponse.json({
-            points: results.map(item => ({
+            points: allPoints.map(item => ({
                 id: item.id,
                 lat: item.lat,
                 lng: item.lng,
@@ -66,7 +77,7 @@ export async function GET(request: Request) {
                 lorId: item.lor_id
             })),
             lorCounts: lorCounts,
-            totalMatched: totalMatched // Now reflects 100% of matching records!
+            totalMatched: totalMatched
         });
     } catch (error) {
         console.error('Error searching business data:', error);
