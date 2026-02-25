@@ -6,6 +6,8 @@ const CKAN_API_URL = 'https://datenregister.berlin.de/api/3/action/package_searc
 const DATA_DIR = path.join(process.cwd(), 'data/raw');
 const PROCESSED_DIR = path.join(process.cwd(), 'data/processed');
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 interface CkanResource {
   id: string;
   name: string;
@@ -53,11 +55,21 @@ export async function fetchBerlinData() {
     for (const query of queries) {
       console.log(`Searching for: ${query}`);
       const url = `${CKAN_API_URL}?q=${encodeURIComponent(query)}&rows=1000`;
+
+      // Delay before each CKAN request to avoid rate limiting
+      await sleep(500);
+
       const response = await fetch(url);
-      if (!response.ok) continue;
+      if (!response.ok) {
+        console.warn(`CKAN Query "${query}" failed with status: ${response.status}`);
+        continue;
+      }
 
       const data: CkanResponse = await response.json();
-      if (!data.success) continue;
+      if (!data.success) {
+        console.warn(`CKAN Query "${query}" reported success=false`);
+        continue;
+      }
 
       console.log(`Query "${query}" found ${data.result.results.length} datasets.`);
 
@@ -128,6 +140,12 @@ async function downloadResource(resource: CkanResource, datasetTitle: string, ma
           console.error(`Status ${response.status} for ${resource.url} - Skipping.`);
           return;
         }
+        if (response.status === 429) {
+          const waitTime = 5000 * attempt;
+          console.warn(`Rate limited (429) on ${resource.name}. Waiting ${waitTime}ms...`);
+          await sleep(waitTime);
+          continue;
+        }
         throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
       }
 
@@ -136,6 +154,8 @@ async function downloadResource(resource: CkanResource, datasetTitle: string, ma
 
       fs.writeFileSync(filePath, buffer);
       console.log(`Saved to ${filePath}`);
+      // Small pause after successful download
+      await sleep(100);
       return; // Success
     } catch (error: any) {
       const waitTimeMs = 2000 * Math.pow(2, attempt - 1);
@@ -144,7 +164,7 @@ async function downloadResource(resource: CkanResource, datasetTitle: string, ma
         console.error(`Failed to download ${resource.name} after ${maxRetries} attempts.`);
         return;
       }
-      await new Promise(resolve => setTimeout(resolve, waitTimeMs));
+      await sleep(waitTimeMs);
     }
   }
 }
@@ -213,7 +233,10 @@ export async function fetchMarketsData() {
   console.log('Fetching Wochen- & Trödelmärkte (Markets)...');
   try {
     const response = await fetch(MARKETS_URL);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      console.error(`Error fetching markets data: HTTP ${response.status}`);
+      return false;
+    }
 
     const buffer = await response.arrayBuffer();
     fs.writeFileSync(TARGET_PATH, Buffer.from(buffer));

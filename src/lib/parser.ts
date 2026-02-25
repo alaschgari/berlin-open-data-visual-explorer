@@ -2,6 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import * as XLSX from 'xlsx';
+import { getTitleName } from './budget-mappings';
 
 const RAW_DIR = path.join(process.cwd(), 'data/raw');
 const PROCESSED_DIR = path.join(process.cwd(), 'data/processed');
@@ -11,25 +12,16 @@ export interface FinancialRecord {
     district: string;
     chapter: string; // Kapitel
     title_code: string; // Titel
+    title?: string; // Bezeichnung
     budget: number; // Ansatz
     actual: number; // Ist
     diff: number; // Budget - Actual
 }
 
 export async function processFiles() {
-    if (!fs.existsSync(RAW_DIR)) return [];
+    if (!fs.existsSync(RAW_DIR)) return { financialRecords: [], subsidyRecords: [] };
 
     const allFiles = fs.readdirSync(RAW_DIR);
-
-    // Deduplicate files: Group by Budget Period (e.g. "2024_2025") and select the latest version (Nachtrag)
-    // Heuristic: 
-    // 1. Identify "Doppelhaushalt" files
-    // 2. Group by years found in filename
-    // 3. Pick the one with highest 'nachtrag' number or valid latest timestamp/length
-
-    // Simplification for now: Explicit ignore list or "Latest wins" based on sorting
-    // We strictly want to avoid processing the same year from multiple files if they represent updates.
-
     // Grouping map
     const fileGroups: Record<string, string[]> = {};
 
@@ -39,13 +31,12 @@ export async function processFiles() {
         let key = 'misc';
         if (f.includes('2024_2025')) key = '2024_2025';
         else if (f.includes('2022_2023')) key = '2022_2023';
-        else if (f.includes('2020_2021')) key = '2020_2021'; // If exists
-        else key = f; // Unique misc files are kept
+        else if (f.includes('2020_2021')) key = '2020_2021';
+        else key = f;
 
         if (!fileGroups[key]) fileGroups[key] = [];
         fileGroups[key].push(f);
     });
-
     const filesToProcess: string[] = [];
 
     Object.keys(fileGroups).forEach(key => {
@@ -53,82 +44,58 @@ export async function processFiles() {
         if (key === 'misc' || group.length === 1) {
             filesToProcess.push(...group);
         } else {
-            // Pick the "best" file for this period
-            // Prefer CSV over Excel?
-            // Prefer "Nachtrag" with highest number?
-
-            // Sort by: 
-            // 1. Contains 'nachtrag' (descending numeric val)
-            // 2. File extension (CSV preferred)?
-
             group.sort((a, b) => {
                 const getVal = (name: string) => {
                     const match = name.match(/(\d+)[_.]?nachtrag/i);
                     return match ? parseInt(match[1]) : 0;
                 };
-                return getVal(b) - getVal(a); // Highest nachtrag first
+                return getVal(b) - getVal(a);
             });
-
             const best = group[0];
-            console.log(`[Parser] For period ${key}, selected ${best} out of ${group.length} files.`);
             filesToProcess.push(best);
         }
     });
 
     let records: FinancialRecord[] = [];
-
     for (const file of filesToProcess) {
-
-        console.log(`Processing file: ${file}`);
         const filePath = path.join(RAW_DIR, file);
-
         try {
             if (file.toLowerCase().includes('doppelhaushalt') && file.endsWith('.csv')) {
                 const newRecords = parseDoppelhaushalt(filePath);
                 records = [...records, ...newRecords];
             } else if (file.endsWith('.json')) {
-                // Handle JSON (if any)
                 const content = fs.readFileSync(filePath, 'utf-8');
                 const data = JSON.parse(content);
-                // ... mapping logic for JSON
-            } else {
-                // Handle Excel
-                if (!fs.existsSync(filePath)) {
-                    console.error(`File does not exist: ${filePath}`);
-                    continue;
-                }
+            } else if (file.match(/\.(xlsx|xls)$/i)) {
+                if (!fs.existsSync(filePath)) continue;
                 const buffer = fs.readFileSync(filePath);
                 const workbook = XLSX.read(buffer, { type: 'buffer' });
                 const sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
                 const rawData = XLSX.utils.sheet_to_json(sheet);
 
-
                 for (const row of rawData as any[]) {
-                    // Extract district from filename if not present
                     const district = getDistrictFromFilename(file);
-                    // Basic mapping based on observed headers
-                    // Need to handle different possible header names or just grab specific properties
                     const year = row['Haushaltsjahr'] || row['Jahr'];
                     const chapter = row['Kapitel'];
                     const titleCode = row['Titel'];
                     const budget = parseCurrency(row['Ansatz']);
                     const actual = parseCurrency(row['Ist']);
-
                     const titleStr = String(titleCode || '');
-                    const isLeaf = titleStr.length === 5; // Haushalts-Titel are usually 5 digits leaf nodes
+                    const isLeaf = titleStr.length === 5;
                     const titleType = String(row['Titelart'] || '').toLowerCase();
-                    const isExpense = titleType.includes('ausgabe') || !titleType.includes('einnahme'); // Default to expense if unclear to avoid losing data, but filter out explicit revenue
+                    const isExpense = titleType.includes('ausgabe') || !titleType.includes('einnahme');
 
                     if (year && chapter && titleCode && isLeaf && isExpense) {
                         const yearNum = Number(year);
-                        // Strict validation to avoid garbage data (e.g. from wrong columns)
-                        if (yearNum >= 2000 && yearNum <= 2100) { // Removed district !== 'Berlin' to allow city-wide data
+                        if (yearNum >= 2000 && yearNum <= 2100) {
+                            const titleStrFixed = titleStr;
                             records.push({
                                 year: yearNum,
                                 district: district,
                                 chapter: String(chapter),
-                                title_code: titleStr,
+                                title_code: titleStrFixed,
+                                title: getTitleName(titleStrFixed),
                                 budget: budget || 0,
                                 actual: actual || 0,
                                 diff: (budget || 0) - (actual || 0)
@@ -142,27 +109,28 @@ export async function processFiles() {
         }
     }
 
-    // Ensure processed directory exists
-    if (!fs.existsSync(PROCESSED_DIR)) {
-        fs.mkdirSync(PROCESSED_DIR, { recursive: true });
-    }
-
-    const outputPath = path.join(PROCESSED_DIR, 'financial_data.json');
-    // Process subsidies if exists
+    let subsidyRecords: SubsidyRecord[] = [];
     const subsidiesPath = path.join(RAW_DIR, 'subsidies.csv');
     if (fs.existsSync(subsidiesPath)) {
         console.log('Processing subsidies...');
-        const subsidyRecords = parseSubsidies(subsidiesPath);
-        // We'll save these to a separate file to keep the main budget data clean
-        const subsidiesProcessedPath = path.join(path.dirname(outputPath), 'subsidies_data.json');
-        fs.writeFileSync(subsidiesProcessedPath, JSON.stringify(subsidyRecords, null, 2));
-        console.log(`Saved ${subsidyRecords.length} subsidy records to ${subsidiesProcessedPath}`);
+        subsidyRecords = parseSubsidies(subsidiesPath);
     }
 
-    fs.writeFileSync(outputPath, JSON.stringify(records, null, 2));
+    // Keep writing files for now for backward compatibility or individual checks, 
+    // but the main goal is to return them.
+    if (!fs.existsSync(PROCESSED_DIR)) {
+        fs.mkdirSync(PROCESSED_DIR, { recursive: true });
+    }
+    const outputPath = path.join(PROCESSED_DIR, 'financial_data.json');
+    const subsidiesProcessedPath = path.join(PROCESSED_DIR, 'subsidies_data.json');
 
-    console.log(`Processed ${records.length} records. Saved to ${outputPath}`);
-    return records;
+    fs.writeFileSync(outputPath, JSON.stringify(records, null, 2));
+    if (subsidyRecords.length > 0) {
+        fs.writeFileSync(subsidiesProcessedPath, JSON.stringify(subsidyRecords, null, 2));
+    }
+
+    console.log(`Processed ${records.length} financial records and ${subsidyRecords.length} subsidy records.`);
+    return { financialRecords: records, subsidyRecords };
 }
 
 /**
@@ -266,6 +234,7 @@ function parseDoppelhaushalt(filePath: string): FinancialRecord[] {
             district: districtName || 'Berlin',
             chapter: cols[7] + ' ' + cols[8], // Kapitel + Bezeichnung
             title_code: titleCode, // Titel
+            title: getTitleName(titleCode),
             budget: budget,
             actual: actual,
             diff: budget - actual

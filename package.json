@@ -7,10 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "update-theft": "npx tsx scripts/update_theft_data.ts",
-    "sync": "npx tsx scripts/sync_data.ts"
+    "update-theft": "npx tsx --env-file=.env.local scripts/update_theft_data.ts",
+    "sync": "npx tsx --env-file=.env.local scripts/sync_data.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.97.0",
     "@types/leaflet": "^1.9.21",
     "@types/proj4": "^2.5.6",
     "clsx": "^2.1.1",

@@ -10,6 +10,7 @@ export interface FinancialRecord {
     district: string;
     chapter: string;
     title_code: string;
+    title?: string;
     budget: number;
     actual: number;
     diff: number;
@@ -38,27 +39,28 @@ export function calculateEnhancedMetrics(data: FinancialRecord[], type: MetricTy
     return calculateMetrics(dataCopy);
 }
 
-const DATA_PATH = path.join(process.cwd(), 'data/processed/financial_data.json');
+import { supabase } from './supabase';
 
-// Direct file access (caching handled by proxy.ts with "use cache")
+// Fetch from Supabase instead of local file
 export async function getFinancialData(): Promise<FinancialRecord[]> {
-    console.log(`[getFinancialData] Reading from ${DATA_PATH}`);
-    if (!fs.existsSync(DATA_PATH)) {
-        console.warn(`[getFinancialData] File not found: ${DATA_PATH}`);
+    console.log('[getFinancialData] Fetching from Supabase...');
+
+    // We fetch everything for now as the current logic expects full data for metrics
+    // In the future, we should probably offload metrics to SQL (group by etc.)
+    const { data, error } = await supabase
+        .from('financial_records')
+        .select('year, district, chapter, title_code, budget, actual, diff')
+        .order('year', { ascending: true });
+
+    if (error) {
+        console.error('[getFinancialData] Supabase error:', error);
         return [];
     }
 
-    try {
-        const content = fs.readFileSync(DATA_PATH, 'utf-8');
-        const data = JSON.parse(content) as FinancialRecord[];
-        console.log(`[getFinancialData] Parsed ${data.length} records`);
+    console.log(`[getFinancialData] Fetched ${data?.length || 0} records from Supabase`);
 
-        // Filter out invalid records (e.g. year 0)
-        return data.filter(r => r.year > 2000 && r.year < 2100);
-    } catch (error) {
-        console.error(`[getFinancialData] Error reading/parsing file:`, error);
-        throw error;
-    }
+    // Explicitly cast or map to ensure correct types (numeric columns in Supabase are returned as numbers)
+    return (data || []) as FinancialRecord[];
 }
 
 

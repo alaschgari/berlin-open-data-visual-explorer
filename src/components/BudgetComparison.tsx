@@ -39,6 +39,7 @@ export default function BudgetComparison({ node2026, node2027, selectedYear }: B
     const percentDiff = val26 !== 0 ? (diff / val26) * 100 : 0;
 
     const formatCurrency = (val: number) => {
+        if (val === undefined || val === null || isNaN(val)) return `0 ${t('euro')}`;
         if (Math.abs(val) >= 1e9) return `${(val / 1e9).toLocaleString(locale, { maximumFractionDigits: 2 })} ${t('mrd_euro')}`;
         if (Math.abs(val) >= 1e6) return `${(val / 1e6).toLocaleString(locale, { maximumFractionDigits: 2 })} ${t('mio_euro')}`;
         return `${val.toLocaleString(locale)} ${t('euro')}`;

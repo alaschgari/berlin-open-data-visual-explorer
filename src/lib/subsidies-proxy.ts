@@ -1,93 +1,7 @@
 'use server';
 
-import fs from 'fs';
-import path from 'path';
-import { SubsidyRecord, parseSubsidies } from './parser';
-
-const IS_VERCEL = !!process.env.VERCEL;
-
-// On Vercel, process.cwd() is read-only. Use /tmp for writable cache.
-const WRITABLE_DIR = IS_VERCEL ? '/tmp' : process.cwd();
-const PROCESSED_DIR = path.join(WRITABLE_DIR, 'data', 'processed');
-const RAW_DIR = path.join(WRITABLE_DIR, 'data', 'raw');
-const SUBSIDIES_RAW_FILE = path.join(RAW_DIR, 'subsidies.csv');
-const SUBSIDIES_FILE = path.join(PROCESSED_DIR, 'subsidies_data.json');
-
-// Bundled data shipped with the build (read-only on Vercel)
-const BUNDLED_SUBSIDIES_FILE = path.join(process.cwd(), 'data', 'processed', 'subsidies_data.json');
-
-const SUBISIDIES_URL = 'https://www.berlin.de/sen/finanzen/service/zuwendungsdatenbank/index.php/index/all.csv?q=';
-
-// In-memory cache to avoid repeated filesystem reads per cold start
-let cachedSubsidies: SubsidyRecord[] | null = null;
-
-function getSubsidiesFilePath(): string {
-    // Prefer the writable cache (freshly fetched), then the bundled version
-    if (fs.existsSync(SUBSIDIES_FILE)) return SUBSIDIES_FILE;
-    if (fs.existsSync(BUNDLED_SUBSIDIES_FILE)) return BUNDLED_SUBSIDIES_FILE;
-    return SUBSIDIES_FILE; // Will trigger fetch
-}
-
-async function checkAndUpdateSubsidies() {
-    try {
-        let shouldUpdate = false;
-        const rawFileExists = fs.existsSync(SUBSIDIES_RAW_FILE);
-
-        if (!rawFileExists && !fs.existsSync(BUNDLED_SUBSIDIES_FILE) && !fs.existsSync(SUBSIDIES_FILE)) {
-            // No data at all — must fetch
-            shouldUpdate = true;
-        } else if (rawFileExists) {
-            const stats = fs.statSync(SUBSIDIES_RAW_FILE);
-            const now = new Date();
-            const lastUpdate = new Date(stats.mtime);
-            const diffDays = (now.getTime() - lastUpdate.getTime()) / (1000 * 3600 * 24);
-
-            if (diffDays > 7) {
-                shouldUpdate = true;
-            }
-        }
-        // If we have bundled data and no writable cache, don't force a fetch — use bundled data
-
-        if (shouldUpdate) {
-            console.log(`[Subsidies Proxy] Fetching fresh data from Berlin.de...`);
-            const response = await fetch(SUBISIDIES_URL);
-            if (!response.ok) throw new Error(`Failed to fetch subsidies: ${response.statusText}`);
-
-            const csvData = await response.text();
-
-            // Ensure writable dirs exist
-            if (!fs.existsSync(RAW_DIR)) fs.mkdirSync(RAW_DIR, { recursive: true });
-            fs.writeFileSync(SUBSIDIES_RAW_FILE, csvData);
-
-            // Parse and save processed
-            const records = parseSubsidies(SUBSIDIES_RAW_FILE);
-            if (!fs.existsSync(PROCESSED_DIR)) fs.mkdirSync(PROCESSED_DIR, { recursive: true });
-            fs.writeFileSync(SUBSIDIES_FILE, JSON.stringify(records, null, 2));
-
-            // Update in-memory cache
-            cachedSubsidies = records;
-
-            console.log(`[Subsidies Proxy] Data updated successfully. (${records.length} records)`);
-        }
-    } catch (error) {
-        console.error(`[Subsidies Proxy] Error updating data:`, error);
-        // Fallback to bundled or cached data
-    }
-}
-
-export interface SubsidyMetrics {
-    totalAmount: number;
-    totalCount: number;
-    recipientCount: number;
-    providerCount: number;
-    minYear: number;
-    maxYear: number;
-    topRecipients: { name: string; amount: number; count: number; history: { year: number; amount: number }[] }[];
-    byYear: { year: number; amount: number }[];
-    byArea: { area: string; amount: number }[];
-    byProvider: { provider: string; amount: number }[];
-    byDistrict: { district: string; amount: number; count: number }[];
-}
+import { SubsidyRecord } from './parser';
+import { supabase } from './supabase';
 
 /**
  * Extract district name from provider field
@@ -98,18 +12,23 @@ function extractDistrict(provider: string): string | null {
     return match ? match[1].trim() : null;
 }
 
-function loadSubsidiesData(): SubsidyRecord[] {
-    if (cachedSubsidies) return cachedSubsidies;
-    const filePath = getSubsidiesFilePath();
-    if (!fs.existsSync(filePath)) return [];
-    const rawData = fs.readFileSync(filePath, 'utf8');
-    cachedSubsidies = JSON.parse(rawData);
-    return cachedSubsidies!;
+async function loadSubsidiesData(): Promise<SubsidyRecord[]> {
+    console.log('[Subsidies Proxy] Fetching from Supabase...');
+    const { data, error } = await supabase
+        .from('subsidies')
+        .select('*')
+        .order('year', { ascending: false });
+
+    if (error) {
+        console.error('[Subsidies Proxy] Supabase error:', error);
+        return [];
+    }
+
+    return (data || []) as SubsidyRecord[];
 }
 
 export async function getSubsidiesMetrics(district?: string): Promise<SubsidyMetrics> {
-    await checkAndUpdateSubsidies();
-    const allData = loadSubsidiesData();
+    const allData = await loadSubsidiesData();
     if (allData.length === 0) {
         return {
             totalAmount: 0,
@@ -245,8 +164,7 @@ export async function searchSubsidies(
     recipient?: string | string[],
     limit: number = 100
 ): Promise<SubsidyRecord[]> {
-    await checkAndUpdateSubsidies();
-    const allData = loadSubsidiesData();
+    const allData = await loadSubsidiesData();
     if (allData.length === 0) return [];
     let data = [...allData];
 
