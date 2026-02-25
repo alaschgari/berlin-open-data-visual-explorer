@@ -84,9 +84,10 @@ export async function processFiles() {
                     const titleStr = String(titleCode || '');
                     const isLeaf = titleStr.length === 5;
                     const titleType = String(row['Titelart'] || '').toLowerCase();
-                    const isExpense = titleType.includes('ausgabe') || !titleType.includes('einnahme');
+                    const isExpense = titleType.includes('ausgabe');
+                    const isRevenue = titleType.includes('einnahme');
 
-                    if (year && chapter && titleCode && isLeaf && isExpense) {
+                    if (year && chapter && titleCode && isLeaf && (isExpense || isRevenue)) {
                         const yearNum = Number(year);
                         if (yearNum >= 2000 && yearNum <= 2100) {
                             const titleStrFixed = titleStr;
@@ -221,7 +222,7 @@ function parseDoppelhaushalt(filePath: string): FinancialRecord[] {
 
         // ONLY process Expenses (Ausgabetitel) to get the actual spending budget
         // AND ensure it's a leaf node title (usually 5 digits)
-        if (titleArt !== 'Ausgabetitel') continue;
+        if (titleArt !== 'Ausgabetitel' && titleArt !== 'Einnahmetitel') continue;
         if (!titleCode || titleCode.length !== 5) continue;
 
         if (isNaN(amount)) continue;
