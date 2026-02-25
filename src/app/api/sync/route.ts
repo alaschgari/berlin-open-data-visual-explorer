@@ -12,7 +12,7 @@ export async function GET() {
             return NextResponse.json({
                 message: 'Data synchronization and processing successful',
                 downloadCount: result.count,
-                processedCount: records.length
+                processedCount: (records.financialRecords?.length || 0) + (records.subsidyRecords?.length || 0)
             });
         } else {
             return NextResponse.json({

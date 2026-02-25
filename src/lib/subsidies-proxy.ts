@@ -3,6 +3,25 @@
 import { SubsidyRecord } from './parser';
 import { supabase } from './supabase';
 
+export interface SubsidyMetrics {
+    totalAmount: number;
+    totalCount: number;
+    recipientCount: number;
+    providerCount: number;
+    minYear: number;
+    maxYear: number;
+    topRecipients: Array<{
+        name: string;
+        amount: number;
+        count: number;
+        history: Array<{ year: number; amount: number }>;
+    }>;
+    byYear: Array<{ year: number; amount: number }>;
+    byArea: Array<{ area: string; amount: number }>;
+    byProvider: Array<{ provider: string; amount: number }>;
+    byDistrict: Array<{ district: string; amount: number; count: number }>;
+}
+
 /**
  * Extract district name from provider field
  * e.g., "Bezirksamt Mitte" -> "Mitte"
