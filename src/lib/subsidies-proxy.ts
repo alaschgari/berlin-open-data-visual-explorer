@@ -32,18 +32,51 @@ function extractDistrict(provider: string): string | null {
 }
 
 async function loadSubsidiesData(): Promise<SubsidyRecord[]> {
-    console.log('[Subsidies Proxy] Fetching from Supabase...');
-    const { data, error } = await supabase
-        .from('subsidies')
-        .select('*')
-        .order('year', { ascending: false });
+    try {
+        // Step 1: Get total count
+        const { count, error: countError } = await supabase
+            .from('subsidies')
+            .select('*', { count: 'exact', head: true });
 
-    if (error) {
-        console.error('[Subsidies Proxy] Supabase error:', error);
+        if (countError) {
+            console.error('[Subsidies Proxy] Count error:', countError);
+            return [];
+        }
+
+        const totalRecords = count || 0;
+        const CHUNK_SIZE = 1000;
+        const totalChunks = Math.ceil(totalRecords / CHUNK_SIZE);
+
+        console.log(`[Subsidies Proxy] Fetching ${totalRecords} records in ${totalChunks} chunks`);
+
+        // Step 2: Fetch all records in parallel chunks
+        const fetchPromises = [];
+        for (let i = 0; i < totalChunks; i++) {
+            fetchPromises.push(
+                supabase
+                    .from('subsidies')
+                    .select('*')
+                    .range(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE - 1)
+                    .order('year', { ascending: false })
+            );
+        }
+
+        const chunkResults = await Promise.all(fetchPromises);
+        let allRecords: SubsidyRecord[] = [];
+
+        chunkResults.forEach(({ data, error }, index) => {
+            if (error) {
+                console.error(`[Subsidies Proxy] Error in chunk ${index}:`, error);
+            } else if (data) {
+                allRecords = allRecords.concat(data as SubsidyRecord[]);
+            }
+        });
+
+        return allRecords;
+    } catch (error) {
+        console.error('[Subsidies Proxy] Unexpected error:', error);
         return [];
     }
-
-    return (data || []) as SubsidyRecord[];
 }
 
 export async function getSubsidiesMetrics(district?: string): Promise<SubsidyMetrics> {
