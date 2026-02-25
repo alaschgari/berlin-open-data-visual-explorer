@@ -224,7 +224,7 @@ const translations: Translations = {
     'biz_type': { de: 'Gewerbeart', en: 'Business Type' },
     'biz_age': { de: 'Alter', en: 'Age' },
     'biz_no_entries': { de: 'Keine passenden Einträge gefunden.', en: 'No matching entries found.' },
-    'biz_show_hits_limit': { de: 'Zeige die ersten 2000 von {count} Treffern • Benutze die Suche zum Eingrenzen', en: 'Showing first 2000 of {count} hits • Use search to narrow down' },
+    'biz_show_hits_limit': { de: 'Zeige die ersten 10,000 von {count} Treffern • Benutze die Suche zum Eingrenzen', en: 'Showing first 10,000 of {count} hits • Use search to narrow down' },
     'biz_companies_count': { de: 'Unternehmen', en: 'Companies' },
     'biz_retail': { de: 'Handel', en: 'Retail' },
     'biz_all': { de: 'Alle', en: 'All' },

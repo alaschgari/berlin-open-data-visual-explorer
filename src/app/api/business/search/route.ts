@@ -36,7 +36,7 @@ export async function GET(request: Request) {
         // Stage 2: Fetch detailed points for the map
         // Supabase has a default limit of 1000. We'll fetch in parallel chunks to get more.
         const CHUNK_SIZE = 1000;
-        const totalChunks = Math.min(5, Math.ceil(limit / CHUNK_SIZE)); // Fetch up to 5000 records
+        const totalChunks = Math.min(10, Math.ceil(limit / CHUNK_SIZE)); // Fetch up to 10,000 records
 
         const fetchPromises = [];
         for (let i = 0; i < totalChunks; i++) {

@@ -530,6 +530,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                     <MapContainer
                         center={[52.5200, 13.4050]}
                         zoom={11}
+                        preferCanvas={true}
                         style={{ height: '100%', width: '100%', borderRadius: '1.5rem', background: '#0f172a' }}
                         aria-label={language === 'de' ? 'Gewerbedaten-Karte' : 'Business data map'}
                     >
@@ -1106,7 +1107,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                         </Fragment>
                                     ))
                                 ) : processedBusinesses.length > 0 ? (
-                                    processedBusinesses.slice(0, 2000).map((biz, i) => (
+                                    processedBusinesses.slice(0, 10000).map((biz, i) => (
                                         <BusinessRow key={i} biz={biz} />
                                     ))
                                 ) : (
@@ -1119,7 +1120,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                             </tbody>
                         </table>
                     </div>
-                    {!groupBy && processedBusinesses.length > 2000 && (
+                    {!groupBy && processedBusinesses.length > 10000 && (
                         <div className="p-4 bg-slate-800/20 border-t border-slate-700/50 text-center">
                             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
                                 {t('biz_show_hits_limit').replace('{count}', processedBusinesses.length.toString())}
