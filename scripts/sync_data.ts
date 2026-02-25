@@ -46,11 +46,15 @@ async function main() {
         const deduplicatedFinancial = Array.from(uniqueFinancialRecords.values());
         console.log(`Deduplicated from ${financialRecords.length} to ${deduplicatedFinancial.length} records.`);
 
-        console.log(`Pushing ${deduplicatedFinancial.length} financial records to Supabase...`);
+        // Strip the 'title' field because the column doesn't exist in Supabase yet 
+        // and we handle it dynamically in the API route.
+        const recordsToPush = deduplicatedFinancial.map(({ title, ...rest }) => rest);
+
+        console.log(`Pushing ${recordsToPush.length} financial records to Supabase...`);
         // Use upsert with a large batch size
         const CHUNK_SIZE = 1000;
-        for (let i = 0; i < deduplicatedFinancial.length; i += CHUNK_SIZE) {
-            const chunk = deduplicatedFinancial.slice(i, i + CHUNK_SIZE);
+        for (let i = 0; i < recordsToPush.length; i += CHUNK_SIZE) {
+            const chunk = recordsToPush.slice(i, i + CHUNK_SIZE);
             const { error } = await supabase
                 .from('financial_records')
                 .upsert(chunk, { onConflict: 'year,district,chapter,title_code' });
