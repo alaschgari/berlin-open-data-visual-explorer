@@ -110,12 +110,22 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
             )}
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                {/* Period Indicator */}
-                <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 rounded-xl border border-emerald-500/20 w-fit">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest">
-                        {language === 'de' ? 'Datenstand' : 'Data Period'}: {metrics.period}
-                    </span>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 rounded-xl border border-emerald-500/20 w-fit">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest">
+                            {language === 'de' ? 'Datenstand' : 'Data Period'}: {metrics.period}
+                        </span>
+                    </div>
+
+                    {(metrics.period.includes('2026') || metrics.period.includes('2027')) && (
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 rounded-lg border border-blue-500/20 shadow-sm">
+                            <Info size={14} className="text-blue-400" />
+                            <span className="text-[10px] font-black text-blue-400 uppercase tracking-tighter">
+                                {t('tax_planned')}
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Perspective Toggle */}

@@ -252,6 +252,7 @@ const translations: Translations = {
     'tax_distribution': { de: 'Verteilung der Steuerarten', en: 'Distribution of Tax Types' },
     'tax_top_sources': { de: 'Top 10 Einnahmequellen', en: 'Top 10 Revenue Sources' },
     'tax_main_source': { de: 'Hauptquelle', en: 'Main Source' },
+    'tax_planned': { de: 'Planung', en: 'Planned' },
 
     // Theft
     'theft_title': { de: 'Kriminalitäts-Atlas', en: 'Crime Atlas' },
