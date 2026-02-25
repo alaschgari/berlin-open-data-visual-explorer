@@ -59,22 +59,51 @@ export async function GET(request: NextRequest) {
     const year = parseInt(searchParams.get('year') || '2024');
 
     try {
-        const { data, error } = await supabase
+        // Step 1: Get total count for this year
+        const { count, error: countError } = await supabase
             .from('financial_records')
-            .select('*')
+            .select('*', { count: 'exact', head: true })
             .eq('year', year);
 
-        if (error) {
-            console.error(`[API Budget] Supabase error for year ${year}:`, error);
+        if (countError) {
+            console.error(`[API Budget] Count error for year ${year}:`, countError);
             return NextResponse.json({ error: 'Database error' }, { status: 500 });
         }
 
-        if (!data || data.length === 0) {
-            // Return an empty tree instead of 404 to be more graceful
+        const totalRecords = count || 0;
+        const CHUNK_SIZE = 1000;
+        const totalChunks = Math.ceil(totalRecords / CHUNK_SIZE);
+
+        console.log(`[API Budget] Fetching ${totalRecords} records for ${year} in ${totalChunks} chunks`);
+
+        // Step 2: Fetch all records in parallel chunks
+        const fetchPromises = [];
+        for (let i = 0; i < totalChunks; i++) {
+            fetchPromises.push(
+                supabase
+                    .from('financial_records')
+                    .select('*')
+                    .eq('year', year)
+                    .range(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE - 1)
+            );
+        }
+
+        const chunkResults = await Promise.all(fetchPromises);
+        let allRecords: any[] = [];
+
+        chunkResults.forEach(({ data, error }, index) => {
+            if (error) {
+                console.error(`[API Budget] Error in chunk ${index}:`, error);
+            } else if (data) {
+                allRecords = allRecords.concat(data);
+            }
+        });
+
+        if (allRecords.length === 0) {
             return NextResponse.json({ name: 'Keine Daten', value: 0, children: [] });
         }
 
-        const tree = buildBudgetTree(data);
+        const tree = buildBudgetTree(allRecords);
         return NextResponse.json(tree);
     } catch (error) {
         console.error(`[API Budget] Error:`, error);
