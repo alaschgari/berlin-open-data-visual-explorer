@@ -12,13 +12,13 @@ Ein interaktives Dashboard zur Visualisierung öffentlicher Berliner Daten. Die 
 
 | Modul | Beschreibung |
 |---|---|
-| 🏦 **Haushalt** | Historische Haushalts­daten und Budgetvergleiche nach Bezirk und Kapitel |
-| 💰 **Subventionen** | Durchsuchbare Tabelle aller Berliner Fördermittel­empfänger |
+| 🏦 **Haushalt** | **Planung 2026/27** sowie historische Daten (>140.000 Datensätze) mit parallelem Datenabruf |
+| 💰 **Subventionen** | Vollständige Datenbank aller **54.771 Förderbescheide** inklusive Empfänger-Insights |
 | 👥 **Demografie** | Bevölkerungskarte und Altersstruktur nach LOR-Planungsräumen |
-| 🚗 **Verkehr** | Aktuelle Verkehrs­belastung und historische Verläufe |
-| 🏪 **Gewerbedaten** | Unternehmens­karte mit Branchen­filter |
-| 💵 **Steuereinnahmen** | Entwicklung der Berliner Steuereinnahmen |
-| 🚰 **Abwasser** | Abwasser­kennzahlen im Zeitverlauf |
+| 🚗 **Verkehr** | Aktuelle Verkehrs­belastung und historische Verläufe via Telraam API |
+| 🏪 **Gewerbedaten** | Hochpräzise Karte mit bis zu **10.000 Unternehmen** gleichzeitig |
+| 💵 **Steuereinnahmen** | Live-Daten aus dem Haushalt inkl. **Planungswerten** für 2026/2027 |
+| 🚰 **Abwasser** | Abwasser­kennzahlen und Gesundheitstrends im Zeitverlauf |
 | 🚲 **Fahrraddiebstahl** | Interaktive Karte der Fahrraddiebstähle nach Bezirk |
 | 🛒 **Wochenmärkte** | Karte aller Wochenmärkte in Berlin |
 | 🏊 **Badestellen** | Wasserqualität an Berliner Badestellen mit Live-Daten |
@@ -82,6 +82,7 @@ npx vercel
 ### 🛠️ Tech Stack
 
 - **Framework:** [Next.js 15](https://nextjs.org) (App Router, SSR)
+- **Datenbank:** [Supabase](https://supabase.com) (PostgreSQL) für High-Scale Datenverarbeitung
 - **Sprache:** TypeScript
 - **Styling:** Tailwind CSS v4
 - **Karten:** Leaflet / React-Leaflet
@@ -100,13 +101,13 @@ An interactive dashboard for visualising Berlin's public open data. The applicat
 
 | Module | Description |
 |---|---|
-| 🏦 **Budget** | Historical budget data and comparisons by district and chapter |
-| 💰 **Subsidies** | Searchable table of all Berlin subsidy recipients |
+| 🏦 **Budget** | **Plan 2026/27** and historical data (>140k records) using parallel chunked fetching |
+| 💰 **Subsidies** | Complete database of all **54,771 grant resolutions** with recipient insights |
 | 👥 **Demographics** | Population map and age structure by LOR planning areas |
-| 🚗 **Traffic** | Current traffic load and historical trends |
-| 🏪 **Business** | Company map with industry filters |
-| 💵 **Tax Revenue** | Development of Berlin's tax revenues over time |
-| 🚰 **Wastewater** | Wastewater statistics over time |
+| 🚗 **Traffic** | Current traffic load and historical trends via Telraam API |
+| 🏪 **Business** | High-precision map with support for up to **10,000 businesses** |
+| 💵 **Tax Revenue** | Live budget data including **planned figures** for 2026/2027 |
+| 🚰 **Wastewater** | Wastewater statistics and health trends over time |
 | 🚲 **Bicycle Theft** | Interactive map of bicycle thefts by district |
 | 🛒 **Markets** | Map of all weekly markets in Berlin |
 | 🏊 **Bathing Spots** | Water quality at Berlin bathing spots with live data |
@@ -170,6 +171,7 @@ npx vercel
 ### 🛠️ Tech Stack
 
 - **Framework:** [Next.js 15](https://nextjs.org) (App Router, SSR)
+- **Database:** [Supabase](https://supabase.com) (PostgreSQL) for large-scale data handling
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS v4
 - **Maps:** Leaflet / React-Leaflet
