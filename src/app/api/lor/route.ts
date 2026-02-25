@@ -1,21 +1,46 @@
 import { NextResponse } from 'next/server';
-import path from 'path';
-import fs from 'fs/promises';
+import { supabase } from '@/lib/supabase';
 
 export async function GET() {
     try {
-        const filePath = path.join(process.cwd(), 'data', 'processed', 'lor_data.json');
+        const { data, error } = await supabase
+            .from('lor_data')
+            .select('*');
 
-        if (!(await fs.access(filePath).then(() => true).catch(() => false))) {
-            return NextResponse.json({ error: 'Processed LOR data not found' }, { status: 404 });
+        if (error) {
+            console.error('Supabase error fetching LOR data:', error);
+            return NextResponse.json({ error: 'Failed to fetch LOR data from database' }, { status: 500 });
         }
 
-        const fileContents = await fs.readFile(filePath, 'utf8');
-        const data = JSON.parse(fileContents);
+        if (!data || data.length === 0) {
+            return NextResponse.json({ error: 'No LOR data found' }, { status: 404 });
+        }
 
-        return NextResponse.json(data);
+        // Reconstruct the GeoJSON FeatureCollection
+        const geojson = {
+            type: 'FeatureCollection',
+            name: 'lor_planungsraeume_2021',
+            crs: {
+                type: 'name',
+                properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' }
+            },
+            features: data.map(item => ({
+                type: 'Feature',
+                properties: {
+                    PLR_ID: item.plr_id,
+                    PLR_NAME: item.plr_name,
+                    BEZ: item.bez,
+                    STAND: item.stand,
+                    GROESSE_M2: item.groesse_m2,
+                    ...item.properties
+                },
+                geometry: item.geometry
+            }))
+        };
+
+        return NextResponse.json(geojson);
     } catch (error) {
-        console.error('Error reading LOR JSON:', error);
-        return NextResponse.json({ error: 'Failed to load LOR data' }, { status: 500 });
+        console.error('Error fetching LOR data:', error);
+        return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
     }
 }

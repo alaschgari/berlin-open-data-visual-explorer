@@ -1,23 +1,26 @@
 import { NextResponse } from 'next/server';
-import path from 'path';
-import fs from 'fs/promises';
+import { supabase } from '@/lib/supabase';
 
 export const revalidate = 86400; // 24 hours
 
 export async function GET() {
     try {
-        const filePath = path.join(process.cwd(), 'data', 'processed', 'demographics_2024.json');
+        const { data, error } = await supabase
+            .from('demographics')
+            .select('*');
 
-        if (!(await fs.access(filePath).then(() => true).catch(() => false))) {
-            return NextResponse.json({ error: 'Processed demographics data not found' }, { status: 404 });
+        if (error) {
+            console.error('Supabase error fetching demographics:', error);
+            return NextResponse.json({ error: 'Failed to fetch demographics from database' }, { status: 500 });
         }
 
-        const fileContents = await fs.readFile(filePath, 'utf8');
-        const data = JSON.parse(fileContents);
+        if (!data || data.length === 0) {
+            return NextResponse.json({ error: 'No demographics data found' }, { status: 404 });
+        }
 
         return NextResponse.json(data);
     } catch (error) {
-        console.error('Error reading demographics JSON:', error);
-        return NextResponse.json({ error: 'Failed to load demographics data' }, { status: 500 });
+        console.error('Error fetching demographics:', error);
+        return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
     }
 }
