@@ -6,6 +6,14 @@ const CKAN_API_URL = 'https://datenregister.berlin.de/api/3/action/package_searc
 const DATA_DIR = path.join(process.cwd(), 'data/raw');
 const PROCESSED_DIR = path.join(process.cwd(), 'data/processed');
 
+// Ensure directories exist
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+if (!fs.existsSync(PROCESSED_DIR)) {
+  fs.mkdirSync(PROCESSED_DIR, { recursive: true });
+}
+
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 interface CkanResource {
@@ -58,8 +66,12 @@ export async function fetchBerlinData() {
       const response = await fetch(url);
       if (!response.ok) continue;
       const data: CkanResponse = await response.json();
-      if (!data.success) continue;
+      if (!data.success) {
+        console.warn(`CKAN API search for "${query}" failed.`);
+        continue;
+      }
 
+      console.log(`Found ${data.result.results.length} datasets for query: ${query}`);
       for (const dataset of data.result.results) {
         for (const resource of dataset.resources) {
           const fmt = resource.format ? resource.format.toUpperCase() : '';
@@ -69,6 +81,8 @@ export async function fetchBerlinData() {
         }
       }
     }
+
+    console.log(`Extracted ${allResources.length} potential resources before filtering.`);
 
     // Filter resources: If multiple resources for the same biennium exist, pick the latest Nachtrag
     const filteredResources = allResources.filter((r, index, self) => {
