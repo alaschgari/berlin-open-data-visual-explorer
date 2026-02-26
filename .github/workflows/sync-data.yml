@@ -2,44 +2,33 @@ name: Sync Berlin Open Data
 
 on:
   schedule:
-    # 5 AM UTC = 6 AM CET (winter) / 7 AM CEST (summer)
-    - cron: '0 5 * * *'
-  workflow_dispatch: # Allow manual trigger from GitHub UI
+    - cron: '0 3 * * *' # Daily at 3:00 AM UTC
+  workflow_dispatch:
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    permissions:
-      contents: write
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Run data sync
+      - name: Sync data from sources
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: npm run sync
 
-      - name: Check for changes
-        id: changes
+      - name: Commit and push if changed
         run: |
-          git diff --quiet data/processed/ && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
-
-      - name: Commit and push
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git add data/processed/
-          git commit -m "chore: sync Berlin Open Data $(date -u +%Y-%m-%d) [skip ci]"
-          git push
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: nightly data sync" && git push)
