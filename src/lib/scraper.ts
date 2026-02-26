@@ -93,6 +93,7 @@ export async function fetchBerlinData() {
       const yearsMatch = (title + name).match(/20\d{2}[_\/]?20\d{2}/);
       if (!yearsMatch) return true;
       const years = yearsMatch[0].replace(/[\/]/g, '_');
+      const yearsSlash = years.replace(/_/g, '/');
 
       // Check if there is a "better" one for these years
       const isBase = !name.includes('nachtrag') && !title.includes('nachtrag');
@@ -105,7 +106,9 @@ export async function fetchBerlinData() {
 
       const competitors = self.filter(other => {
         const otherFull = ((other.datasetTitle || "") + " " + (other.resource.name || "")).toLowerCase();
-        return otherFull.includes(years) && other.resource.format === r.resource.format;
+        // Match either 2024_2025 or 2024/2025
+        return (otherFull.includes(years) || otherFull.includes(yearsSlash)) &&
+          other.resource.format === r.resource.format;
       });
 
       const maxNachtrag = Math.max(...competitors.map(c => getNachtragNum(((c.datasetTitle || "") + " " + (c.resource.name || "")).toLowerCase())));
