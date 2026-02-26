@@ -104,7 +104,7 @@ export async function fetchBerlinData() {
       const currentNachtrag = getNachtragNum(title + " " + name);
 
       const competitors = self.filter(other => {
-        const otherFull = (other.datasetTitle + " " + other.resource.name).toLowerCase();
+        const otherFull = ((other.datasetTitle || "") + " " + (other.resource.name || "")).toLowerCase();
         return otherFull.includes(years) && other.resource.format === r.resource.format;
       });
 
@@ -127,6 +127,8 @@ export async function fetchBerlinData() {
 
     // Fetch weekly & flea markets
     await fetchMarketsData();
+
+    console.log(`Sync summary: Processed ${allResources.length} total, filtered down to ${filteredResources.length}, downloaded ${totalDownloadCount} successfully.`);
 
     return { success: true, count: totalDownloadCount };
 
