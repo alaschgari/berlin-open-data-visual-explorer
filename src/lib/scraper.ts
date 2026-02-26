@@ -41,55 +41,67 @@ export async function fetchBerlinData() {
   ];
 
   // Search queries
-  const queries = ['Doppelhaushalt Berlin', 'Monatsschreibung'];
+  const queries = ['Doppelhaushalt Berlin'];
   // Add targeted queries for each district
   districts.forEach(d => {
-    queries.push(`Kamerale Monatsdaten ${d}`);
-    queries.push(`Haushaltsplan ${d}`);
-    queries.push(`aktuelle kamerale Monatsschreibung ${d}`);
+    // Note: General "Doppelhaushalt" files are sufficient as they contain all districts.
   });
 
   try {
     let totalDownloadCount = 0;
 
+    const allResources: { resource: CkanResource, datasetTitle: string }[] = [];
     for (const query of queries) {
       console.log(`Searching for: ${query}`);
       const url = `${CKAN_API_URL}?q=${encodeURIComponent(query)}&rows=1000`;
-
-      // Delay before each CKAN request to avoid rate limiting
       await sleep(500);
-
       const response = await fetch(url);
-      if (!response.ok) {
-        console.warn(`CKAN Query "${query}" failed with status: ${response.status}`);
-        continue;
-      }
-
+      if (!response.ok) continue;
       const data: CkanResponse = await response.json();
-      if (!data.success) {
-        console.warn(`CKAN Query "${query}" reported success=false`);
-        continue;
-      }
-
-      console.log(`Query "${query}" found ${data.result.results.length} datasets.`);
-
-      // Ensure raw data directory exists
-      if (!fs.existsSync(DATA_DIR)) {
-        fs.mkdirSync(DATA_DIR, { recursive: true });
-      }
+      if (!data.success) continue;
 
       for (const dataset of data.result.results) {
-        console.log(`Processing dataset: ${dataset.title}`);
-
         for (const resource of dataset.resources) {
           const fmt = resource.format ? resource.format.toUpperCase() : '';
-          console.log(`Checking resource: ${resource.name}, format: ${fmt}`);
           if (['CSV', 'JSON', 'XLS', 'XLSX'].includes(fmt)) {
-            await downloadResource(resource, dataset.title);
-            totalDownloadCount++;
+            allResources.push({ resource, datasetTitle: dataset.title });
           }
         }
       }
+    }
+
+    // Filter resources: If multiple resources for the same biennium exist, pick the latest Nachtrag
+    const filteredResources = allResources.filter((r, index, self) => {
+      const name = r.resource.name.toLowerCase();
+      const title = r.datasetTitle.toLowerCase();
+
+      // Years pattern e.g. 2024/2025 or 2024_2025
+      const yearsMatch = (title + name).match(/20\d{2}[_\/]?20\d{2}/);
+      if (!yearsMatch) return true;
+      const years = yearsMatch[0].replace(/[\/]/g, '_');
+
+      // Check if there is a "better" one for these years
+      const isBase = !name.includes('nachtrag') && !title.includes('nachtrag');
+      const getNachtragNum = (s: string) => {
+        const m = s.match(/(\d+)\.?\s*nachtrag/);
+        return m ? parseInt(m[1]) : (s.includes('nachtrag') ? 1 : 0);
+      };
+
+      const currentNachtrag = getNachtragNum(title + " " + name);
+
+      const competitors = self.filter(other => {
+        const otherFull = (other.datasetTitle + " " + other.resource.name).toLowerCase();
+        return otherFull.includes(years) && other.resource.format === r.resource.format;
+      });
+
+      const maxNachtrag = Math.max(...competitors.map(c => getNachtragNum((c.datasetTitle + " " + c.resource.name).toLowerCase())));
+
+      return currentNachtrag === maxNachtrag;
+    });
+
+    for (const { resource, datasetTitle } of filteredResources) {
+      await downloadResource(resource, datasetTitle);
+      totalDownloadCount++;
     }
 
     // Also fetch the subsidies database

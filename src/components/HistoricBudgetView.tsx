@@ -193,7 +193,7 @@ export default function HistoricBudgetView({ enrichedData, timeline, topChapters
 
                     <div className="mt-8 text-center bg-slate-900/40 py-3 rounded-xl border border-white/5">
                         <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                            Basierend auf Haushaltsplänen 2010-2027
+                            Basierend auf Haushaltsplänen 2012-2027
                         </p>
                     </div>
                 </footer>

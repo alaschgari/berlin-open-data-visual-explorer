@@ -76,31 +76,62 @@ export async function processFiles() {
 
                 for (const row of rawData as any[]) {
                     const district = getDistrictFromFilename(file);
-                    const year = row['Haushaltsjahr'] || row['Jahr'];
                     const chapter = row['Kapitel'];
                     const titleCode = row['Titel'];
-                    const budget = parseCurrency(row['Ansatz']);
-                    const actual = parseCurrency(row['Ist']);
                     const titleStr = String(titleCode || '');
                     const isLeaf = titleStr.length === 5;
                     const titleType = String(row['Titelart'] || '').toLowerCase();
                     const isExpense = titleType.includes('ausgabe');
                     const isRevenue = titleType.includes('einnahme');
 
-                    if (year && chapter && titleCode && isLeaf && (isExpense || isRevenue)) {
-                        const yearNum = Number(year);
-                        if (yearNum >= 2000 && yearNum <= 2100) {
-                            const titleStrFixed = titleStr;
-                            records.push({
-                                year: yearNum,
-                                district: district,
-                                chapter: String(chapter),
-                                title_code: titleStrFixed,
-                                title: getTitleName(titleStrFixed),
-                                budget: budget || 0,
-                                actual: actual || 0,
-                                diff: (budget || 0) - (actual || 0)
-                            });
+                    if (!chapter || !titleCode || !isLeaf || (!isExpense && !isRevenue)) continue;
+
+                    // Handle standard columns
+                    let years = [row['Haushaltsjahr'] || row['Jahr']];
+
+                    // Handle historical format with year-specific columns: "Ansatz 2012 in €"
+                    const yearColumns = Object.keys(row).filter(k => k.startsWith('Ansatz ') && k.includes(' in €'));
+                    if (yearColumns.length > 0) {
+                        for (const col of yearColumns) {
+                            const match = col.match(/Ansatz (\d{4})/);
+                            if (match) {
+                                const yearNum = parseInt(match[1]);
+                                const budget = parseCurrency(row[col]);
+                                // Ist-Werte are often in "Ist [Year] in €" columns if they exist
+                                const istCol = col.replace('Ansatz', 'Ist');
+                                const actual = row[istCol] !== undefined ? parseCurrency(row[istCol]) : 0;
+
+                                records.push({
+                                    year: yearNum,
+                                    district: district,
+                                    chapter: String(chapter),
+                                    title_code: titleStr,
+                                    title: getTitleName(titleStr),
+                                    budget: budget || 0,
+                                    actual: actual || 0,
+                                    diff: (budget || 0) - (actual || 0)
+                                });
+                            }
+                        }
+                    } else {
+                        // Standard processing
+                        const year = years[0];
+                        if (year) {
+                            const yearNum = Number(year);
+                            if (yearNum >= 2000 && yearNum <= 2100) {
+                                const budget = parseCurrency(row['Ansatz']);
+                                const actual = parseCurrency(row['Ist']);
+                                records.push({
+                                    year: yearNum,
+                                    district: district,
+                                    chapter: String(chapter),
+                                    title_code: titleStr,
+                                    title: getTitleName(titleStr),
+                                    budget: budget || 0,
+                                    actual: actual || 0,
+                                    diff: (budget || 0) - (actual || 0)
+                                });
+                            }
                         }
                     }
                 }

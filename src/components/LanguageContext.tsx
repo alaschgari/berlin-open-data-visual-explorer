@@ -57,7 +57,7 @@ const translations: Translations = {
 
     // Budget Specific
     'budget_mode_historic': { de: 'Historische Analyse', en: 'Historical Analysis' },
-    'budget_mode_explorer': { de: 'Planung 2026/27 (Neu)', en: 'Budget 2026/27 (New)' },
+    'budget_mode_explorer': { de: 'Detail-Explorer (2026/27)', en: 'Detail Explorer (2026/27)' },
     'no_data': { de: 'Keine Daten verfügbar', en: 'No data available' },
     'loading': { de: 'Lade Daten...', en: 'Loading data...' },
     'total_volume': { de: 'Gesamtvolumen', en: 'Total Volume' },

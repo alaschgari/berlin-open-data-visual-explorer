@@ -12,8 +12,8 @@ export interface HistoricalYear {
 export const HISTORICAL_DATA: HistoricalYear[] = [
     { year: 2010, budget: 19800, actual: 20100 },
     { year: 2011, budget: 20500, actual: 20400 },
-    { year: 2012, budget: 21200, actual: 21500 },
-    { year: 2013, budget: 22100, actual: 22800 },
+    { year: 2012, budget: 21265, actual: 21265 },
+    { year: 2013, budget: 21265, actual: 21265 },
     { year: 2014, budget: 23500, actual: 23200 },
     { year: 2015, budget: 24800, actual: 25100 },
     { year: 2016, budget: 26200, actual: 26800 },

@@ -1,8 +1,20 @@
 import { fetchBerlinData } from '../src/lib/scraper';
 import { processFiles } from '../src/lib/parser';
 import { supabase } from '../src/lib/supabase';
+import { existsSync } from 'fs';
 
 async function main() {
+    // Load local environment variables if they exist
+    if (existsSync('.env.local')) {
+        try {
+            // @ts-ignore - process.loadEnvFile is available in Node 20.12+
+            process.loadEnvFile('.env.local');
+            console.log('Loaded environment variables from .env.local');
+        } catch (err) {
+            console.warn('Note: Could not load .env.local:', err);
+        }
+    }
+
     console.log('=== Berlin Open Data Sync ===');
     console.log(`Started at: ${new Date().toISOString()}`);
 
