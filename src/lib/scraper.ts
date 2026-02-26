@@ -72,8 +72,8 @@ export async function fetchBerlinData() {
 
     // Filter resources: If multiple resources for the same biennium exist, pick the latest Nachtrag
     const filteredResources = allResources.filter((r, index, self) => {
-      const name = r.resource.name.toLowerCase();
-      const title = r.datasetTitle.toLowerCase();
+      const name = (r.resource.name || '').toLowerCase();
+      const title = (r.datasetTitle || '').toLowerCase();
 
       // Years pattern e.g. 2024/2025 or 2024_2025
       const yearsMatch = (title + name).match(/20\d{2}[_\/]?20\d{2}/);
@@ -94,7 +94,7 @@ export async function fetchBerlinData() {
         return otherFull.includes(years) && other.resource.format === r.resource.format;
       });
 
-      const maxNachtrag = Math.max(...competitors.map(c => getNachtragNum((c.datasetTitle + " " + c.resource.name).toLowerCase())));
+      const maxNachtrag = Math.max(...competitors.map(c => getNachtragNum(((c.datasetTitle || "") + " " + (c.resource.name || "")).toLowerCase())));
 
       return currentNachtrag === maxNachtrag;
     });
@@ -128,9 +128,9 @@ async function downloadResource(resource: CkanResource, datasetTitle: string, ma
     return;
   }
 
-  const safeTitle = datasetTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-  const safeResourceName = resource.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-  const filename = `${safeTitle}_${safeResourceName}.${resource.format.toLowerCase()}`;
+  const safeTitle = (datasetTitle || 'dataset').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  const safeResourceName = (resource.name || 'resource').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  const filename = `${safeTitle}_${safeResourceName}.${(resource.format || 'bin').toLowerCase()}`;
   const filePath = path.join(DATA_DIR, filename);
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
