@@ -42,25 +42,89 @@ export function calculateEnhancedMetrics(data: FinancialRecord[], type: MetricTy
 import { supabase } from './supabase';
 
 // Fetch from Supabase instead of local file
+export async function getQuickFinancialMetrics(district?: string): Promise<{ budget: number, actual: number }> {
+    console.log('[getQuickFinancialMetrics] Quick fetch for Hub...');
+    try {
+        let query = supabase.from('financial_records').select('budget, actual');
+
+        if (district && district !== 'Berlin' && district !== 'All') {
+            query = query.eq('district', district);
+        }
+
+        // Latest year only for Hub
+        query = query.eq('year', 2024);
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        const budget = (data || []).reduce((sum, r) => sum + (r.budget || 0), 0);
+        const actual = (data || []).reduce((sum, r) => sum + (r.actual || 0), 0);
+
+        return { budget, actual };
+    } catch (error) {
+        console.error('[getQuickFinancialMetrics] Error:', error);
+        return { budget: 0, actual: 0 };
+    }
+}
+
 export async function getFinancialData(): Promise<FinancialRecord[]> {
     console.log('[getFinancialData] Fetching from Supabase...');
 
-    // We fetch everything for now as the current logic expects full data for metrics
-    // In the future, we should probably offload metrics to SQL (group by etc.)
-    const { data, error } = await supabase
-        .from('financial_records')
-        .select('year, district, chapter, title_code, budget, actual, diff')
-        .order('year', { ascending: true });
+    try {
+        const { count, error: countError } = await supabase
+            .from('financial_records')
+            .select('*', { count: 'exact', head: true });
 
-    if (error) {
-        console.error('[getFinancialData] Supabase error:', error);
+        if (countError) {
+            console.error('[getFinancialData] Count error:', countError);
+            return [];
+        }
+
+        const totalRecords = count || 0;
+        const CHUNK_SIZE = 1000;
+        const totalChunks = Math.ceil(totalRecords / CHUNK_SIZE);
+        const BATCH_SIZE = 5;
+
+        console.log(`[getFinancialData] Fetching ${totalRecords} records in ${totalChunks} chunks (Batch Size: ${BATCH_SIZE})`);
+
+        let allRecords: FinancialRecord[] = [];
+
+        for (let i = 0; i < totalChunks; i += BATCH_SIZE) {
+            const batchLimit = Math.min(i + BATCH_SIZE, totalChunks);
+            const batchPromises = [];
+
+            for (let j = i; j < batchLimit; j++) {
+                batchPromises.push(
+                    supabase
+                        .from('financial_records')
+                        .select('year, district, chapter, title_code, budget, actual, diff')
+                        .range(j * CHUNK_SIZE, (j + 1) * CHUNK_SIZE - 1)
+                        .order('year', { ascending: true })
+                        .then(result => ({ ...result, index: j }))
+                );
+            }
+
+            const batchResults = await Promise.all(batchPromises);
+
+            batchResults.forEach(({ data, error, index }) => {
+                if (error) {
+                    console.error(`[getFinancialData] Error in chunk ${index}:`, error);
+                } else if (data) {
+                    allRecords = allRecords.concat(data as FinancialRecord[]);
+                }
+            });
+
+            if (totalChunks > BATCH_SIZE) {
+                console.log(`[getFinancialData] Progress: ${Math.min(batchLimit * CHUNK_SIZE, totalRecords)}/${totalRecords} records`);
+            }
+        }
+
+        console.log(`[getFinancialData] Successfully fetched ${allRecords.length} records`);
+        return allRecords;
+    } catch (error) {
+        console.error('[getFinancialData] Unexpected error:', error);
         return [];
     }
-
-    console.log(`[getFinancialData] Fetched ${data?.length || 0} records from Supabase`);
-
-    // Explicitly cast or map to ensure correct types (numeric columns in Supabase are returned as numbers)
-    return (data || []) as FinancialRecord[];
 }
 
 

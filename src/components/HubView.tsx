@@ -1,9 +1,14 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
+import React, { useState, useMemo, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/components/LanguageContext';
-import { Search, TrendingUp, Star } from 'lucide-react';
+import { Search, TrendingUp, Star, Loader2 } from 'lucide-react';
+
+import { SubsidyMetrics } from '@/lib/subsidies-proxy';
+import { TaxMetrics } from '@/lib/taxes';
+
+import { SESSION_CACHE } from './DashboardClient';
 
 export interface NavItem {
     id: string;
@@ -16,19 +21,58 @@ export interface NavItem {
 interface HubViewProps {
     district: string;
     navItems: NavItem[];
-    budgetVolume?: number;
-    subsidiesCount?: number;
-    taxRevenue?: number;
-    theftCount?: number;
+    budgetVolumePromise?: Promise<any>;
+    subsidiesMetricsPromise?: Promise<SubsidyMetrics>;
+    taxRevenuePromise?: Promise<TaxMetrics>;
+    theftCountPromise?: Promise<number>;
+    onNavigate: (tab: string) => void;
+    isNavigating: boolean;
+}
+
+// Internal component to resolve individual metrics with Suspense
+function MetricValue({ promise, field, cacheKey, format, label }: {
+    promise?: Promise<any>,
+    field: string,
+    cacheKey?: string,
+    format: (val: any) => string,
+    label: string
+}) {
+    if (!promise) return <span className="text-slate-600">---</span>;
+
+    // Check global session cache first for instant Hub values
+    if (cacheKey && SESSION_CACHE[cacheKey]) {
+        const value = SESSION_CACHE[cacheKey][field];
+        return <span>{format(value)}</span>;
+    }
+
+    return (
+        <React.Suspense fallback={<span className="w-16 h-4 bg-slate-700/50 animate-pulse rounded block"></span>}>
+            <MetricValueInner promise={promise} field={field} cacheKey={cacheKey} format={format} />
+        </React.Suspense>
+    );
+}
+
+function MetricValueInner({ promise, field, cacheKey, format }: { promise: Promise<any>, field: string, cacheKey?: string, format: (val: any) => string }) {
+    const data = React.use(promise);
+
+    // Also save to cache if we pulled it via Hub
+    if (cacheKey) {
+        SESSION_CACHE[cacheKey] = data;
+    }
+
+    const value = data ? data[field] : null;
+    return <span>{format(value)}</span>;
 }
 
 export default function HubView({
     district,
     navItems,
-    budgetVolume,
-    subsidiesCount,
-    taxRevenue,
-    theftCount
+    budgetVolumePromise,
+    subsidiesMetricsPromise,
+    taxRevenuePromise,
+    theftCountPromise,
+    onNavigate,
+    isNavigating
 }: HubViewProps) {
     const { t, language } = useLanguage();
     const [searchQuery, setSearchQuery] = useState('');
@@ -44,11 +88,23 @@ export default function HubView({
     const formatNumber = (val?: number) => val ? new Intl.NumberFormat(language === 'de' ? 'de-DE' : 'en-GB').format(val) : '';
 
     // Data Mapping for micro-metrics
-    const metricsMap: Record<string, { label: string, value: string | React.ReactNode }> = {
-        'budget': { label: 'Gesamtvolumen', value: formatCurrency(budgetVolume) },
-        'subsidies': { label: 'Einträge', value: formatNumber(subsidiesCount) },
-        'taxes': { label: 'Gesamteinnahmen', value: formatCurrency(taxRevenue) },
-        'theft': { label: 'Erfasste Diebstähle', value: formatNumber(theftCount) },
+    const metricsMap: Record<string, { label: string, value: React.ReactNode }> = {
+        'budget': {
+            label: 'Gesamtvolumen',
+            value: <MetricValue promise={budgetVolumePromise} field="budget" cacheKey={`budget-${district}`} format={formatCurrency} label="Budget" />
+        },
+        'subsidies': {
+            label: 'Einträge',
+            value: <MetricValue promise={subsidiesMetricsPromise} field="totalCount" cacheKey={`subsidies-${district}`} format={formatNumber} label="Subsidies" />
+        },
+        'taxes': {
+            label: 'Gesamteinnahmen',
+            value: <MetricValue promise={taxRevenuePromise} field="totalMonthly" cacheKey={`taxes-${district}`} format={formatCurrency} label="Taxes" />
+        },
+        'theft': {
+            label: 'Erfasste Diebstähle',
+            value: <MetricValue promise={theftCountPromise} field="count" format={formatNumber} label="Theft" />
+        },
     };
 
     // Filter Logic
@@ -107,10 +163,10 @@ export default function HubView({
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {highlights.map(item => (
-                            <Link
+                            <button
                                 key={item.id}
-                                href={`/?tab=${item.id}&district=${district}`}
-                                className="group relative bg-slate-800/40 backdrop-blur-md rounded-3xl p-6 border border-emerald-500/20 hover:bg-slate-800/60 hover:border-emerald-500/50 transition-all duration-300 overflow-hidden shadow-2xl shadow-emerald-900/20 hover:-translate-y-1"
+                                onClick={() => onNavigate(item.id)}
+                                className="group relative bg-slate-800/40 backdrop-blur-md rounded-3xl p-6 border border-emerald-500/20 hover:bg-slate-800/60 hover:border-emerald-500/50 transition-all duration-300 overflow-hidden shadow-2xl shadow-emerald-900/20 hover:-translate-y-1 text-left w-full disabled:opacity-50"
                             >
                                 {/* Highlight noise pattern overlay */}
                                 <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
@@ -144,7 +200,7 @@ export default function HubView({
                                         </div>
                                     )}
                                 </div>
-                            </Link>
+                            </button>
                         ))}
                     </div>
                 </section>
@@ -174,10 +230,10 @@ export default function HubView({
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {categoryItems.map(item => (
-                                    <Link
+                                    <button
                                         key={item.id}
-                                        href={`/?tab=${item.id}&district=${district}`}
-                                        className={`group relative bg-slate-800/20 backdrop-blur-sm rounded-3xl p-6 border border-slate-700/50 hover:bg-slate-800/40 hover:border-slate-600/50 transition-all duration-300 overflow-hidden hover:shadow-2xl hover:-translate-y-1 ${colorMap.shadow}`}
+                                        onClick={() => onNavigate(item.id)}
+                                        className={`group relative bg-slate-800/20 backdrop-blur-sm rounded-3xl p-6 border border-slate-700/50 hover:bg-slate-800/40 hover:border-slate-600/50 transition-all duration-300 overflow-hidden hover:shadow-2xl hover:-translate-y-1 text-left w-full disabled:opacity-50 ${colorMap.shadow}`}
                                     >
                                         <div className="flex flex-col h-full gap-4 relative z-10">
                                             <div className="flex items-center gap-4">
@@ -200,7 +256,7 @@ export default function HubView({
                                                 </div>
                                             )}
                                         </div>
-                                    </Link>
+                                    </button>
                                 ))}
                             </div>
                         </section>

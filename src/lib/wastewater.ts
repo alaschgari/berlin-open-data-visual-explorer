@@ -21,6 +21,7 @@ let lastFetchTime = 0;
 const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
 
 export async function getWastewaterData(): Promise<WastewaterRecord[]> {
+    "use cache";
     // Check cache
     if (cachedData && (Date.now() - lastFetchTime < CACHE_TTL)) {
         return cachedData;

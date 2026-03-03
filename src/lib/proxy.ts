@@ -8,6 +8,7 @@ import { getFinancialData as fetchRawData, calculateMetrics, calculateEnhancedMe
 // "use cache" directive for Next.js 16 dynamic IO
 // This function will be cached automatically by Next.js
 export async function getCachedFinancialData() {
+    "use cache";
     return fetchRawData();
 }
 
@@ -17,6 +18,7 @@ import { getTitleName } from './budget-mappings';
 const PROCESSED_DIR = path.join(process.cwd(), 'data', 'processed');
 
 export async function getCachedSummaryMetrics(metric: MetricType = 'nominal') {
+    "use cache";
     const data = await fetchRawData();
     return calculateEnhancedMetrics(data, metric);
 }
@@ -229,7 +231,20 @@ export async function getCachedFilteredData(year?: number, search?: string, dist
     return data;
 }
 
+export async function getQuickDistrictMetrics(district: string) {
+    "use cache";
+    const { getQuickFinancialMetrics } = await import('./data');
+    const metrics = await getQuickFinancialMetrics(district);
+    return {
+        ...metrics,
+        totalBudget: metrics.budget,
+        totalActual: metrics.actual,
+        diff: metrics.actual - metrics.budget
+    };
+}
+
 export async function getDistrictMetrics(district: string) {
+    "use cache";
     const data = await fetchRawData();
     const filtered = (district === 'Berlin' || district === 'All') ? data : data.filter(r => r.district === district);
     const metrics = calculateMetrics(filtered);
@@ -242,6 +257,7 @@ export async function getDistrictMetrics(district: string) {
 }
 
 export async function getTopChapters(district: string) {
+    "use cache";
     const data = await fetchRawData();
     const filtered = district === 'Berlin' ? data : data.filter(r => r.district === district);
     const recentData = filtered.filter(r => r.year >= 2024);
@@ -279,6 +295,7 @@ export async function getChapterDetails(district: string, chapter: string) {
 }
 
 export async function getTimelineData(district: string) {
+    "use cache";
     const data = await fetchRawData();
     const filtered = (district === 'Berlin' || district === 'All') ? data : data.filter(r => r.district === district);
 
@@ -309,6 +326,7 @@ export async function getTimelineData(district: string) {
 }
 
 export async function getLastSyncTime() {
+    "use cache";
     const filePath = path.join(PROCESSED_DIR, 'financial_data.json');
     if (!fs.existsSync(filePath)) return null;
     const stats = fs.statSync(filePath);

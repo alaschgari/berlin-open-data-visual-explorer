@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Text } from 'recharts';
-import { Building2, Landmark, LayoutGrid, Info, X } from 'lucide-react';
+import { Building2, Landmark, LayoutGrid, Info, X, Loader2 } from 'lucide-react';
 import { getTaxDescription } from '@/lib/tax-descriptions';
 import { useLanguage } from './LanguageContext';
 
@@ -79,8 +79,9 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
     };
 
     if (!mounted) {
-        return <div className="min-h-[600px] flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+        return <div className="min-h-[600px] flex flex-col items-center justify-center gap-4">
+            <Loader2 className="animate-spin h-8 w-8 text-emerald-500" />
+            <span className="text-slate-500 text-sm font-medium animate-pulse">Initialisiere Steuerdaten...</span>
         </div>;
     }
 

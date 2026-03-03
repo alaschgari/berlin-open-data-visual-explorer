@@ -49,28 +49,43 @@ async function loadSubsidiesData(): Promise<SubsidyRecord[]> {
 
         console.log(`[Subsidies Proxy] Fetching ${totalRecords} records in ${totalChunks} chunks`);
 
-        // Step 2: Fetch all records in parallel chunks
-        const fetchPromises = [];
-        for (let i = 0; i < totalChunks; i++) {
-            fetchPromises.push(
-                supabase
-                    .from('subsidies')
-                    .select('*')
-                    .range(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE - 1)
-                    .order('year', { ascending: false })
-            );
-        }
-
-        const chunkResults = await Promise.all(fetchPromises);
         let allRecords: SubsidyRecord[] = [];
+        const BATCH_SIZE = 5;
 
-        chunkResults.forEach(({ data, error }, index) => {
-            if (error) {
-                console.error(`[Subsidies Proxy] Error in chunk ${index}:`, error);
-            } else if (data) {
-                allRecords = allRecords.concat(data as SubsidyRecord[]);
+        for (let i = 0; i < totalChunks; i += BATCH_SIZE) {
+            const batchLimit = Math.min(i + BATCH_SIZE, totalChunks);
+            const batchPromises = [];
+
+            for (let j = i; j < batchLimit; j++) {
+                batchPromises.push(
+                    supabase
+                        .from('subsidies')
+                        .select('*')
+                        .range(j * CHUNK_SIZE, (j + 1) * CHUNK_SIZE - 1)
+                        .order('year', { ascending: false })
+                        .then(result => ({ ...result, index: j }))
+                );
             }
-        });
+
+            const batchResults = await Promise.all(batchPromises);
+
+            batchResults.forEach(({ data, error, index }) => {
+                if (error) {
+                    console.error(`[Subsidies Proxy] Error in chunk ${index}:`, {
+                        message: error.message,
+                        details: error.details,
+                        hint: error.hint,
+                        code: error.code
+                    });
+                } else if (data) {
+                    allRecords = allRecords.concat(data as SubsidyRecord[]);
+                }
+            });
+
+            if (totalChunks > BATCH_SIZE) {
+                console.log(`[Subsidies Proxy] Progress: ${Math.min(batchLimit * CHUNK_SIZE, totalRecords)}/${totalRecords} records`);
+            }
+        }
 
         return allRecords;
     } catch (error) {
@@ -79,7 +94,34 @@ async function loadSubsidiesData(): Promise<SubsidyRecord[]> {
     }
 }
 
+export async function getQuickSubsidiesMetrics(district?: string): Promise<{ totalAmount: number, totalCount: number }> {
+    "use cache";
+
+    let query = supabase.from('subsidies').select('amount', { count: 'exact' });
+
+    // Filter by district if specified
+    if (district && district !== 'Berlin' && district !== 'All') {
+        // Since district is derived from provider in the full proxy, 
+        // we use the same filter logic (Bezirksamt [District])
+        query = query.ilike('provider', `%Bezirksamt ${district}%`);
+    }
+
+    const { data, count, error } = await query;
+
+    if (error) {
+        console.error('[Subsidies Proxy] Quick metrics error:', error);
+        return { totalAmount: 0, totalCount: 0 };
+    }
+
+    const totalAmount = (data || []).reduce((sum, r) => sum + (r.amount || 0), 0);
+    return {
+        totalAmount,
+        totalCount: count || 0
+    };
+}
+
 export async function getSubsidiesMetrics(district?: string): Promise<SubsidyMetrics> {
+    "use cache";
     const allData = await loadSubsidiesData();
     if (allData.length === 0) {
         return {

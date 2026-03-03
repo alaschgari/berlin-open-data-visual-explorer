@@ -11,21 +11,43 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const activeTab = (resolvedSearchParams.tab || 'hub') as 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets';
   const budgetMode = (resolvedSearchParams.budgetMode || 'explorer') as 'historic' | 'explorer';
 
-  // Data pre-fetching (SSR)
-  const data = await getDistrictMetrics(district);
-  const rawTimeline = await getTimelineData(district);
-  const topChapters = await getTopChapters(district);
-  const enrichedData = (district === 'Berlin' || district === 'All') ? await enrichMetricsWithHistory(data) : data;
+  // SSR Core Data (fast or critical)
+  const isHub = activeTab === 'hub';
+  const lastSync = isHub ? null : await getLastSyncTime();
 
-  const timeline = await Promise.all(rawTimeline.map(async (item: Record<string, any>) => {
-    return (district === 'Berlin' || district === 'All') ? await enrichMetricsWithHistory(item) : item;
-  }));
+  // Budget Promises
+  let districtDataPromise: Promise<any> | undefined = undefined;
+  let timelinePromise: Promise<any[]> | undefined = undefined;
+  let topChaptersPromise: Promise<any[]> | undefined = undefined;
 
-  const initialSubsidiesMetrics = await getSubsidiesMetrics(district);
-  const initialSubsidiesList = await searchSubsidies('', district);
-  const taxMetrics = await getTaxMetrics();
-  const lastSync = await getLastSyncTime();
-  const wastewaterData = await getWastewaterData();
+  if (activeTab === 'budget') {
+    districtDataPromise = getDistrictMetrics(district);
+    timelinePromise = getTimelineData(district).then(async (rawTimeline) => {
+      return Promise.all(rawTimeline.map(async (item: Record<string, any>) => {
+        return (district === 'Berlin' || district === 'All') ? enrichMetricsWithHistory(item) : item;
+      }));
+    });
+    topChaptersPromise = getTopChapters(district);
+  }
+
+  // Subsidies Promises
+  let initialSubsidiesMetricsPromise: Promise<any> | undefined = undefined;
+  let initialSubsidiesListPromise: Promise<any[]> | undefined = undefined;
+
+  if (activeTab === 'subsidies') {
+    initialSubsidiesMetricsPromise = getSubsidiesMetrics(district);
+    initialSubsidiesListPromise = searchSubsidies('', district);
+  }
+
+  // Taxes Promise
+  let taxMetricsPromise: Promise<any> | undefined = undefined;
+  if (activeTab === 'taxes') {
+    taxMetricsPromise = getTaxMetrics();
+  }
+
+  // Others
+  const wastewaterDataPromise = activeTab === 'wastewater' ? getWastewaterData() : undefined;
+  const theftCountPromise = undefined; // No theft count on hub as requested for zero-data
 
   const districts = [
     'Berlin', 'Mitte', 'Friedrichshain-Kreuzberg', 'Pankow', 'Charlottenburg-Wilmersdorf',
@@ -40,13 +62,15 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       budgetMode={budgetMode}
       lastSync={lastSync}
       districts={districts}
-      enrichedData={enrichedData}
-      timeline={timeline}
-      topChapters={topChapters.map(c => ({ name: c.name, value: c.amount }))}
-      initialSubsidiesMetrics={initialSubsidiesMetrics}
-      initialSubsidiesList={initialSubsidiesList}
-      taxMetrics={taxMetrics}
-      wastewaterData={wastewaterData}
+      // Pass promises for streaming
+      dataPromise={districtDataPromise as any}
+      timelinePromise={timelinePromise as any}
+      topChaptersPromise={topChaptersPromise as any}
+      subsidiesMetricsPromise={initialSubsidiesMetricsPromise as any}
+      subsidiesListPromise={initialSubsidiesListPromise as any}
+      taxMetricsPromise={taxMetricsPromise as any}
+      wastewaterDataPromise={wastewaterDataPromise as any}
+      theftCountPromise={theftCountPromise as any}
     />
   );
 }

@@ -20,14 +20,17 @@ interface DistrictSelectorProps {
 export default function DistrictSelector({ currentDistrict, districts, activeTab }: DistrictSelectorProps) {
     const router = useRouter();
     const { t } = useLanguage();
+    const [isPending, startTransition] = React.useTransition();
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newDistrict = e.target.value;
-        router.push(`/?tab=${activeTab}&district=${newDistrict}`);
+        startTransition(() => {
+            router.push(`/?tab=${activeTab}&district=${newDistrict}`);
+        });
     };
 
     return (
-        <div className="relative group w-full sm:w-72">
+        <div className={`relative group w-full sm:w-72 transition-opacity duration-200 ${isPending ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
             <select
                 value={currentDistrict}
                 onChange={handleChange}

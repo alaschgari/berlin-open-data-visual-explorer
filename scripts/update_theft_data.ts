@@ -1,5 +1,5 @@
 
-import { fetchBicycleTheftData } from '../src/lib/scraper';
+import { fetchBicycleTheftData, fetchCarTheftData } from '../src/lib/scraper';
 import { existsSync } from 'fs';
 
 async function main() {
@@ -14,12 +14,14 @@ async function main() {
         }
     }
 
-    console.log("Updating Bicycle Theft Data...");
-    const success = await fetchBicycleTheftData();
-    if (success) {
-        console.log("Update successful. New data saved to data/raw/Fahrraddiebstahl.csv");
+    console.log("Updating Theft Data...");
+    const bikeSuccess = await fetchBicycleTheftData();
+    const carSuccess = await fetchCarTheftData();
+
+    if (bikeSuccess && carSuccess) {
+        console.log("Update successful. New data saved to data/raw/Fahrraddiebstahl.csv and data/raw/Kfzdiebstahl.csv");
     } else {
-        console.log("Update failed. Check logs for details.");
+        console.log("Update partially failed or fully failed. Check logs for details.");
     }
 }
 

@@ -20,7 +20,31 @@ export async function getTaxData(): Promise<TaxEntry[]> {
     return metrics.allData;
 }
 
+export async function getQuickTaxMetrics(): Promise<{ totalMonthly: number }> {
+    "use cache";
+    try {
+        // Query only the actual/budget values for tax chapters (29%)
+        // We limit to the most recent year to keep it "quick"
+        const { data, error } = await supabase
+            .from('financial_records')
+            .select('actual, budget')
+            .ilike('chapter', '29%')
+            .eq('year', 2024); // Use target year for summary
+
+        if (error) {
+            console.error('[Taxes Proxy] Quick metrics error:', error);
+            return { totalMonthly: 0 };
+        }
+
+        const totalMonthly = (data || []).reduce((sum, r) => sum + (r.actual > 0 ? r.actual : r.budget), 0);
+        return { totalMonthly };
+    } catch (e) {
+        return { totalMonthly: 0 };
+    }
+}
+
 export async function getTaxMetrics(): Promise<TaxMetrics> {
+    "use cache";
     try {
         // Step 1: Count tax-related records in financial_records
         // Primary chapters for taxes: 2901 (Landessteuern), 2902 (Gemeindeanteile)
@@ -38,26 +62,41 @@ export async function getTaxMetrics(): Promise<TaxMetrics> {
         const totalRecords = count || 0;
         const CHUNK_SIZE = 1000;
         const totalChunks = Math.ceil(totalRecords / CHUNK_SIZE);
+        const BATCH_SIZE = 5;
 
-        console.log(`[Taxes Proxy] Fetching ${totalRecords} tax records in ${totalChunks} chunks`);
+        console.log(`[Taxes Proxy] Fetching ${totalRecords} tax records in ${totalChunks} chunks (Batch Size: ${BATCH_SIZE})`);
 
-        // Step 2: Fetch all records in parallel
-        const fetchPromises = [];
-        for (let i = 0; i < totalChunks; i++) {
-            fetchPromises.push(
-                supabase
-                    .from('financial_records')
-                    .select('year, chapter, title_code, title, actual, budget')
-                    .ilike('chapter', '29%')
-                    .range(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE - 1)
-            );
-        }
-
-        const chunkResults = await Promise.all(fetchPromises);
         let allRecords: any[] = [];
-        chunkResults.forEach(({ data, error }) => {
-            if (!error && data) allRecords = allRecords.concat(data);
-        });
+
+        for (let i = 0; i < totalChunks; i += BATCH_SIZE) {
+            const batchLimit = Math.min(i + BATCH_SIZE, totalChunks);
+            const batchPromises = [];
+
+            for (let j = i; j < batchLimit; j++) {
+                batchPromises.push(
+                    supabase
+                        .from('financial_records')
+                        .select('year, chapter, title_code, title, actual, budget')
+                        .ilike('chapter', '29%')
+                        .range(j * CHUNK_SIZE, (j + 1) * CHUNK_SIZE - 1)
+                        .then(result => ({ ...result, index: j }))
+                );
+            }
+
+            const batchResults = await Promise.all(batchPromises);
+
+            batchResults.forEach(({ data, error, index }) => {
+                if (error) {
+                    console.error(`[Taxes Proxy] Error in chunk ${index}:`, error);
+                } else if (data) {
+                    allRecords = allRecords.concat(data);
+                }
+            });
+
+            if (totalChunks > BATCH_SIZE) {
+                console.log(`[Taxes Proxy] Progress: ${Math.min(batchLimit * CHUNK_SIZE, totalRecords)}/${totalRecords} records`);
+            }
+        }
 
         // Filter for latest year available and only actual tax titles
         // Tax titles usually have range 10-18 in the first two digits of title_code

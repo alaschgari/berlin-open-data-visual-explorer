@@ -1,3 +1,5 @@
+'use server';
+
 import Papa from 'papaparse';
 
 export interface TheftRecord {
@@ -76,4 +78,11 @@ export async function fetchLiveTheftData(type: 'bicycle' | 'car'): Promise<any[]
         console.error(`Error fetching ${type} theft data:`, error);
         return cache[type].data || [];
     }
+}
+
+export async function getTheftCount(): Promise<number> {
+    "use cache";
+    const bikeData = await fetchLiveTheftData('bicycle');
+    const carData = await fetchLiveTheftData('car');
+    return (bikeData?.length || 0) + (carData?.length || 0);
 }
