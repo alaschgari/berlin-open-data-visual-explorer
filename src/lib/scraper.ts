@@ -1,6 +1,7 @@
-
 import fs from 'fs';
 import path from 'path';
+import { getLatestResourceUrl } from './ckan';
+import { CKAN_PACKAGES } from './constants';
 
 const CKAN_API_URL = 'https://datenregister.berlin.de/api/3/action/package_search';
 const DATA_DIR = path.join(process.cwd(), 'data/raw');
@@ -116,12 +117,13 @@ async function downloadResource(resource: CkanResource, datasetTitle: string, ma
 }
 
 export async function fetchSubsidies() {
-  const SUBSIDIES_URL = 'https://www.berlin.de/sen/finanzen/service/zuwendungsdatenbank/index.php/index/all.csv?q=';
+  const DEFAULT_URL = 'https://www.berlin.de/sen/finanzen/service/zuwendungsdatenbank/index.php/index/all.csv?q=';
   const TARGET_PATH = path.join(DATA_DIR, 'subsidies.csv');
 
   console.log('Fetching Zuwendungsdatenbank (Subsidies)...');
   try {
-    const response = await fetch(SUBSIDIES_URL);
+    const url = await getLatestResourceUrl(CKAN_PACKAGES.SUBSIDIES, 'CSV') || DEFAULT_URL;
+    const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
     const buffer = await response.arrayBuffer();
@@ -135,12 +137,13 @@ export async function fetchSubsidies() {
 }
 
 export async function fetchBicycleTheftData() {
-  const THEFT_URL = 'https://www.polizei-berlin.eu/Fahrraddiebstahl/Fahrraddiebstahl.csv';
+  const DEFAULT_URL = 'https://www.polizei-berlin.eu/Fahrraddiebstahl/Fahrraddiebstahl.csv';
   const TARGET_PATH = path.join(DATA_DIR, 'Fahrraddiebstahl.csv');
 
   console.log('Fetching Latest Bicycle Theft Data...');
   try {
-    const response = await fetch(THEFT_URL);
+    const url = await getLatestResourceUrl(CKAN_PACKAGES.BICYCLE_THEFT, 'CSV') || DEFAULT_URL;
+    const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
     const buffer = await response.arrayBuffer();
@@ -154,12 +157,13 @@ export async function fetchBicycleTheftData() {
 }
 
 export async function fetchCarTheftData() {
-  const THEFT_URL = 'https://www.polizei-berlin.eu/Kfzdiebstahl/Kfzdiebstahl.csv';
+  const DEFAULT_URL = 'https://www.polizei-berlin.eu/Kfzdiebstahl/Kfzdiebstahl.csv';
   const TARGET_PATH = path.join(DATA_DIR, 'Kfzdiebstahl.csv');
 
   console.log('Fetching Latest Car Theft Data...');
   try {
-    const response = await fetch(THEFT_URL);
+    const url = await getLatestResourceUrl(CKAN_PACKAGES.CAR_THEFT, 'CSV') || DEFAULT_URL;
+    const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
     const buffer = await response.arrayBuffer();
@@ -173,12 +177,13 @@ export async function fetchCarTheftData() {
 }
 
 export async function fetchMarketsData() {
-  const MARKETS_URL = 'https://www.berlin.de/sen/web/service/maerkte-feste/wochen-troedelmaerkte/index.php/index/all.geojson?q=';
+  const DEFAULT_URL = 'https://www.berlin.de/sen/web/service/maerkte-feste/wochen-troedelmaerkte/index.php/index/all.geojson?q=';
   const TARGET_PATH = path.join(PROCESSED_DIR, 'markets.geojson');
 
   console.log('Fetching Wochen- & Trödelmärkte (Markets)...');
   try {
-    const response = await fetch(MARKETS_URL);
+    const url = await getLatestResourceUrl(CKAN_PACKAGES.MARKETS, 'GeoJSON') || DEFAULT_URL;
+    const response = await fetch(url);
     if (!response.ok) {
       console.error(`Error fetching markets data: HTTP ${response.status}`);
       return false;

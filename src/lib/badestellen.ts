@@ -1,6 +1,9 @@
 import Papa from 'papaparse';
 
-export const BADESTELLEN_CSV_URL = 'https://www.data.lageso.de/baden/0_letzte/letzte.csv';
+import { getLatestResourceUrl } from './ckan';
+import { CKAN_PACKAGES } from './constants';
+
+const DEFAULT_BADESTELLEN_CSV_URL = 'https://www.data.lageso.de/baden/0_letzte/letzte.csv';
 
 export interface BadestelleProperties {
     id: string;
@@ -38,7 +41,9 @@ export interface BadestelleFeature {
  */
 export async function getBadestellenLive(): Promise<BadestelleFeature[]> {
     try {
-        const response = await fetch(BADESTELLEN_CSV_URL, {
+        const url = await getLatestResourceUrl(CKAN_PACKAGES.BADESTELLEN, 'CSV') || DEFAULT_BADESTELLEN_CSV_URL;
+        
+        const response = await fetch(url, {
             next: { revalidate: 10800 } // 3 hours
         });
         if (!response.ok) throw new Error(`CSV fetch failed: ${response.statusText}`);

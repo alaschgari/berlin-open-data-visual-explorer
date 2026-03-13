@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, CircleMarker, GeoJSON, Pane } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, CircleMarker, GeoJSON, Pane, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -56,11 +56,42 @@ const LOR_PREFIX_TO_DISTRICT: Record<string, string> = {
   '12': 'Reinickendorf'
 };
 
+import { districtCoordinates } from '@/lib/district-coords';
+
+function MapViewHandler({ district, selectedLorCoord }: { district?: string, selectedLorCoord?: { lat: number, lng: number } | null }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (selectedLorCoord) {
+      map.setView([selectedLorCoord.lat, selectedLorCoord.lng], 15);
+      return;
+    }
+
+    if (!district || district === 'Berlin' || district === 'All') {
+      map.setView([52.5200, 13.4050], 11);
+      return;
+    }
+
+    // Find district prefix
+    const prefix = Object.entries(LOR_PREFIX_TO_DISTRICT).find(([_, name]) => name === district)?.[0];
+    if (prefix && districtCoordinates[prefix]) {
+      const coords = districtCoordinates[prefix];
+      map.setView([coords.lat, coords.lng], 13);
+    }
+  }, [district, map]);
+
+  return null;
+}
+
 export default function BicycleTheftMap({ district }: { district?: string }) {
   const { t, language } = useLanguage();
   const [data, setData] = useState<TheftData[]>([]);
   const [prevYearData, setPrevYearData] = useState<TheftData[]>([]);
   const [lorData, setLorData] = useState<any>(null);
+  const [lorCentroids, setLorCentroids] = useState<Record<string, { lat: number, lng: number, name: string }>>({});
+  const [selectedLorCoord, setSelectedLorCoord] = useState<{ lat: number, lng: number } | null>(null);
+  const [hoveredLorId, setHoveredLorId] = useState<string | null>(null);
+  const [selectedLorId, setSelectedLorId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<keyof TheftData>('date');
@@ -104,10 +135,6 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
       const inDateRange = itemDate >= sDate && itemDate <= eDate;
       if (!inDateRange) return false;
 
-      if (district && district !== 'Berlin' && district !== 'All') {
-        const prefix = LOR_PREFIX_TO_DISTRICT[Object.keys(LOR_PREFIX_TO_DISTRICT).find(p => LOR_PREFIX_TO_DISTRICT[p] === district) || ''];
-        // Note: LOR filtering is already done in backend but we double check here for sync
-      }
       return true;
     });
   }, [data, debouncedStartDate, debouncedEndDate, district]);
@@ -143,8 +170,8 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
           return res.ok ? res.json() : [];
         };
 
-        const [current, prev] = await Promise.all([fetchCurrent(), fetchPrev()]);
-
+        const current = await fetchCurrent();
+        
         // Safety check: ensure the data matches the current theftType toggle
         if (current.length > 0 && current[0].category !== theftType && theftType !== 'both') {
           console.warn('Fetched data category mismatch, ignoring stale response');
@@ -152,11 +179,15 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
         }
 
         setData(current);
+        setLoading(false);
+
+        // Fetch previous year data in the background
+        const prev = await fetchPrev();
         setPrevYearData(prev);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
-      } finally {
         setLoading(false);
+      } finally {
         setCurrentPage(1);
       }
     }
@@ -171,7 +202,19 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
       .then(res => res.json())
       .then(data => setLorData(data))
       .catch(err => console.error('Error loading LOR data:', err));
+
+    // Load LOR centroids for coordinate lookup
+    fetch('/api/bicycle-theft/lor-centroids')
+      .then(res => res.json())
+      .then(data => setLorCentroids(data))
+      .catch(err => console.error('Error loading LOR centroids:', err));
   }, []);
+
+  // Reset LOR zoom when district changes
+  useEffect(() => {
+    setSelectedLorCoord(null);
+    setSelectedLorId(null);
+  }, [district]);
 
   // Note: All stats now use filteredData for instant parallel updates
   const sortedData = [...filteredData].sort((a, b) => {
@@ -278,18 +321,21 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
     }, {});
 
     return Object.entries(counts)
-      .map(([name, count]) => ({ name, count }))
+      .map(([name, count]) => ({ name, count, id: name }))
       .sort((a, b) => b.count - a.count);
   }, [filteredData]);
 
   const lorStats = useMemo(() => {
-    const counts = filteredData.reduce((acc: Record<string, number>, curr) => {
-      acc[curr.lor] = (acc[curr.lor] || 0) + 1;
+    const statsMap = filteredData.reduce((acc: Record<string, { name: string, count: number, id: string }>, curr) => {
+      const name = curr.lor;
+      if (!acc[name]) {
+        acc[name] = { name, count: 0, id: curr.rawLor || '' };
+      }
+      acc[name].count++;
       return acc;
     }, {});
 
-    return Object.entries(counts)
-      .map(([name, count]) => ({ name, count }))
+    return Object.values(statsMap)
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
   }, [filteredData]);
@@ -556,18 +602,35 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
           className="z-0"
           aria-label={language === 'de' ? 'Karte der Diebstähle' : 'Theft locations map'}
         >
+          <MapViewHandler district={district} selectedLorCoord={selectedLorCoord} />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           />
           {lorData && (
             <GeoJSON
+              key={`lor-layer-${selectedLorId}-${hoveredLorId}`}
               data={lorData}
-              style={{
-                color: '#64748b',
-                weight: 1,
-                fillOpacity: 0.1,
-                fillColor: 'transparent'
+              style={(feature) => {
+                const id = feature?.properties?.SCHLUESSEL;
+                const isSelected = id === selectedLorId;
+                const isHovered = id === hoveredLorId;
+                
+                if (isSelected) {
+                  return {
+                    color: '#fbbf24',
+                    weight: 4,
+                    fillOpacity: 0.4,
+                    fillColor: '#fbbf24',
+                  };
+                }
+                
+                return {
+                  color: isHovered ? '#fff' : '#64748b',
+                  weight: isHovered ? 3 : 1,
+                  fillOpacity: isHovered ? 0.3 : 0.1,
+                  fillColor: isHovered ? '#fff' : 'transparent',
+                };
               }}
               onEachFeature={(feature, layer) => {
                 if (feature.properties && feature.properties.PLR_NAME) {
@@ -735,7 +798,55 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
                   fill={theftType === 'car' ? "#f43f5e" : theftType === 'bicycle' ? "#10b981" : "#3b82f6"}
                   radius={[0, 4, 4, 0]}
                   label={{ position: 'right', fill: '#94a3b8', fontSize: 10 }}
-                />
+                  onMouseEnter={(data) => {
+                    if (data && data.id) {
+                      setHoveredLorId(data.id);
+                    }
+                  }}
+                  onMouseLeave={() => setHoveredLorId(null)}
+                  onClick={(data: any) => {
+                    // Handle both direct data (from Bar) and payload (from BarChart/Tooltip)
+                    const item = data?.activePayload ? data.activePayload[0].payload : data;
+                    if (!item) return;
+
+                    const id = item.id;
+                    const name = item.name;
+
+                    // Toggle selection
+                    if (selectedLorId === id) {
+                      setSelectedLorId(null);
+                      setSelectedLorCoord(null);
+                      return;
+                    }
+
+                    setSelectedLorId(id || null);
+
+                    // Try lookup by ID first
+                    let centroid = id ? lorCentroids[id] : null;
+
+                    // Fallback to name search
+                    if (!centroid && name) {
+                      centroid = Object.values(lorCentroids).find(c => c.name === name) || null;
+                    }
+
+                    if (centroid) {
+                      setSelectedLorCoord({ lat: centroid.lat, lng: centroid.lng });
+                      setTimeout(() => {
+                        document.querySelector('.leaflet-container')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }
+                  }}
+                  className="cursor-pointer"
+                >
+                  {((!district || district === 'Berlin' || district === 'All') ? districtStats : lorStats).map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={entry.id === selectedLorId ? "#fbbf24" : (theftType === 'car' ? "#f43f5e" : theftType === 'bicycle' ? "#10b981" : "#3b82f6")}
+                      stroke={entry.id === selectedLorId ? "#fff" : "none"}
+                      strokeWidth={entry.id === selectedLorId ? 1 : 0}
+                    />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>

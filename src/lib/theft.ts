@@ -25,8 +25,11 @@ export interface CarTheftRecord extends TheftRecord {
     ERLANGTES_GUT: string;
 }
 
-const BIKE_THEFT_URL = 'https://www.polizei-berlin.eu/Fahrraddiebstahl/Fahrraddiebstahl.csv';
-const CAR_THEFT_URL = 'https://www.polizei-berlin.eu/Kfzdiebstahl/Kfzdiebstahl.csv';
+import { getLatestResourceUrl } from './ckan';
+import { CKAN_PACKAGES } from './constants';
+
+const DEFAULT_BIKE_THEFT_URL = 'https://www.polizei-berlin.eu/Fahrraddiebstahl/Fahrraddiebstahl.csv';
+const DEFAULT_CAR_THEFT_URL = 'https://www.polizei-berlin.eu/Kfzdiebstahl/Kfzdiebstahl.csv';
 
 // Cache structure
 interface TheftCache {
@@ -47,7 +50,11 @@ export async function fetchLiveTheftData(type: 'bicycle' | 'car'): Promise<any[]
         return cache[type].data!;
     }
 
-    const url = type === 'bicycle' ? BIKE_THEFT_URL : CAR_THEFT_URL;
+    const packageId = type === 'bicycle' ? CKAN_PACKAGES.BICYCLE_THEFT : CKAN_PACKAGES.CAR_THEFT;
+    const defaultUrl = type === 'bicycle' ? DEFAULT_BIKE_THEFT_URL : DEFAULT_CAR_THEFT_URL;
+    
+    // Attempt to get latest URL from CKAN, fallback to default
+    const url = await getLatestResourceUrl(packageId, 'CSV') || defaultUrl;
     const delimiter = type === 'bicycle' ? ',' : '|';
 
     try {

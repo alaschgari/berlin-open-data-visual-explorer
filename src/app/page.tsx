@@ -8,12 +8,13 @@ import DashboardClient from '@/components/DashboardClient';
 export default async function Dashboard({ searchParams }: { searchParams: Promise<{ district?: string, tab?: string, budgetMode?: string }> }) {
   const resolvedSearchParams = await searchParams;
   const district = resolvedSearchParams.district || 'Berlin';
-  const activeTab = (resolvedSearchParams.tab || 'hub') as 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets';
+  const activeTab = (resolvedSearchParams.tab || 'hub') as 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets' | 'baustellen';
   const budgetMode = (resolvedSearchParams.budgetMode || 'explorer') as 'historic' | 'explorer';
 
   // SSR Core Data (fast or critical)
   const isHub = activeTab === 'hub';
-  const lastSync = isHub ? null : await getLastSyncTime();
+  const lastSyncDate = isHub ? null : await getLastSyncTime();
+  const lastSync = lastSyncDate ? lastSyncDate.toISOString() : null;
 
   // Budget Promises
   let districtDataPromise: Promise<any> | undefined = undefined;

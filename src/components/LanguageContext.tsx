@@ -33,6 +33,7 @@ const translations: Translations = {
     'tab_wastewater': { de: 'Abwasser', en: 'Wastewater' },
     'tab_badestellen': { de: 'Badestellen', en: 'Swimming Spots' },
     'tab_traffic': { de: 'Verkehr', en: 'Traffic' },
+    'tab_baustellen': { de: 'Baustellen', en: 'Construction' },
 
     // Hub
     'hub_title': { de: 'Berlin Open Data', en: 'Berlin Open Data' },
@@ -51,6 +52,7 @@ const translations: Translations = {
     'desc_wastewater': { de: 'Abwasserbelastung und Gesundheitsdaten.', en: 'Wastewater pollution and health data.' },
     'desc_traffic': { de: 'Verkehrsaufkommen und -analysen.', en: 'Traffic volume and analyses.' },
     'desc_markets': { de: 'Standorte der Berliner Wochenmärkte.', en: 'Locations of Berlin\'s weekly markets.' },
+    'desc_baustellen': { de: 'Baustellen und Verkehrsstörungen live.', en: 'Live construction sites and traffic disruptions.' },
 
     // Selectors
     'all_districts': { de: 'Alle Bezirke', en: 'All Districts' },
@@ -344,7 +346,19 @@ const translations: Translations = {
     'markets_count': { de: 'Märkte', en: 'Markets' },
     'markets_closed': { de: 'Geschlossen', en: 'Closed' },
     'markets_map_label': { de: 'Märkte-Karte', en: 'Markets map' },
-    'traffic_map_label': { de: 'Verkehrssegment-Karte', en: 'Traffic segments map' }
+    'traffic_map_label': { de: 'Verkehrssegment-Karte', en: 'Traffic segments map' },
+
+    // Baustellen
+    'baustellen_title': { de: 'Baustellen & Störungen', en: 'Construction & Disruptions' },
+    'baustellen_subtitle': { de: 'Live-Daten der Verkehrsinformationszentrale (VIZ)', en: 'Live data from the Traffic Information Center (VIZ)' },
+    'baustellen_loading': { de: 'Lade Baustellendaten...', en: 'Loading construction data...' },
+    'baustellen_count': { de: 'Baustellen', en: 'Construction Sites' },
+    'baustellen_map_label': { de: 'Karte der Verkehrsstörungen', en: 'Map of traffic disruptions' },
+    'baustellen_street': { de: 'Straße', en: 'Street' },
+    'baustellen_period': { de: 'Zeitraum', en: 'Period' },
+    'baustellen_type': { de: 'Art', en: 'Type' },
+    'baustellen_severity': { de: 'Schweregrad', en: 'Severity' },
+    'baustellen_content': { de: 'Details', en: 'Details' }
 };
 
 interface LanguageContextType {

@@ -16,6 +16,7 @@ import WastewaterView from '@/components/WastewaterView';
 import BadestellenWrapper from '@/components/BadestellenWrapper';
 import TrafficView from '@/components/TrafficView';
 import MarketsMapWrapper from '@/components/MarketsMapWrapper';
+import BaustellenMapWrapper from '@/components/BaustellenMapWrapper';
 import HubView from '@/components/HubView';
 import { WastewaterRecord } from '@/lib/wastewater';
 import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets, ShoppingBag, LayoutGrid } from 'lucide-react';
@@ -29,9 +30,9 @@ import { CardSkeleton, ChartSkeleton, SubsidiesListSkeleton, MapSkeleton } from 
 
 interface DashboardClientProps {
     district: string;
-    activeTab: 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets';
+    activeTab: 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets' | 'baustellen';
     budgetMode: 'historic' | 'explorer';
-    lastSync: Date | null;
+    lastSync: string | null;
     districts: string[];
     // Data promises for streaming
     dataPromise: Promise<any>;
@@ -46,7 +47,7 @@ interface DashboardClientProps {
 
 // Local cache-enabled AsyncView implemented inside DashboardClient
 
-type TabType = 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets';
+type TabType = 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets' | 'baustellen';
 
 interface NavItem {
     id: TabType;
@@ -66,7 +67,8 @@ const NAV_ITEMS: NavItem[] = [
     { id: 'business', labelKey: 'tab_business', icon: <Building2 className="w-3.5 h-3.5" />, category: 'infrastructure', priority: 7 },
     { id: 'wastewater', labelKey: 'tab_wastewater', icon: <Droplets className="w-3.5 h-3.5" />, category: 'infrastructure', priority: 8 },
     { id: 'traffic', labelKey: 'tab_traffic', icon: <BarChart3 className="w-3.5 h-3.5" />, category: 'infrastructure', priority: 9 },
-    { id: 'markets', labelKey: 'tab_markets', icon: <ShoppingBag className="w-3.5 h-3.5" />, category: 'society', priority: 10 },
+    { id: 'baustellen', labelKey: 'tab_baustellen', icon: <Shield className="w-3.5 h-3.5" />, category: 'infrastructure', priority: 10 },
+    { id: 'markets', labelKey: 'tab_markets', icon: <ShoppingBag className="w-3.5 h-3.5" />, category: 'society', priority: 11 },
 ];
 
 // Client-side persistent cache for resolved promises (module level singleton)
@@ -138,7 +140,7 @@ export default function DashboardClient({
                 {/* Unified Premium Header */}
                 <header className="relative z-[2000] flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-2xl overflow-visible">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
+                        <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0" suppressHydrationWarning>
                             <svg className="w-7 h-7 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
@@ -165,6 +167,7 @@ export default function DashboardClient({
                                     })}
                                     disabled={isPending}
                                     className="flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl border border-slate-700/50 hover:border-slate-600 transition-all font-bold text-xs shadow-inner w-full sm:w-auto disabled:opacity-50"
+                                    suppressHydrationWarning
                                 >
                                     <LayoutGrid className="w-4 h-4" />
                                     <span>{t('back_to_hub')}</span>
@@ -260,6 +263,8 @@ export default function DashboardClient({
                             <TrafficView district={district} />
                         ) : activeTab === 'markets' ? (
                             <MarketsMapWrapper district={district} />
+                        ) : activeTab === 'baustellen' ? (
+                            <BaustellenMapWrapper district={district} />
                         ) : activeTab === 'badestellen' ? (
                             <BadestellenWrapper district={district} />
                         ) : (

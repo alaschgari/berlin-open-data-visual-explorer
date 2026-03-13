@@ -119,6 +119,10 @@ export async function GET(request: Request) {
             if (!inDateRange) return false;
 
             if (district && district !== 'Berlin' && district !== 'All') {
+                const prefix = DISTRICT_TO_LOR_PREFIX[district];
+                if (prefix && item.rawLor) {
+                    return item.rawLor.startsWith(prefix);
+                }
                 return item.lor === district;
             }
             return true;
