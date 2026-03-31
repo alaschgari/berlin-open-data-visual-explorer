@@ -39,26 +39,30 @@ export function calculateEnhancedMetrics(data: FinancialRecord[], type: MetricTy
     return calculateMetrics(dataCopy);
 }
 
-import { supabase } from './supabase';
+import { db } from '@/db';
+import { financialRecords } from '@/db/schema';
+import { eq, and, sql as drizzleSql } from 'drizzle-orm';
 
 // Fetch from Supabase instead of local file
 export async function getQuickFinancialMetrics(district?: string): Promise<{ budget: number, actual: number }> {
-    console.log('[getQuickFinancialMetrics] Quick fetch for Hub...');
+    console.log('[getQuickFinancialMetrics] Quick fetch Neon...');
     try {
-        let query = supabase.from('financial_records').select('budget, actual');
-
+        let whereClause = eq(financialRecords.year, 2024);
+        
         if (district && district !== 'Berlin' && district !== 'All') {
-            query = query.eq('district', district);
+            whereClause = and(whereClause, eq(financialRecords.district, district)) as any;
         }
 
-        // Latest year only for Hub
-        query = query.eq('year', 2024);
+        const data = await db
+            .select({
+                budget: financialRecords.budget,
+                actual: financialRecords.actual
+            })
+            .from(financialRecords)
+            .where(whereClause);
 
-        const { data, error } = await query;
-        if (error) throw error;
-
-        const budget = (data || []).reduce((sum, r) => sum + (r.budget || 0), 0);
-        const actual = (data || []).reduce((sum, r) => sum + (r.actual || 0), 0);
+        const budget = data.reduce((sum, r) => sum + (r.budget || 0), 0);
+        const actual = data.reduce((sum, r) => sum + (r.actual || 0), 0);
 
         return { budget, actual };
     } catch (error) {
@@ -68,59 +72,15 @@ export async function getQuickFinancialMetrics(district?: string): Promise<{ bud
 }
 
 export async function getFinancialData(): Promise<FinancialRecord[]> {
-    console.log('[getFinancialData] Fetching from Supabase...');
+    console.log('[getFinancialData] Fetching from Neon...');
 
     try {
-        const { count, error: countError } = await supabase
-            .from('financial_records')
-            .select('*', { count: 'exact', head: true });
-
-        if (countError) {
-            console.error('[getFinancialData] Count error:', countError);
-            return [];
-        }
-
-        const totalRecords = count || 0;
-        const CHUNK_SIZE = 1000;
-        const totalChunks = Math.ceil(totalRecords / CHUNK_SIZE);
-        const BATCH_SIZE = 5;
-
-        console.log(`[getFinancialData] Fetching ${totalRecords} records in ${totalChunks} chunks (Batch Size: ${BATCH_SIZE})`);
-
-        let allRecords: FinancialRecord[] = [];
-
-        for (let i = 0; i < totalChunks; i += BATCH_SIZE) {
-            const batchLimit = Math.min(i + BATCH_SIZE, totalChunks);
-            const batchPromises = [];
-
-            for (let j = i; j < batchLimit; j++) {
-                batchPromises.push(
-                    supabase
-                        .from('financial_records')
-                        .select('year, district, chapter, title_code, budget, actual, diff')
-                        .range(j * CHUNK_SIZE, (j + 1) * CHUNK_SIZE - 1)
-                        .order('year', { ascending: true })
-                        .then(result => ({ ...result, index: j }))
-                );
-            }
-
-            const batchResults = await Promise.all(batchPromises);
-
-            batchResults.forEach(({ data, error, index }) => {
-                if (error) {
-                    console.error(`[getFinancialData] Error in chunk ${index}:`, error);
-                } else if (data) {
-                    allRecords = allRecords.concat(data as FinancialRecord[]);
-                }
-            });
-
-            if (totalChunks > BATCH_SIZE) {
-                console.log(`[getFinancialData] Progress: ${Math.min(batchLimit * CHUNK_SIZE, totalRecords)}/${totalRecords} records`);
-            }
-        }
+        // Fetch all records from Neon
+        // For a larger dataset like 140k, Drizzle on Server Components handles this well
+        const allRecords = await db.select().from(financialRecords).orderBy(financialRecords.year);
 
         console.log(`[getFinancialData] Successfully fetched ${allRecords.length} records`);
-        return allRecords;
+        return allRecords as unknown as FinancialRecord[];
     } catch (error) {
         console.error('[getFinancialData] Unexpected error:', error);
         return [];

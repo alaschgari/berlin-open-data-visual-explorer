@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { db } from '@/db';
+import { financialRecords } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 import { getTitleName } from '@/lib/budget-mappings';
 
 export const revalidate = 3600; // 1 hour
@@ -59,47 +61,13 @@ export async function GET(request: NextRequest) {
     const year = parseInt(searchParams.get('year') || '2024');
 
     try {
-        // Step 1: Get total count for this year
-        const { count, error: countError } = await supabase
-            .from('financial_records')
-            .select('*', { count: 'exact', head: true })
-            .eq('year', year);
+        console.log(`[API Budget] Fetching records for ${year} from Neon...`);
+        const allRecords = await db
+            .select()
+            .from(financialRecords)
+            .where(eq(financialRecords.year, year));
 
-        if (countError) {
-            console.error(`[API Budget] Count error for year ${year}:`, countError);
-            return NextResponse.json({ error: 'Database error' }, { status: 500 });
-        }
-
-        const totalRecords = count || 0;
-        const CHUNK_SIZE = 1000;
-        const totalChunks = Math.ceil(totalRecords / CHUNK_SIZE);
-
-        console.log(`[API Budget] Fetching ${totalRecords} records for ${year} in ${totalChunks} chunks`);
-
-        // Step 2: Fetch all records in parallel chunks
-        const fetchPromises = [];
-        for (let i = 0; i < totalChunks; i++) {
-            fetchPromises.push(
-                supabase
-                    .from('financial_records')
-                    .select('*')
-                    .eq('year', year)
-                    .range(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE - 1)
-            );
-        }
-
-        const chunkResults = await Promise.all(fetchPromises);
-        let allRecords: any[] = [];
-
-        chunkResults.forEach(({ data, error }, index) => {
-            if (error) {
-                console.error(`[API Budget] Error in chunk ${index}:`, error);
-            } else if (data) {
-                allRecords = allRecords.concat(data);
-            }
-        });
-
-        if (allRecords.length === 0) {
+        if (!allRecords || allRecords.length === 0) {
             return NextResponse.json({ name: 'Keine Daten', value: 0, children: [] });
         }
 

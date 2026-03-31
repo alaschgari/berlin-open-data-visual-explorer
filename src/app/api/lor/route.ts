@@ -1,16 +1,10 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { db } from '@/db';
+import { lorData } from '@/db/schema';
 
 export async function GET() {
     try {
-        const { data, error } = await supabase
-            .from('lor_data')
-            .select('*');
-
-        if (error) {
-            console.error('Supabase error fetching LOR data:', error);
-            return NextResponse.json({ error: 'Failed to fetch LOR data from database' }, { status: 500 });
-        }
+        const data = await db.select().from(lorData);
 
         if (!data || data.length === 0) {
             return NextResponse.json({ error: 'No LOR data found' }, { status: 404 });
@@ -24,14 +18,9 @@ export async function GET() {
                 type: 'name',
                 properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' }
             },
-            features: data.map(item => ({
+            features: data.map((item: any) => ({
                 type: 'Feature',
                 properties: {
-                    PLR_ID: item.plr_id,
-                    PLR_NAME: item.plr_name,
-                    BEZ: item.bez,
-                    STAND: item.stand,
-                    GROESSE_M2: item.groesse_m2,
                     ...item.properties
                 },
                 geometry: item.geometry

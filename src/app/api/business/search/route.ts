@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { db } from '@/db';
+import { businesses } from '@/db/schema';
+import { and, ilike, like, sql as drizzleSql } from 'drizzle-orm';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -13,69 +15,43 @@ export async function GET(request: Request) {
 
     try {
         // Stage 1: Get 100% accurate counts using the RPC function
-        const { data: countData, error: countError } = await supabase.rpc('get_business_counts', {
-            search_query: query,
-            district_filter: districtId || null
-        });
-
-        if (countError) {
-            console.error('Error in business count RPC:', countError);
-            // Fallback or handle error
-        }
+        // In Drizzle, we can call the function using raw SQL
+        const countData = await db.execute(drizzleSql`SELECT * FROM get_business_counts(${query}, ${districtId || null})`) as unknown as { lor_id: string, count: string }[];
 
         // Convert RPC result back to the expected key-value object
         const lorCounts: Record<string, number> = {};
         let totalMatched = 0;
         if (countData) {
-            countData.forEach((row: { lor_id: string, count: number }) => {
+            countData.forEach((row) => {
                 lorCounts[row.lor_id] = Number(row.count);
                 totalMatched += Number(row.count);
             });
         }
 
         // Stage 2: Fetch detailed points for the map
-        // Supabase has a default limit of 1000. We'll fetch in parallel chunks to get more.
-        const CHUNK_SIZE = 1000;
-        const totalChunks = Math.min(10, Math.ceil(limit / CHUNK_SIZE)); // Fetch up to 10,000 records
-
-        const fetchPromises = [];
-        for (let i = 0; i < totalChunks; i++) {
-            let chunkQuery = supabase
-                .from('businesses')
-                .select('id, lat, lng, branch, employees, type, age, city, postcode, lor_id')
-                .ilike('branch', `%${query}%`)
-                .range(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE - 1);
-
-            if (districtId) {
-                chunkQuery = chunkQuery.like('lor_id', `${districtId}%`);
-            }
-            fetchPromises.push(chunkQuery);
-        }
-
-        const chunkResults = await Promise.all(fetchPromises);
-        let allPoints: any[] = [];
-
-        chunkResults.forEach(({ data, error }) => {
-            if (error) {
-                console.error('Error fetching business chunk:', error);
-            } else if (data) {
-                allPoints = [...allPoints, ...data];
-            }
-        });
+        const allPoints = await db.select({
+            id: businesses.id,
+            lat: businesses.lat,
+            lng: businesses.lng,
+            branch: businesses.branch,
+            employees: businesses.employees,
+            type: businesses.type,
+            age: businesses.age,
+            city: businesses.city,
+            postcode: businesses.postcode,
+            lorId: businesses.lor_id
+        })
+        .from(businesses)
+        .where(
+            and(
+                ilike(businesses.branch, `%${query}%`),
+                districtId ? like(businesses.lor_id, `${districtId}%`) : undefined
+            )
+        )
+        .limit(limit);
 
         return NextResponse.json({
-            points: allPoints.map(item => ({
-                id: item.id,
-                lat: item.lat,
-                lng: item.lng,
-                branch: item.branch,
-                employees: item.employees,
-                type: item.type,
-                age: item.age,
-                city: item.city,
-                postcode: item.postcode,
-                lorId: item.lor_id
-            })),
+            points: allPoints,
             lorCounts: lorCounts,
             totalMatched: totalMatched
         });

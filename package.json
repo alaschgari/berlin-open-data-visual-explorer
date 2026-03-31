@@ -11,16 +11,18 @@
     "sync": "npx tsx scripts/sync_data.ts"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.97.0",
+    "@neondatabase/serverless": "^1.0.2",
     "@types/leaflet": "^1.9.21",
     "@types/proj4": "^2.5.6",
     "clsx": "^2.1.1",
     "d3": "^7.9.0",
+    "drizzle-orm": "^0.45.2",
     "epsg-index": "^2.0.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.563.0",
     "next": "^16.2.0-canary.31",
     "papaparse": "^5.5.3",
+    "postgres": "^3.4.8",
     "proj4": "^2.20.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -32,15 +34,19 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@supabase/supabase-js": "^2.101.0",
     "@tailwindcss/postcss": "^4",
     "@types/d3": "^7.4.3",
     "@types/node": "^20",
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.3.1",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

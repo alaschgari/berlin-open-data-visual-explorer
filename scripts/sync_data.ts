@@ -1,6 +1,5 @@
 import { fetchBerlinData } from '../src/lib/scraper';
 import { processFiles } from '../src/lib/parser';
-import { supabase } from '../src/lib/supabase';
 import { existsSync } from 'fs';
 
 async function main() {
