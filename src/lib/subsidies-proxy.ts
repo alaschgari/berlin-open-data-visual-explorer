@@ -3,7 +3,7 @@
 import { SubsidyRecord } from './parser';
 import { db } from '@/db';
 import { subsidies } from '@/db/schema';
-import { desc, eq, ilike, sql as drizzleSql } from 'drizzle-orm';
+import { desc, eq, ilike, or, and, sql as drizzleSql, sum, count, min, max, countDistinct, inArray } from 'drizzle-orm';
 
 export interface SubsidyMetrics {
     totalAmount: number;
@@ -29,43 +29,76 @@ export interface SubsidyMetrics {
  * e.g., "Bezirksamt Mitte" -> "Mitte"
  */
 function extractDistrict(provider: string): string | null {
-    const match = provider.match(/Bezirksamt\s+(.+)/i);
+    if (!provider) return null;
+    const match = provider.match(/Bezirksamt\s+([a-zA-ZäöüßÄÖÜ\-]+)/i);
     return match ? match[1].trim() : null;
 }
 
-async function loadSubsidiesData(): Promise<SubsidyRecord[]> {
-    console.log('[Subsidies Proxy] Fetching from Neon...');
-    try {
-        const allRecords = await db.select().from(subsidies).orderBy(desc(subsidies.year));
-        return allRecords as unknown as SubsidyRecord[];
-    } catch (error) {
-        console.error('[Subsidies Proxy] Unexpected error:', error);
-        return [];
+// Build dynamic WHERE clause based on filters
+function buildWhereClause(district?: string, query?: string, area?: string | string[], provider?: string | string[], recipient?: string | string[]) {
+    const conditions = [];
+
+    // Filter by district using SQL ILIKE
+    if (district && district !== 'Berlin' && district !== 'All') {
+        conditions.push(ilike(subsidies.provider, `%Bezirksamt ${district}%`));
     }
+
+    // Filter by search query
+    if (query) {
+        conditions.push(
+            or(
+                ilike(subsidies.recipient, `%${query}%`),
+                ilike(subsidies.purpose, `%${query}%`)
+            )
+        );
+    }
+
+    // Filter by area
+    if (area) {
+        const areas = Array.isArray(area) ? area : [area];
+        if (areas.length > 0) {
+            conditions.push(inArray(subsidies.area, areas));
+        }
+    }
+
+    // Filter by provider
+    if (provider) {
+        const providers = Array.isArray(provider) ? provider : [provider];
+        if (providers.length > 0) {
+            conditions.push(inArray(subsidies.provider, providers));
+        }
+    }
+
+    // Filter by recipient
+    if (recipient) {
+        const recipients = Array.isArray(recipient) ? recipient : [recipient];
+        if (recipients.length > 0) {
+            conditions.push(inArray(subsidies.recipient, recipients));
+        }
+    }
+
+    return conditions.length > 0 ? and(...conditions) : undefined;
 }
 
 export async function getQuickSubsidiesMetrics(district?: string): Promise<{ totalAmount: number, totalCount: number }> {
     "use cache";
 
     try {
-        let whereClause = undefined;
+        const whereClause = district && district !== 'Berlin' && district !== 'All'
+            ? ilike(subsidies.provider, `%Bezirksamt ${district}%`)
+            : undefined;
 
-        // Filter by district if specified
-        if (district && district !== 'Berlin' && district !== 'All') {
-            whereClause = ilike(subsidies.provider, `%Bezirksamt ${district}%`);
-        }
-
-        const data = await db
+        const result = await db
             .select({
-                amount: subsidies.amount
+                totalAmount: sum(subsidies.amount),
+                totalCount: count(subsidies.id)
             })
             .from(subsidies)
             .where(whereClause);
 
-        const totalAmount = data.reduce((sum, r) => sum + (r.amount || 0), 0);
         return {
-            totalAmount,
-            totalCount: data.length
+            totalAmount: parseFloat(result[0]?.totalAmount || '0'),
+            totalCount: Number(result[0]?.totalCount || 0)
         };
     } catch (error) {
         console.error('[Subsidies Proxy] Quick metrics error:', error);
@@ -75,8 +108,173 @@ export async function getQuickSubsidiesMetrics(district?: string): Promise<{ tot
 
 export async function getSubsidiesMetrics(district?: string): Promise<SubsidyMetrics> {
     "use cache";
-    const allData = await loadSubsidiesData();
-    if (allData.length === 0) {
+
+    try {
+        const whereClause = district && district !== 'Berlin' && district !== 'All'
+            ? ilike(subsidies.provider, `%Bezirksamt ${district}%`)
+            : undefined;
+
+        // 1. Fetch overall aggregates
+        const overallResult = await db
+            .select({
+                totalAmount: sum(subsidies.amount),
+                totalCount: count(subsidies.id),
+                recipientCount: countDistinct(subsidies.recipient),
+                providerCount: countDistinct(subsidies.provider),
+                minYear: min(subsidies.year),
+                maxYear: max(subsidies.year)
+            })
+            .from(subsidies)
+            .where(whereClause);
+
+        const totalAmount = parseFloat(overallResult[0]?.totalAmount || '0');
+        const totalCount = Number(overallResult[0]?.totalCount || 0);
+
+        if (totalCount === 0) {
+            return {
+                totalAmount: 0,
+                totalCount: 0,
+                topRecipients: [],
+                byYear: [],
+                byArea: [],
+                byDistrict: [],
+                byProvider: [],
+                recipientCount: 0,
+                providerCount: 0,
+                minYear: 0,
+                maxYear: 0,
+            };
+        }
+
+        // 2. Fetch Aggregation by Year
+        const yearResult = await db
+            .select({
+                year: subsidies.year,
+                amount: sum(subsidies.amount)
+            })
+            .from(subsidies)
+            .where(whereClause)
+            .groupBy(subsidies.year)
+            .orderBy(subsidies.year);
+
+        const byYear = yearResult.map(r => ({
+            year: r.year,
+            amount: parseFloat(r.amount || '0')
+        }));
+
+        // 3. Fetch Aggregation by Area
+        const areaResult = await db
+            .select({
+                area: subsidies.area,
+                amount: sum(subsidies.amount)
+            })
+            .from(subsidies)
+            .where(whereClause)
+            .groupBy(subsidies.area)
+            .orderBy(desc(sum(subsidies.amount)));
+
+        const byArea = areaResult.map(r => ({
+            area: r.area || 'Sonstige',
+            amount: parseFloat(r.amount || '0')
+        }));
+
+        // 4. Fetch Aggregation by Provider (also used to map districts in memory)
+        const providerResult = await db
+            .select({
+                provider: subsidies.provider,
+                amount: sum(subsidies.amount),
+                count: count(subsidies.id)
+            })
+            .from(subsidies)
+            .where(whereClause)
+            .groupBy(subsidies.provider)
+            .orderBy(desc(sum(subsidies.amount)));
+
+        const byProvider = providerResult.map(r => ({
+            provider: r.provider,
+            amount: parseFloat(r.amount || '0')
+        }));
+
+        // Map provider results to districts in-memory (highly efficient as unique provider list is small)
+        const districtMap = new Map<string, { amount: number; count: number }>();
+        providerResult.forEach(r => {
+            const dName = extractDistrict(r.provider) || 'Senat/Berlin-weit';
+            const stats = districtMap.get(dName) || { amount: 0, count: 0 };
+            stats.amount += parseFloat(r.amount || '0');
+            stats.count += Number(r.count || 0);
+            districtMap.set(dName, stats);
+        });
+
+        const byDistrict = Array.from(districtMap.entries())
+            .map(([d, stats]) => ({
+                district: d,
+                amount: stats.amount,
+                count: stats.count
+            }))
+            .sort((a, b) => b.amount - a.amount);
+
+        // 5. Fetch Top Recipients (Limit 20)
+        const topRecipientsResult = await db
+            .select({
+                recipient: subsidies.recipient,
+                amount: sum(subsidies.amount),
+                count: count(subsidies.id)
+            })
+            .from(subsidies)
+            .where(whereClause)
+            .groupBy(subsidies.recipient)
+            .orderBy(desc(sum(subsidies.amount)))
+            .limit(20);
+
+        // Fetch history for top recipients in a single fast query or dynamically
+        // To prevent multiple queries, we can get history for top recipients
+        const topRecipientNames = topRecipientsResult.map(r => r.recipient);
+        let historyResult: any[] = [];
+        if (topRecipientNames.length > 0) {
+            historyResult = await db
+                .select({
+                    recipient: subsidies.recipient,
+                    year: subsidies.year,
+                    amount: sum(subsidies.amount)
+                })
+                .from(subsidies)
+                .where(and(whereClause, inArray(subsidies.recipient, topRecipientNames)))
+                .groupBy(subsidies.recipient, subsidies.year);
+        }
+
+        const topRecipients = topRecipientsResult.map(r => {
+            const rHistory = historyResult
+                .filter(h => h.recipient === r.recipient)
+                .map(h => ({
+                    year: h.year,
+                    amount: parseFloat(h.amount || '0')
+                }))
+                .sort((a, b) => a.year - b.year);
+
+            return {
+                name: r.recipient,
+                amount: parseFloat(r.amount || '0'),
+                count: Number(r.count || 0),
+                history: rHistory
+            };
+        });
+
+        return {
+            totalAmount,
+            totalCount,
+            recipientCount: Number(overallResult[0]?.recipientCount || 0),
+            providerCount: Number(overallResult[0]?.providerCount || 0),
+            minYear: Number(overallResult[0]?.minYear || 0),
+            maxYear: Number(overallResult[0]?.maxYear || 0),
+            topRecipients,
+            byYear,
+            byArea,
+            byProvider,
+            byDistrict
+        };
+
+    } catch (e) {
+        console.error('[Subsidies Proxy] Metrics aggregation error:', e);
         return {
             totalAmount: 0,
             totalCount: 0,
@@ -91,116 +289,6 @@ export async function getSubsidiesMetrics(district?: string): Promise<SubsidyMet
             maxYear: 0,
         };
     }
-
-    let data = [...allData];
-
-    // Filter by district if specified
-    if (district && district !== 'Berlin' && district !== 'All') {
-        data = data.filter(record => {
-            const recordDistrict = extractDistrict(record.provider);
-            return recordDistrict === district;
-        });
-    }
-
-    const metrics: SubsidyMetrics = {
-        totalAmount: 0,
-        totalCount: data.length,
-        recipientCount: 0,
-        providerCount: 0,
-        minYear: new Date().getFullYear(),
-        maxYear: new Date().getFullYear(),
-        topRecipients: [],
-        byYear: [],
-        byArea: [],
-        byProvider: [],
-        byDistrict: [],
-    };
-
-    const recipientMap = new Map<string, { amount: number; count: number; historyMap: Map<number, number> }>();
-    const yearMap = new Map<number, number>();
-    const areaMap = new Map<string, number>();
-    const providerMap = new Map<string, number>();
-    const districtMap = new Map<string, { amount: number; count: number }>();
-
-    for (const record of data) {
-        metrics.totalAmount += record.amount;
-
-        // Recipient aggregation
-        const rData = recipientMap.get(record.recipient) || { amount: 0, count: 0, historyMap: new Map<number, number>() };
-        rData.amount += record.amount;
-        rData.count += 1;
-        const yearAmount = rData.historyMap.get(record.year) || 0;
-        rData.historyMap.set(record.year, yearAmount + record.amount);
-        recipientMap.set(record.recipient, rData);
-
-        // Year aggregation
-        yearMap.set(record.year, (yearMap.get(record.year) || 0) + record.amount);
-
-        // Area aggregation
-        areaMap.set(record.area, (areaMap.get(record.area) || 0) + record.amount);
-
-        // Provider aggregation
-        providerMap.set(record.provider, (providerMap.get(record.provider) || 0) + record.amount);
-
-        // District aggregation
-        const dName = extractDistrict(record.provider) || 'Senat/Berlin-weit';
-        const dStats = districtMap.get(dName) || { amount: 0, count: 0 };
-        dStats.amount += record.amount;
-        dStats.count += 1;
-        districtMap.set(dName, dStats);
-    }
-
-    // Top recipients
-    metrics.topRecipients = Array.from(recipientMap.entries())
-        .map(([name, stats]) => ({
-            name,
-            amount: stats.amount,
-            count: stats.count,
-            history: Array.from(stats.historyMap.entries())
-                .map(([year, amount]) => ({ year, amount }))
-                .sort((a, b) => a.year - b.year)
-        }))
-        .sort((a, b) => b.amount - a.amount);
-
-    // By Year
-    metrics.byYear = Array.from(yearMap.entries())
-        .map(([year, amount]) => ({ year, amount }))
-        .sort((a, b) => a.year - b.year);
-
-    // By Area
-    metrics.byArea = Array.from(areaMap.entries())
-        .map(([area, amount]) => ({ area, amount }))
-        .sort((a, b) => b.amount - a.amount);
-
-    // By Provider
-    metrics.byProvider = Array.from(providerMap.entries())
-        .map(([provider, amount]) => ({ provider, amount }))
-        .sort((a, b) => b.amount - a.amount);
-
-    // By District
-    metrics.byDistrict = Array.from(districtMap.entries())
-        .map(([district, stats]) => ({ district, ...stats }))
-        .sort((a, b) => b.amount - a.amount);
-
-    // Final Counts
-    metrics.recipientCount = recipientMap.size;
-
-    // Count unique providers
-    const providers = new Set<string>();
-    let minYear = Infinity;
-    let maxYear = -Infinity;
-
-    data.forEach(r => {
-        providers.add(r.provider);
-        if (r.year < minYear) minYear = r.year;
-        if (r.year > maxYear) maxYear = r.year;
-    });
-
-    metrics.providerCount = providers.size;
-    metrics.minYear = minYear === Infinity ? 0 : minYear;
-    metrics.maxYear = maxYear === -Infinity ? 0 : maxYear;
-
-    return metrics;
 }
 
 export async function searchSubsidies(
@@ -211,42 +299,22 @@ export async function searchSubsidies(
     recipient?: string | string[],
     limit: number = 100
 ): Promise<SubsidyRecord[]> {
-    const allData = await loadSubsidiesData();
-    if (allData.length === 0) return [];
-    let data = [...allData];
+    try {
+        const whereClause = buildWhereClause(district, query, area, provider, recipient);
 
-    // Filter by district if specified
-    if (district && district !== 'Berlin' && district !== 'All') {
-        data = data.filter(record => {
-            const recordDistrict = extractDistrict(record.provider);
-            return recordDistrict === district;
-        });
+        const queryBuilder = db
+            .select()
+            .from(subsidies)
+            .where(whereClause)
+            .orderBy(desc(subsidies.year));
+
+        const result = limit === -1 
+            ? await queryBuilder
+            : await queryBuilder.limit(limit);
+
+        return result as unknown as SubsidyRecord[];
+    } catch (error) {
+        console.error('[Subsidies Proxy] Search subsidies SQL error:', error);
+        return [];
     }
-
-    // Filter by area if specified
-    if (area && (Array.isArray(area) ? area.length > 0 : true)) {
-        const areas = Array.isArray(area) ? area : [area];
-        data = data.filter(record => areas.includes(record.area));
-    }
-
-    // Filter by provider if specified
-    if (provider && (Array.isArray(provider) ? provider.length > 0 : true)) {
-        const providers = Array.isArray(provider) ? provider : [provider];
-        data = data.filter(record => providers.includes(record.provider));
-    }
-
-    // Filter by recipient if specified
-    if (recipient && (Array.isArray(recipient) ? recipient.length > 0 : true)) {
-        const recipients = Array.isArray(recipient) ? recipient : [recipient];
-        data = data.filter(record => recipients.includes(record.recipient));
-    }
-
-    if (!query) return limit === -1 ? data : data.slice(0, limit);
-
-    const q = query.toLowerCase();
-    const filtered = data.filter(r =>
-        (r.recipient?.toLowerCase() || '').includes(q) ||
-        (r.purpose?.toLowerCase() || '').includes(q)
-    );
-    return limit === -1 ? filtered : filtered.slice(0, limit);
 }

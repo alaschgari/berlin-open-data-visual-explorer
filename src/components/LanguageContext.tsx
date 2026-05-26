@@ -22,6 +22,9 @@ const translations: Translations = {
     'cat_finance': { de: 'Finanzen', en: 'Finance' },
     'cat_infrastructure': { de: 'Infrastruktur', en: 'Infrastructure' },
     'cat_society': { de: 'Gesellschaft', en: 'Society' },
+    'nav_dashboard': { de: 'Dashboard', en: 'Dashboard' },
+    'nav_compare': { de: 'Bezirk-Vergleich', en: 'District Comparison' },
+    'nav_beneficiaries': { de: 'Zuwendungen', en: 'Subsidies List' },
 
     // Tabs
     'tab_subsidies': { de: 'Subventionen', en: 'Subsidies' },

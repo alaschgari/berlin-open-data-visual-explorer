@@ -332,3 +332,72 @@ export async function getLastSyncTime() {
     const stats = fs.statSync(filePath);
     return stats.mtime;
 }
+
+function getDistrictPrefix(district: string): string | null {
+    const prefixes: Record<string, string> = {
+        'Mitte': '01',
+        'Friedrichshain-Kreuzberg': '02',
+        'Pankow': '03',
+        'Charlottenburg-Wilmersdorf': '04',
+        'Spandau': '05',
+        'Steglitz-Zehlendorf': '06',
+        'Tempelhof-Schöneberg': '07',
+        'Neukölln': '08',
+        'Treptow-Köpenick': '09',
+        'Marzahn-Hellersdorf': '10',
+        'Lichtenberg': '11',
+        'Reinickendorf': '12'
+    };
+    return prefixes[district] || null;
+}
+
+export async function getDistrictCompareStats(district: string) {
+    "use cache";
+    const { getDistrictMetrics } = await import('./proxy');
+    const { getQuickSubsidiesMetrics } = await import('./subsidies-proxy');
+    const { getPopulation } = await import('./demographics');
+    const { db } = await import('@/db');
+    const { businesses } = await import('@/db/schema');
+    const { like, sql: drizzleSql } = await import('drizzle-orm');
+
+    // 1. Finance Stats
+    const finance = await getDistrictMetrics(district);
+
+    // 2. Subsidies Stats
+    const subsidies = await getQuickSubsidiesMetrics(district);
+
+    // 3. Demographics
+    const population = getPopulation(district);
+
+    // 4. Businesses Count
+    const prefix = getDistrictPrefix(district);
+    let businessCount = 0;
+    try {
+        if (prefix) {
+            const result = await db
+                .select({ count: drizzleSql<number>`count(*)` })
+                .from(businesses)
+                .where(like(businesses.lor_id, `${prefix}%`));
+            businessCount = Number(result[0]?.count || 0);
+        } else {
+            const result = await db
+                .select({ count: drizzleSql<number>`count(*)` })
+                .from(businesses);
+            businessCount = Number(result[0]?.count || 0);
+        }
+    } catch (e) {
+        console.error('Error counting businesses in compare stats:', e);
+    }
+
+    return {
+        population,
+        budget: finance.budget,
+        actual: finance.actual,
+        diff: finance.diff,
+        perCapita: Math.round(finance.budget / (population || 1)),
+        subsidiesAmount: subsidies.totalAmount,
+        subsidiesCount: subsidies.totalCount,
+        businessCount
+    };
+}
+

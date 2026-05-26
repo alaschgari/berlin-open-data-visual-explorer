@@ -60,7 +60,7 @@ export default function BudgetTreemap({ data, onDrillDown, isRoot }: BudgetTreem
             .attr('transform', (d: any) => `translate(${d.x0},${d.y0})`);
 
         leaf.append('rect')
-            .attr('id', (d: any) => (d.leafId = `leaf-${Math.random().toString(36).substr(2, 9)}`))
+            .attr('id', (d: any) => (d.leafId = `leaf-${Math.random().toString(36).substring(2, 11)}`))
             .attr('fill', (d: any) => color(d.data.name) as string)
             .attr('fill-opacity', 0.2) // Subtle background
             .attr('stroke', (d: any) => color(d.data.name) as string)
@@ -83,7 +83,7 @@ export default function BudgetTreemap({ data, onDrillDown, isRoot }: BudgetTreem
             });
 
         leaf.append('clipPath')
-            .attr('id', (d: any) => (d.clipId = `clip-${Math.random().toString(36).substr(2, 9)}`))
+            .attr('id', (d: any) => (d.clipId = `clip-${Math.random().toString(36).substring(2, 11)}`))
             .append('use')
             .attr('xlink:href', (d: any) => `#${d.leafId}`);
 

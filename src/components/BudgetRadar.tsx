@@ -42,7 +42,7 @@ export default function BudgetRadar({ data, year }: BudgetRadarProps) {
                 />
                 <Tooltip
                     contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                    itemStyle={{ color: '#teal-400' }}
+                    itemStyle={{ color: '#0d9488' }}
                 />
             </RadarChart>
         </ResponsiveContainer>

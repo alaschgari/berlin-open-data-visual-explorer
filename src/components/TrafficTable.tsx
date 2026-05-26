@@ -13,6 +13,13 @@ interface TrafficTableProps {
 type SortField = 'segment_id' | 'car' | 'bike' | 'pedestrian' | 'heavy' | 'v85' | 'district';
 type SortDirection = 'asc' | 'desc';
 
+function getSpeedLevel(v85: number, t: (key: string) => string) {
+    if (!v85) return t('traffic_unknown');
+    if (v85 > 50) return t('traffic_speed_high');
+    if (v85 > 30) return t('traffic_speed_medium');
+    return t('traffic_speed_low');
+}
+
 export default function TrafficTable({ features, onHighlight, highlightedId }: TrafficTableProps) {
     const { t } = useLanguage();
     const [searchTerm, setSearchTerm] = useState('');
@@ -38,13 +45,6 @@ export default function TrafficTable({ features, onHighlight, highlightedId }: T
             setSortField(field);
             setSortDirection('desc');
         }
-    };
-
-    const getSpeedLevel = (v85: number) => {
-        if (!v85) return t('traffic_unknown');
-        if (v85 > 50) return t('traffic_speed_high');
-        if (v85 > 30) return t('traffic_speed_medium');
-        return t('traffic_speed_low');
     };
 
     const filteredAndSortedData = useMemo(() => {
@@ -73,7 +73,7 @@ export default function TrafficTable({ features, onHighlight, highlightedId }: T
         return filteredAndSortedData.reduce((groups: any, feature: any) => {
             let key = '';
             if (groupBy === 'speed_level') {
-                key = getSpeedLevel(feature.properties.v85);
+                key = getSpeedLevel(feature.properties.v85, t);
             } else if (groupBy === 'district') {
                 key = feature.properties.district || 'Unknown';
             }
@@ -82,7 +82,7 @@ export default function TrafficTable({ features, onHighlight, highlightedId }: T
             groups[key].push(feature);
             return groups;
         }, {});
-    }, [filteredAndSortedData, groupBy]);
+    }, [filteredAndSortedData, groupBy, t]);
 
     const SortIcon = ({ field }: { field: SortField }) => {
         if (sortField !== field) return <div className="w-4 h-4" />;
