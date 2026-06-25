@@ -23,15 +23,30 @@ export async function getCachedSummaryMetrics(metric: MetricType = 'nominal') {
     return calculateEnhancedMetrics(data, metric);
 }
 
+export interface YearlyItem {
+    year: number;
+    budget: number;
+    actual: number;
+    isEstimated?: boolean;
+}
+
+export interface AggregatedMetrics {
+    byYear: YearlyItem[];
+    totalBudget: number;
+    totalActual: number;
+    budget: number;
+    actual: number;
+}
+
 /**
  * Enriches data with historical baseline for years where coverage is known to be partial.
  * Handles both a full metrics object (with byYear) and an individual data point (with year).
  */
-export async function enrichMetricsWithHistory(data: any, district?: string) {
+export async function enrichMetricsWithHistory(data: YearlyItem | AggregatedMetrics, district?: string) {
     if (district && district !== 'Berlin' && district !== 'All') return data;
 
     // Case 1: Individual data point (year, budget, actual)
-    if (data.year !== undefined) {
+    if ('year' in data && data.year !== undefined) {
         const hist = HISTORICAL_DATA.find(h => h.year === data.year);
         if (hist) {
             const histBudget = hist.budget * 1000000;
@@ -49,8 +64,8 @@ export async function enrichMetricsWithHistory(data: any, district?: string) {
     }
 
     // Case 2: Aggregated metrics object (with byYear)
-    if (data.byYear) {
-        const enrichedByYear = data.byYear.map((item: any) => {
+    if ('byYear' in data && data.byYear) {
+        const enrichedByYear = data.byYear.map((item) => {
             const hist = HISTORICAL_DATA.find(h => h.year === item.year);
             if (hist) {
                 const histBudget = hist.budget * 1000000;
@@ -69,7 +84,7 @@ export async function enrichMetricsWithHistory(data: any, district?: string) {
 
         // Add missing years from history
         HISTORICAL_DATA.forEach(h => {
-            if (!enrichedByYear.find((i: any) => i.year === h.year)) {
+            if (!enrichedByYear.find((i) => i.year === h.year)) {
                 enrichedByYear.push({
                     year: h.year,
                     budget: h.budget * 1000000,
@@ -81,11 +96,11 @@ export async function enrichMetricsWithHistory(data: any, district?: string) {
 
         return {
             ...data,
-            totalBudget: enrichedByYear.reduce((sum: number, item: any) => sum + item.budget, 0),
-            totalActual: enrichedByYear.reduce((sum: number, item: any) => sum + item.actual, 0),
-            budget: enrichedByYear.reduce((sum: number, item: any) => sum + item.budget, 0), // also add shorthand for page.tsx
-            actual: enrichedByYear.reduce((sum: number, item: any) => sum + item.actual, 0),
-            byYear: enrichedByYear.sort((a: any, b: any) => a.year - b.year)
+            totalBudget: enrichedByYear.reduce((sum, item) => sum + item.budget, 0),
+            totalActual: enrichedByYear.reduce((sum, item) => sum + item.actual, 0),
+            budget: enrichedByYear.reduce((sum, item) => sum + item.budget, 0), // also add shorthand for page.tsx
+            actual: enrichedByYear.reduce((sum, item) => sum + item.actual, 0),
+            byYear: enrichedByYear.sort((a, b) => a.year - b.year)
         };
     }
 

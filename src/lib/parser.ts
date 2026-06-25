@@ -64,8 +64,7 @@ export async function processFiles() {
                 const newRecords = parseDoppelhaushalt(filePath);
                 records = [...records, ...newRecords];
             } else if (file.endsWith('.json')) {
-                const content = fs.readFileSync(filePath, 'utf-8');
-                const data = JSON.parse(content);
+                fs.readFileSync(filePath, 'utf-8');
             } else if (file.match(/\.(xlsx|xls)$/i)) {
                 if (!fs.existsSync(filePath)) continue;
                 const buffer = fs.readFileSync(filePath);
@@ -74,7 +73,18 @@ export async function processFiles() {
                 const sheet = workbook.Sheets[sheetName];
                 const rawData = XLSX.utils.sheet_to_json(sheet);
 
-                for (const row of rawData as any[]) {
+                interface ExcelRow {
+                    Kapitel?: string | number;
+                    Titel?: string | number;
+                    Titelart?: string;
+                    Haushaltsjahr?: string | number;
+                    Jahr?: string | number;
+                    Ansatz?: string | number;
+                    Ist?: string | number;
+                    [key: string]: unknown;
+                }
+
+                for (const row of rawData as ExcelRow[]) {
                     const district = getDistrictFromFilename(file);
                     const chapter = row['Kapitel'];
                     const titleCode = row['Titel'];
@@ -87,7 +97,7 @@ export async function processFiles() {
                     if (!chapter || !titleCode || !isLeaf || (!isExpense && !isRevenue)) continue;
 
                     // Handle standard columns
-                    let years = [row['Haushaltsjahr'] || row['Jahr']];
+                    const years = [row['Haushaltsjahr'] || row['Jahr']];
 
                     // Handle historical format with year-specific columns: "Ansatz 2012 in €"
                     const yearColumns = Object.keys(row).filter(k => k.startsWith('Ansatz ') && k.includes(' in €'));
@@ -172,7 +182,7 @@ export async function processFiles() {
  * - International: "1,000.00" -> 1000.00
  * - Plain: 1000 -> 1000
  */
-export function parseCurrency(val: any): number {
+export function parseCurrency(val: unknown): number {
     if (typeof val === 'number') return val;
     if (typeof val !== 'string') return 0;
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { getDistrictMetrics, getTopChapters, getTimelineData, enrichMetricsWithHistory, getLastSyncTime } from '@/lib/proxy';
+import { getDistrictMetrics, getTopChapters, getTimelineData, enrichMetricsWithHistory, getLastSyncTime, YearlyItem } from '@/lib/proxy';
 import { getSubsidiesMetrics, searchSubsidies } from '@/lib/subsidies-proxy';
 import { getTaxMetrics } from '@/lib/taxes';
 import { getWastewaterData } from '@/lib/wastewater';
@@ -24,7 +24,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   if (activeTab === 'budget') {
     districtDataPromise = getDistrictMetrics(district);
     timelinePromise = getTimelineData(district).then(async (rawTimeline) => {
-      return Promise.all(rawTimeline.map(async (item: Record<string, any>) => {
+      return Promise.all(rawTimeline.map(async (item: YearlyItem) => {
         return (district === 'Berlin' || district === 'All') ? enrichMetricsWithHistory(item) : item;
       }));
     });

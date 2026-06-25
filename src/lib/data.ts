@@ -41,16 +41,16 @@ export function calculateEnhancedMetrics(data: FinancialRecord[], type: MetricTy
 
 import { db } from '@/db';
 import { financialRecords } from '@/db/schema';
-import { eq, and, sql as drizzleSql } from 'drizzle-orm';
+import { eq, and, sql as drizzleSql, SQL } from 'drizzle-orm';
 
 // Fetch from Supabase instead of local file
 export async function getQuickFinancialMetrics(district?: string): Promise<{ budget: number, actual: number }> {
     console.log('[getQuickFinancialMetrics] Quick fetch Neon...');
     try {
-        let whereClause = eq(financialRecords.year, 2024);
+        let whereClause: SQL | undefined = eq(financialRecords.year, 2024);
         
         if (district && district !== 'Berlin' && district !== 'All') {
-            whereClause = and(whereClause, eq(financialRecords.district, district)) as any;
+            whereClause = and(whereClause, eq(financialRecords.district, district));
         }
 
         const data = await db
@@ -149,7 +149,6 @@ export async function getFilteredData(year?: number, search?: string) {
     }
 
     if (search) {
-        const lowerSearch = search.toLowerCase(); // unused but ready
         data = data.filter(r =>
             r.title_code.includes(search) ||
             r.chapter.includes(search)

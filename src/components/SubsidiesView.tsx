@@ -8,8 +8,7 @@ import {
     TrendingUp, TrendingDown, Minus,
     Briefcase, GraduationCap, Leaf,
     Heart, Home, Shield, Music,
-    Globe, HelpCircle, Shuffle,
-    CircleDollarSign, Filter, Info, Search
+    Globe, HelpCircle, Search
 } from 'lucide-react';
 
 const AreaIcons: Record<string, any> = {
@@ -74,89 +73,9 @@ interface SubsidiesViewProps {
     district: string;
 }
 
-function SearchForm({ onSearch, onRandom, onSmartFilter, loading, initialValue, t }: {
-    onSearch: (query: string) => void,
-    onRandom: () => void,
-    onSmartFilter: (type: 'large' | 'small' | 'providers') => void,
-    loading: boolean,
-    initialValue: string,
-    t: any
-}) {
-    const [localQuery, setLocalQuery] = useState(initialValue);
-
-    useEffect(() => {
-        setLocalQuery(initialValue);
-    }, [initialValue]);
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSearch(localQuery);
-    };
-
-    return (
-        <div className="space-y-4 mb-6">
-            <form onSubmit={handleSubmit} className="relative">
-                <div className="relative group">
-                    <input
-                        type="text"
-                        value={localQuery}
-                        onChange={(e) => setLocalQuery(e.target.value)}
-                        placeholder={t('placeholder_search')}
-                        className="w-full bg-slate-900/50 border border-slate-700 rounded-xl pl-4 pr-24 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 placeholder:text-slate-600 transition-all font-medium"
-                    />
-                    <div className="absolute right-1 top-1 bottom-1 flex gap-1">
-                        <button
-                            type="button"
-                            onClick={onRandom}
-                            title={t('random_discover')}
-                            className="px-2.5 bg-slate-800 text-slate-400 rounded-lg flex items-center justify-center hover:bg-slate-700 hover:text-white transition-colors"
-                        >
-                            <Shuffle className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                            type="submit"
-                            className="px-4 bg-emerald-500 text-slate-900 rounded-lg flex items-center justify-center hover:bg-emerald-400 transition-colors disabled:opacity-50"
-                            disabled={loading}
-                        >
-                            {loading ? (
-                                <div className="w-4 h-4 border-2 border-slate-900/20 border-t-slate-900 rounded-full animate-spin"></div>
-                            ) : (
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            )}
-                        </button>
-                    </div>
-                </div>
-            </form>
-
-            {/* Smart Filters */}
-            <div className="flex flex-wrap gap-2">
-                <button
-                    onClick={() => onSmartFilter('large')}
-                    className="px-3 py-1.5 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-[10px] font-bold text-emerald-400 transition-all flex items-center gap-2"
-                >
-                    <CircleDollarSign className="w-3 h-3" />
-                    {t('large_projects')}
-                </button>
-                <button
-                    onClick={() => onSmartFilter('small')}
-                    className="px-3 py-1.5 bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/20 rounded-lg text-[10px] font-bold text-blue-400 transition-all flex items-center gap-2"
-                >
-                    <Filter className="w-3 h-3" />
-                    {t('small_funding')}
-                </button>
-            </div>
-        </div>
-    );
-}
-
 export default function SubsidiesView({ initialMetrics, initialList, district }: SubsidiesViewProps) {
     const { t, language } = useLanguage();
     const [metrics, setMetrics] = useState<SubsidyMetrics>(initialMetrics);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<SubsidyRecord[]>(initialList);
-    const [loading, setLoading] = useState(false);
     const [selectedRecipients, setSelectedRecipients] = useState<Set<string>>(new Set());
     const [selectedAreas, setSelectedAreas] = useState<Set<string>>(new Set());
     const [selectedProviders, setSelectedProviders] = useState<Set<string>>(new Set());
@@ -168,7 +87,6 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
     const [topAreaQuery, setTopAreaQuery] = useState('');
     const [topProviderQuery, setTopProviderQuery] = useState('');
     const [visibleRecipients, setVisibleRecipients] = useState(100);
-    const [visibleResults, setVisibleResults] = useState(100);
 
     const activeMetrics = useMemo(() => {
         if (selectedRecipients.size === 0 && selectedAreas.size === 0 && selectedProviders.size === 0) return metrics;
@@ -235,12 +153,10 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
         newProviders: Set<string>
     ) => {
         if (newRecipients.size === 0 && newAreas.size === 0 && newProviders.size === 0) {
-            setSearchResults(initialList);
             setRecipientDetails([]);
             return;
         }
 
-        setLoading(true);
         try {
             const data = await searchSubsidies(
                 '',
@@ -251,11 +167,8 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                 -1
             );
             setRecipientDetails(data);
-            setSearchResults(data);
         } catch (error) {
             console.error('Failed to fetch filtered data:', error);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -277,7 +190,6 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
 
     const handleProviderClick = (provider: string) => {
         const next = new Set(selectedProviders);
-        const cleanName = provider.replace(/^\"|\"$/g, '');
         if (next.has(provider)) next.delete(provider);
         else next.add(provider);
         setSelectedProviders(next);
@@ -286,43 +198,17 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
 
     const locale = language === 'de' ? 'de-DE' : 'en-GB';
 
-    const getInsight = () => {
-        if (selectedRecipients.size === 0 || recipientDetails.length === 0) return null;
-
-        // Get details for the first selected recipient as "primary insight"
-        const recipientName = Array.from(selectedRecipients)[0];
-        const details = recipientDetails.filter(d => d.recipient === recipientName);
-
-        const areas = new Set(details.map(d => d.area));
-        const areaCounts: Record<string, number> = {};
-        details.forEach(d => {
-            areaCounts[d.area] = (areaCounts[d.area] || 0) + d.amount;
-        });
-
-        const sortedAreas = Object.entries(areaCounts).sort((a, b) => b[1] - a[1]);
-        if (sortedAreas.length === 0) return null;
-
-        return {
-            count: areas.size,
-            topArea: sortedAreas[0][0]
-        };
-    };
-
-    const insight = getInsight();
-
     // Sync state when props change (district change)
     useEffect(() => {
         setMetrics(initialMetrics);
-        setSearchResults(initialList);
         setSelectedRecipients(new Set());
         setSelectedAreas(new Set());
         setSelectedProviders(new Set());
         setRecipientDetails([]);
-        setSearchQuery('');
     }, [initialMetrics, initialList]);
 
     const processedDetails = React.useMemo(() => {
-        let sorted = [...recipientDetails];
+        const sorted = [...recipientDetails];
         if (sortConfig) {
             sorted.sort((a, b) => {
                 let valA = a[sortConfig.key as keyof SubsidyRecord];
@@ -407,72 +293,6 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
 
     }, [recipientDetails, sortConfig, groupBy, collapsedGroups]);
 
-    const handleExport = () => {
-        if (searchResults.length === 0) return;
-        const headers = [t('year_label'), t('recipients'), t('purpose_label'), t('area_label'), t('provider_label'), t('amount_label')];
-        const csvRows = [
-            headers.join(','),
-            ...searchResults.map(r => [
-                r.year,
-                `"${r.recipient}"`,
-                `"${r.purpose?.replace(/"/g, '""')}"`,
-                `"${r.area}"`,
-                `"${r.provider}"`,
-                r.amount
-            ].join(','))
-        ];
-
-        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', `subsidies_berlin_${district}_${new Date().toISOString().split('T')[0]}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    const handleSearch = async (query: string) => {
-        setSearchQuery(query);
-        setVisibleResults(100);
-        setLoading(true);
-        try {
-            const data = await searchSubsidies(query, district);
-            setSearchResults(data);
-        } catch (error) {
-            console.error('Search failed:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleRandom = () => {
-        if (!initialList || initialList.length === 0) return;
-        const randomItem = initialList[Math.floor(Math.random() * initialList.length)];
-        handleRecipientClick(randomItem.recipient);
-    };
-
-    const handleSmartFilter = async (type: 'large' | 'small' | 'providers') => {
-        setLoading(true);
-        try {
-            let filtered = [...initialList];
-            if (type === 'large') {
-                filtered = filtered.filter(item => item.amount > 1000000);
-            } else if (type === 'small') {
-                filtered = filtered.filter(item => item.amount < 50000);
-            }
-            setSearchResults(filtered);
-            setSearchQuery('');
-            setSelectedRecipients(new Set());
-            setSelectedAreas(new Set());
-            setSelectedProviders(new Set());
-        } catch (error) {
-            console.error('Smart filter failed:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const activeFilters = [];
     if (selectedRecipients.size > 0) activeFilters.push(Array.from(selectedRecipients).map(r => r.replace(/^"|"$/g, '')).join(', '));
@@ -732,7 +552,6 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                     setSelectedAreas(new Set());
                                     setSelectedProviders(new Set());
                                     setRecipientDetails([]);
-                                    setSearchResults(initialList);
                                 }}
                                 className="text-slate-400 hover:text-slate-200 transition-colors"
                             >

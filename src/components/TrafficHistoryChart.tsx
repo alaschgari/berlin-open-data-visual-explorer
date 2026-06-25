@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { useLanguage } from './LanguageContext';
-import { ResponsiveContainer, ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Area } from 'recharts';
+import { ResponsiveContainer, ComposedChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Area } from 'recharts';
 import { Loader2, AlertCircle, Calendar, Clock, BarChart3, Info } from 'lucide-react';
 
 interface TrafficHistoryChartProps {
@@ -120,7 +120,7 @@ export default function TrafficHistoryChart({ segmentId }: TrafficHistoryChartPr
                 v85: group.v85_count > 0 ? Math.round(group.v85_sum / group.v85_count) : 0
             }));
         }
-    }, [originalData, viewMode]);
+    }, [originalData, viewMode, t]);
 
     if (!segmentId) {
         return (
