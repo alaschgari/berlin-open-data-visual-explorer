@@ -374,6 +374,8 @@ const translations: Translations = {
     'disabled_parking_loading': { de: 'Lade Behindertenparkplätze...', en: 'Loading disabled parking spaces...' },
     'disabled_parking_spots': { de: 'Anzahl Stellplätze', en: 'Number of Spots' },
     'disabled_parking_district': { de: 'Bezirk', en: 'District' },
+    'disabled_parking_police': { de: 'Polizeiabschnitt', en: 'Police Department' },
+    'disabled_parking_distance': { de: 'Entfernung', en: 'Distance' },
     'disabled_parking_notes': { de: 'Bemerkung / zeitliche Einschränkung', en: 'Note / time restrictions' },
     'disabled_parking_select': { de: 'Wähle einen Parkplatz auf der Karte aus, um Details anzuzeigen.', en: 'Select a parking space on the map to view details.' },
     'disabled_parking_list': { de: 'Nahegelegene Standorte', en: 'Nearby Locations' }
