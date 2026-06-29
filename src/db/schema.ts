@@ -71,3 +71,10 @@ export const markets = pgTable('markets', {
   geometry: jsonb('geometry'),
   properties: jsonb('properties'),
 });
+
+export const disabledParkingSpaces = pgTable('disabled_parking_spaces', {
+  id: text('id').primaryKey(),
+  geometry: jsonb('geometry'),
+  properties: jsonb('properties'),
+});
+

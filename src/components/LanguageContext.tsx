@@ -56,6 +56,7 @@ const translations: Translations = {
     'desc_traffic': { de: 'Verkehrsaufkommen und -analysen.', en: 'Traffic volume and analyses.' },
     'desc_markets': { de: 'Standorte der Berliner Wochenmärkte.', en: 'Locations of Berlin\'s weekly markets.' },
     'desc_baustellen': { de: 'Baustellen und Verkehrsstörungen live.', en: 'Live construction sites and traffic disruptions.' },
+    'desc_disabled_parking': { de: 'Standorte nicht personenbezogener Schwerbehindertenparkplätze.', en: 'Locations of non-personal disabled parking spaces.' },
 
     // Selectors
     'all_districts': { de: 'Alle Bezirke', en: 'All Districts' },
@@ -361,7 +362,21 @@ const translations: Translations = {
     'baustellen_period': { de: 'Zeitraum', en: 'Period' },
     'baustellen_type': { de: 'Art', en: 'Type' },
     'baustellen_severity': { de: 'Schweregrad', en: 'Severity' },
-    'baustellen_content': { de: 'Details', en: 'Details' }
+    'baustellen_content': { de: 'Details', en: 'Details' },
+
+    // Disabled Parking
+    'tab_disabled_parking': { de: 'Behindertenparkplätze', en: 'Disabled Parking' },
+    'disabled_parking_title': { de: 'Schwerbehindertenparkplätze', en: 'Disabled Parking Spaces' },
+    'disabled_parking_subtitle': { de: 'Standorte nicht personenbezogener Schwerbehindertenparkplätze in Berlin', en: 'Locations of non-personal disabled parking spaces in Berlin' },
+    'disabled_parking_search': { de: 'Nach Straße, PLZ oder Ortsteil suchen...', en: 'Search by street, postal code, or sub-district...' },
+    'disabled_parking_locations': { de: 'Standorte', en: 'Locations' },
+    'disabled_parking_total': { de: 'Gesamtparkplätze', en: 'Total Spots' },
+    'disabled_parking_loading': { de: 'Lade Behindertenparkplätze...', en: 'Loading disabled parking spaces...' },
+    'disabled_parking_spots': { de: 'Anzahl Stellplätze', en: 'Number of Spots' },
+    'disabled_parking_district': { de: 'Bezirk', en: 'District' },
+    'disabled_parking_notes': { de: 'Bemerkung / zeitliche Einschränkung', en: 'Note / time restrictions' },
+    'disabled_parking_select': { de: 'Wähle einen Parkplatz auf der Karte aus, um Details anzuzeigen.', en: 'Select a parking space on the map to view details.' },
+    'disabled_parking_list': { de: 'Nahegelegene Standorte', en: 'Nearby Locations' }
 };
 
 interface LanguageContextType {

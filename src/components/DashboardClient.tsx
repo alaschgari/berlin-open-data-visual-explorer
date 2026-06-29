@@ -18,9 +18,10 @@ import BadestellenWrapper from '@/components/BadestellenWrapper';
 import TrafficView from '@/components/TrafficView';
 import MarketsMapWrapper from '@/components/MarketsMapWrapper';
 import BaustellenMapWrapper from '@/components/BaustellenMapWrapper';
+import DisabledParkingMapWrapper from '@/components/DisabledParkingMapWrapper';
 import HubView from '@/components/HubView';
 import { WastewaterRecord } from '@/lib/wastewater';
-import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets, ShoppingBag, LayoutGrid } from 'lucide-react';
+import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets, ShoppingBag, LayoutGrid, Accessibility } from 'lucide-react';
 
 import { SubsidyMetrics } from '@/lib/subsidies-proxy';
 import { SubsidyRecord } from '@/lib/parser';
@@ -31,7 +32,7 @@ import { CardSkeleton, ChartSkeleton, SubsidiesListSkeleton, MapSkeleton } from 
 
 interface DashboardClientProps {
     district: string;
-    activeTab: 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets' | 'baustellen';
+    activeTab: 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets' | 'baustellen' | 'disabled_parking';
     budgetMode: 'historic' | 'explorer';
     lastSync: string | null;
     districts: string[];
@@ -48,7 +49,7 @@ interface DashboardClientProps {
 
 // Local cache-enabled AsyncView implemented inside DashboardClient
 
-type TabType = 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets' | 'baustellen';
+type TabType = 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets' | 'baustellen' | 'disabled_parking';
 
 interface NavItem {
     id: TabType;
@@ -70,6 +71,7 @@ const NAV_ITEMS: NavItem[] = [
     { id: 'traffic', labelKey: 'tab_traffic', icon: <BarChart3 className="w-3.5 h-3.5" />, category: 'infrastructure', priority: 9 },
     { id: 'baustellen', labelKey: 'tab_baustellen', icon: <Shield className="w-3.5 h-3.5" />, category: 'infrastructure', priority: 10 },
     { id: 'markets', labelKey: 'tab_markets', icon: <ShoppingBag className="w-3.5 h-3.5" />, category: 'society', priority: 11 },
+    { id: 'disabled_parking', labelKey: 'tab_disabled_parking', icon: <Accessibility className="w-3.5 h-3.5" />, category: 'society', priority: 12 },
 ];
 
 // Client-side persistent cache for resolved promises (module level singleton)
@@ -230,6 +232,8 @@ export default function DashboardClient({
                             <BaustellenMapWrapper district={district} />
                         ) : activeTab === 'badestellen' ? (
                             <BadestellenWrapper district={district} />
+                        ) : activeTab === 'disabled_parking' ? (
+                            <DisabledParkingMapWrapper district={district} />
                         ) : (
                             <HubView
                                 district={district}
