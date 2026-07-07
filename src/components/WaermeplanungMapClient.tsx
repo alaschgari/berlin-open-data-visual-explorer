@@ -183,17 +183,12 @@ export default function WaermeplanungMapClient({ district }: { district?: string
                             <Info className="w-3.5 h-3.5 text-slate-500" />
                             {t('legend')}
                         </span>
-                        <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800 flex items-center justify-center min-h-[60px] overflow-auto max-h-[250px]">
+                        <div className="bg-white p-4 rounded-xl border border-slate-800 flex items-center justify-center min-h-[60px] overflow-auto max-h-[250px]">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={legendUrl}
                                 alt={`Legend for ${activeLayerTitle}`}
-                                className="max-w-full h-auto brightness-90 contrast-125 filter invert"
-                                style={{ mixBlendMode: 'color-dodge' }}
-                                onError={(e) => {
-                                    // Fallback if invert style/image loading fails or is hard to see in dark mode
-                                    (e.target as HTMLElement).className = 'max-w-full h-auto brightness-100';
-                                }}
+                                className="max-w-full h-auto"
                             />
                         </div>
                     </div>
