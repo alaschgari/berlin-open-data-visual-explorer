@@ -216,6 +216,16 @@ export default function WaermeplanungMapClient({ district }: { district?: string
                             }}
                             opacity={opacity}
                         />
+                        <WMSTileLayer
+                            url="https://gdi.berlin.de/services/wms/alkis_bezirke"
+                            params={{
+                                layers: 'alkis_bezirke',
+                                format: 'image/png',
+                                transparent: true,
+                                version: '1.3.0',
+                            }}
+                            opacity={0.8}
+                        />
                         <MapController district={district} />
                     </MapContainer>
                 </div>
