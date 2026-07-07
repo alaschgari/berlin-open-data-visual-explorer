@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, WMSTileLayer, useMap } from 'react-leaflet';
+import { useEffect, useState, useMemo } from 'react';
+import { MapContainer, TileLayer, WMSTileLayer, GeoJSON, useMap } from 'react-leaflet';
 import { Info, Settings, Layers, Eye } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import { useLanguage } from './LanguageContext';
@@ -57,10 +57,47 @@ function MapController({ district }: { district?: string }) {
     return null;
 }
 
+const DISTRICT_IDS: Record<string, string> = {
+    'Mitte': '01',
+    'Friedrichshain-Kreuzberg': '02',
+    'Pankow': '03',
+    'Charlottenburg-Wilmersdorf': '04',
+    'Spandau': '05',
+    'Steglitz-Zehlendorf': '06',
+    'Tempelhof-Schöneberg': '07',
+    'Neukölln': '08',
+    'Treptow-Köpenick': '09',
+    'Marzahn-Hellersdorf': '10',
+    'Lichtenberg': '11',
+    'Reinickendorf': '12'
+};
+
 export default function WaermeplanungMapClient({ district }: { district?: string }) {
     const { t, language } = useLanguage();
     const [selectedLayer, setSelectedLayer] = useState<string>('ae_waermeversorgungsgeb_2025');
     const [opacity, setOpacity] = useState<number>(0.75);
+    const [lorGeoJson, setLorGeoJson] = useState<any>(null);
+
+    useEffect(() => {
+        if (district && district !== 'Berlin') {
+            fetch('/data/berlin-lor-planungsraeume.geojson')
+                .then(res => res.json())
+                .then(data => setLorGeoJson(data))
+                .catch(err => console.error("Error loading LOR GeoJSON", err));
+        }
+    }, [district]);
+
+    const filteredGeoJson = useMemo(() => {
+        if (!lorGeoJson || !district || district === 'Berlin') return null;
+        const targetId = DISTRICT_IDS[district];
+        if (!targetId) return null;
+
+        const filtered = lorGeoJson.features.filter((f: any) => {
+            return f.properties && f.properties.SCHLUESSEL && f.properties.SCHLUESSEL.startsWith(targetId);
+        });
+
+        return { ...lorGeoJson, features: filtered };
+    }, [lorGeoJson, district]);
 
     const legendUrl = `https://gdi.berlin.de/services/wms/waermeplanung?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${selectedLayer}&SLD_VERSION=1.1.0`;
 
@@ -216,17 +253,18 @@ export default function WaermeplanungMapClient({ district }: { district?: string
                             }}
                             opacity={opacity}
                         />
-                        <WMSTileLayer
-                            url="https://gdi.berlin.de/services/wms/alkis_bezirke"
-                            className="invert brightness-200"
-                            params={{
-                                layers: 'alkis_bezirke',
-                                format: 'image/png',
-                                transparent: true,
-                                version: '1.3.0',
-                            }}
-                            opacity={0.8}
-                        />
+                        {filteredGeoJson && (
+                            <GeoJSON
+                                key={district}
+                                data={filteredGeoJson}
+                                style={{
+                                    color: '#ffffff',
+                                    weight: 2.5,
+                                    fillColor: 'transparent',
+                                    fillOpacity: 0
+                                }}
+                            />
+                        )}
                         <MapController district={district} />
                     </MapContainer>
                 </div>
