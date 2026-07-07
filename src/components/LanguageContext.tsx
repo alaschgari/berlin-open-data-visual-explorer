@@ -37,6 +37,7 @@ const translations: Translations = {
     'tab_badestellen': { de: 'Badestellen', en: 'Swimming Spots' },
     'tab_traffic': { de: 'Verkehr', en: 'Traffic' },
     'tab_baustellen': { de: 'Baustellen', en: 'Construction' },
+    'tab_waermeplanung': { de: 'Wärmeplanung', en: 'Heating Planning' },
 
     // Hub
     'hub_title': { de: 'Berlin Open Data', en: 'Berlin Open Data' },
@@ -57,6 +58,10 @@ const translations: Translations = {
     'desc_markets': { de: 'Standorte der Berliner Wochenmärkte.', en: 'Locations of Berlin\'s weekly markets.' },
     'desc_baustellen': { de: 'Baustellen und Verkehrsstörungen live.', en: 'Live construction sites and traffic disruptions.' },
     'desc_disabled_parking': { de: 'Standorte nicht personenbezogener Schwerbehindertenparkplätze.', en: 'Locations of non-personal disabled parking spaces.' },
+    'desc_waermeplanung': { de: 'Ergebnisse der gesamtstädtischen Wärmeplanung, einschließlich Wärmeversorgungsgebieten (2025-2045), Wärmebedarfen und Potenzialanalysen.', en: 'Results of the city-wide heating planning, including heat supply areas (2025-2045), heat demands, and potential analyses.' },
+    'opacity': { de: 'Deckkraft', en: 'Opacity' },
+    'layer': { de: 'Ebene / Layer', en: 'Layer' },
+    'legend': { de: 'Legende', en: 'Legend' },
 
     // Selectors
     'all_districts': { de: 'Alle Bezirke', en: 'All Districts' },
