@@ -13,19 +13,19 @@ interface LayerOption {
 
 const LAYERS: LayerOption[] = [
     // Wärmeversorgungsgebiete
-    { id: '3_0_waermeversorgungsgeb_2025', labelDe: 'Wärmeversorgungsgebiete 2025 (Status Quo)', labelEn: 'Heat Supply Areas 2025 (Status Quo)', category: 'versorgungsgebiete' },
-    { id: '3_1_waermeversorgungsgeb_2030', labelDe: 'Wärmeversorgungsgebiete 2030', labelEn: 'Heat Supply Areas 2030', category: 'versorgungsgebiete' },
-    { id: '3_2_waermeversorgungsgeb_2035', labelDe: 'Wärmeversorgungsgebiete 2035', labelEn: 'Heat Supply Areas 2035', category: 'versorgungsgebiete' },
-    { id: '3_3_waermeversorgungsgeb_2040', labelDe: 'Wärmeversorgungsgebiete 2040', labelEn: 'Heat Supply Areas 2040', category: 'versorgungsgebiete' },
-    { id: '3_4_waermeversorgungsgeb_2045', labelDe: 'Wärmeversorgungsgebiete 2045', labelEn: 'Heat Supply Areas 2045', category: 'versorgungsgebiete' },
+    { id: 'ae_waermeversorgungsgeb_2025', labelDe: 'Wärmeversorgungsgebiete 2025 (Status Quo)', labelEn: 'Heat Supply Areas 2025 (Status Quo)', category: 'versorgungsgebiete' },
+    { id: 'ad_waermeversorgungsgeb_2030', labelDe: 'Wärmeversorgungsgebiete 2030', labelEn: 'Heat Supply Areas 2030', category: 'versorgungsgebiete' },
+    { id: 'ac_waermeversorgungsgeb_2035', labelDe: 'Wärmeversorgungsgebiete 2035', labelEn: 'Heat Supply Areas 2035', category: 'versorgungsgebiete' },
+    { id: 'ab_waermeversorgungsgeb_2040', labelDe: 'Wärmeversorgungsgebiete 2040', labelEn: 'Heat Supply Areas 2040', category: 'versorgungsgebiete' },
+    { id: 'aa_waermeversorgungsgeb_2045', labelDe: 'Wärmeversorgungsgebiete 2045', labelEn: 'Heat Supply Areas 2045', category: 'versorgungsgebiete' },
     // Bestandsanalyse
-    { id: '1_1_waermeverbrauchsdichte', labelDe: 'Wärmeverbrauchsdichte (MWh/ha)', labelEn: 'Heat Consumption Density (MWh/ha)', category: 'bestand' },
-    { id: '1_2_waermeliniendichte', labelDe: 'Wärmeliniendichte (kWh/m)', labelEn: 'Heat Line Density (kWh/m)', category: 'bestand' },
-    { id: '1_3_0_verbrauch_hauptquelle', labelDe: 'Hauptenergieträger des Baublocks', labelEn: 'Main Energy Source of Block', category: 'bestand' },
+    { id: 'ba_waermeverbrauchsdichte', labelDe: 'Wärmeverbrauchsdichte (MWh/ha)', labelEn: 'Heat Consumption Density (MWh/ha)', category: 'bestand' },
+    { id: 'bb_waermeliniendichte', labelDe: 'Wärmeliniendichte (kWh/m)', labelEn: 'Heat Line Density (kWh/m)', category: 'bestand' },
+    { id: 'bc_endenergie_hauptquelle', labelDe: 'Hauptenergieträger des Baublocks', labelEn: 'Main Energy Source of Block', category: 'bestand' },
     // Potenzialanalyse
-    { id: '2_2_geothermie_hinweise', labelDe: 'Hinweise Geothermienutzung', labelEn: 'Geothermal Energy Use Notes', category: 'potenzial' },
-    { id: '2_4_potenzial_geothermie', labelDe: 'Geothermiepotenzial für Wärmenetze', labelEn: 'Geothermal Potential for Heat Networks', category: 'potenzial' },
-    { id: '2_3_potenzial_solarthermie_isu5', labelDe: 'Solarthermiepotenzial (Baublock)', labelEn: 'Solar Thermal Potential (Block)', category: 'potenzial' },
+    { id: 'cd_hinweise_geothermie', labelDe: 'Hinweise Geothermienutzung', labelEn: 'Geothermal Energy Use Notes', category: 'potenzial' },
+    { id: 'ce_potenzial_geothermie', labelDe: 'Geothermiepotenzial für Wärmenetze', labelEn: 'Geothermal Potential for Heat Networks', category: 'potenzial' },
+    { id: 'cg_potenzial_solarthermie', labelDe: 'Solarthermiepotenzial (Baublock)', labelEn: 'Solar Thermal Potential (Block)', category: 'potenzial' },
 ];
 
 // Map controller to handle zoom / bounds if needed.
@@ -40,10 +40,10 @@ function MapController({ district }: { district?: string }) {
 
 export default function WaermeplanungMapClient({ district }: { district?: string }) {
     const { t, language } = useLanguage();
-    const [selectedLayer, setSelectedLayer] = useState<string>('3_0_waermeversorgungsgeb_2025');
+    const [selectedLayer, setSelectedLayer] = useState<string>('ae_waermeversorgungsgeb_2025');
     const [opacity, setOpacity] = useState<number>(0.75);
 
-    const legendUrl = `https://gdi.berlin.de/services/wms/waermeplanung?VERSION=1.3.0&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${selectedLayer}&SLD_VERSION=1.1.0`;
+    const legendUrl = `https://gdi.berlin.de/services/wms/waermeplanung?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${selectedLayer}&SLD_VERSION=1.1.0`;
 
     const activeLayerObj = LAYERS.find(l => l.id === selectedLayer);
     const activeLayerTitle = activeLayerObj ? (language === 'de' ? activeLayerObj.labelDe : activeLayerObj.labelEn) : '';
