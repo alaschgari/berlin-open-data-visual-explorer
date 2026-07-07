@@ -218,6 +218,7 @@ export default function WaermeplanungMapClient({ district }: { district?: string
                         />
                         <WMSTileLayer
                             url="https://gdi.berlin.de/services/wms/alkis_bezirke"
+                            className="invert brightness-200"
                             params={{
                                 layers: 'alkis_bezirke',
                                 format: 'image/png',
