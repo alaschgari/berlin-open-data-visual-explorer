@@ -28,13 +28,32 @@ const LAYERS: LayerOption[] = [
     { id: 'cg_potenzial_solarthermie', labelDe: 'Solarthermiepotenzial (Baublock)', labelEn: 'Solar Thermal Potential (Block)', category: 'potenzial' },
 ];
 
+const DISTRICT_COORDINATES: Record<string, { center: [number, number]; zoom: number }> = {
+    'Mitte': { center: [52.5200, 13.3700], zoom: 12 },
+    'Friedrichshain-Kreuzberg': { center: [52.5000, 13.4400], zoom: 13 },
+    'Pankow': { center: [52.5689, 13.4361], zoom: 12 },
+    'Charlottenburg-Wilmersdorf': { center: [52.5000, 13.2800], zoom: 12 },
+    'Spandau': { center: [52.5350, 13.1900], zoom: 12 },
+    'Steglitz-Zehlendorf': { center: [52.4300, 13.2500], zoom: 12 },
+    'Tempelhof-Schöneberg': { center: [52.4600, 13.3800], zoom: 12 },
+    'Neukölln': { center: [52.4600, 13.4400], zoom: 12 },
+    'Treptow-Köpenick': { center: [52.4300, 13.5800], zoom: 11 },
+    'Marzahn-Hellersdorf': { center: [52.5300, 13.5900], zoom: 12 },
+    'Lichtenberg': { center: [52.5300, 13.5000], zoom: 12 },
+    'Reinickendorf': { center: [52.5900, 13.3200], zoom: 12 },
+    'Berlin': { center: [52.5200, 13.4050], zoom: 11 }
+};
+
 // Map controller to handle zoom / bounds if needed.
 function MapController({ district }: { district?: string }) {
     const map = useMap();
     useEffect(() => {
-        // Berlin center default view
-        map.setView([52.5200, 13.4050], 11);
-    }, [map]);
+        const target = district && DISTRICT_COORDINATES[district] 
+            ? DISTRICT_COORDINATES[district] 
+            : DISTRICT_COORDINATES['Berlin'];
+            
+        map.flyTo(target.center, target.zoom, { animate: true, duration: 1.5 });
+    }, [district, map]);
     return null;
 }
 
