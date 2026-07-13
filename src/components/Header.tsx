@@ -32,7 +32,7 @@ export default function Header({ showDistrictSelector }: HeaderProps) {
                     </svg>
                 </div>
                 <div>
-                    <h1 className="text-2xl font-black bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent tracking-tight leading-none mb-1.5">
+                    <h1 className="text-2xl font-black text-white tracking-tight leading-none mb-1.5">
                         {t('brand_name')}
                     </h1>
                     <p className="text-slate-500 font-bold text-[10px] uppercase tracking-wider">{t('brand_sub')}</p>
