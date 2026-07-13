@@ -81,7 +81,7 @@ npx vercel
 
 ### 🛠️ Tech Stack
 
-- **Framework:** [Next.js 15](https://nextjs.org) (App Router, SSR)
+- **Framework:** [Next.js 16](https://nextjs.org) (App Router, SSR)
 - **Datenbank:** [Supabase](https://supabase.com) (PostgreSQL) für High-Scale Datenverarbeitung
 - **Sprache:** TypeScript
 - **Styling:** Tailwind CSS v4
@@ -170,7 +170,7 @@ npx vercel
 
 ### 🛠️ Tech Stack
 
-- **Framework:** [Next.js 15](https://nextjs.org) (App Router, SSR)
+- **Framework:** [Next.js 16](https://nextjs.org) (App Router, SSR)
 - **Database:** [Supabase](https://supabase.com) (PostgreSQL) for large-scale data handling
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS v4
