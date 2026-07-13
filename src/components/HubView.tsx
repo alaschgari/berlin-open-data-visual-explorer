@@ -129,7 +129,7 @@ export default function HubView({
 
             <div className="text-center space-y-8 max-w-3xl mx-auto relative z-10">
                 <div className="space-y-4">
-                    <h2 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-emerald-300 via-emerald-100 to-emerald-300 bg-clip-text text-transparent tracking-tight leading-tight">
+                    <h2 className="text-4xl md:text-6xl font-black text-emerald-400 tracking-tight leading-tight">
                         {t('hub_title')}
                     </h2>
                     <p className="text-slate-400 text-lg md:text-xl font-medium tracking-wide">
