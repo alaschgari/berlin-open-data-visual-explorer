@@ -7,6 +7,7 @@ import L from 'leaflet';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, Cell, PieChart, Pie } from 'recharts';
 import { Download, Briefcase, Building2, Store, Factory, PlusCircle, Map as MapIcon, ChevronRight, X as CloseIcon, Info, Users, Calendar, MapPin, Search, Filter, ArrowUp, ArrowDown, ListTree, ChevronDown, BarChart3, TrendingUp, Zap, Scale, Copy, Crosshair } from 'lucide-react';
 import { useLanguage } from './LanguageContext';
+import { getDistrictPrefix, getDistrictNameByBezId } from '@/lib/constants';
 
 // Helper component to auto-zoom to GeoJSON data
 function FitBounds({ data }: { data: any }) {
@@ -24,23 +25,9 @@ function FitBounds({ data }: { data: any }) {
     return null;
 }
 
-const getDistrictName = (bezId: number | string) => {
-    const districts: Record<string, string> = {
-        '1': 'Mitte', '2': 'Friedrichshain-Kreuzberg', '3': 'Pankow', '4': 'Charlottenburg-Wilmersdorf',
-        '5': 'Spandau', '6': 'Steglitz-Zehlendorf', '7': 'Tempelhof-Schöneberg', '8': 'Neukölln',
-        '9': 'Treptow-Köpenick', '10': 'Marzahn-Hellersdorf', '11': 'Lichtenberg', '12': 'Reinickendorf'
-    };
-    return districts[String(bezId)] || `Bezirk ${bezId}`;
-};
+const getDistrictName = (bezId: number | string) => getDistrictNameByBezId(bezId);
 
-const getDistrictId = (name: string) => {
-    const districts: Record<string, string> = {
-        'Mitte': '01', 'Friedrichshain-Kreuzberg': '02', 'Pankow': '03', 'Charlottenburg-Wilmersdorf': '04',
-        'Spandau': '05', 'Steglitz-Zehlendorf': '06', 'Tempelhof-Schöneberg': '07', 'Neukölln': '08',
-        'Treptow-Köpenick': '09', 'Marzahn-Hellersdorf': '10', 'Lichtenberg': '11', 'Reinickendorf': '12'
-    };
-    return districts[name];
-};
+const getDistrictId = (name: string) => getDistrictPrefix(name) ?? undefined;
 
 export default function BusinessMapClient({ district }: { district: string }) {
     const { t, language } = useLanguage();

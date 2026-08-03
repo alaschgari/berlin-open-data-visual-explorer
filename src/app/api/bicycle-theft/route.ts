@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import Papa from 'papaparse';
 import fs from 'fs';
 import path from 'path';
+import { DISTRICT_TO_LOR_PREFIX } from '@/lib/constants';
 
 // Interfaces and types are now imported from @/lib/theft where appropriate
 // or handled dynamically.
@@ -11,21 +12,6 @@ interface LorCentroid {
     lng: number;
     name: string;
 }
-
-const DISTRICT_TO_LOR_PREFIX: Record<string, string> = {
-    'Mitte': '01',
-    'Friedrichshain-Kreuzberg': '02',
-    'Pankow': '03',
-    'Charlottenburg-Wilmersdorf': '04',
-    'Spandau': '05',
-    'Steglitz-Zehlendorf': '06',
-    'Tempelhof-Schöneberg': '07',
-    'Neukölln': '08',
-    'Treptow-Köpenick': '09',
-    'Marzahn-Hellersdorf': '10',
-    'Lichtenberg': '11',
-    'Reinickendorf': '12'
-};
 
 function addJitter(lat: number, lng: number, radiusDeg: number = 0.002) {
     const r = radiusDeg * Math.sqrt(Math.random());
@@ -47,6 +33,17 @@ if (globalForCache.carTheftCacheV2 === undefined) globalForCache.carTheftCacheV2
 
 import { fetchLiveTheftData } from '@/lib/theft';
 
+let lorCentroidsCache: Record<string, LorCentroid> | null = null;
+
+function loadLorCentroids(): Record<string, LorCentroid> {
+    if (lorCentroidsCache) return lorCentroidsCache;
+    const lorPath = path.join(process.cwd(), 'src', 'lib', 'lor-centroids.json');
+    if (!fs.existsSync(lorPath)) throw new Error(`LOR centroids file not found at ${lorPath}`);
+    const lorText = fs.readFileSync(lorPath, 'utf-8');
+    lorCentroidsCache = JSON.parse(lorText);
+    return lorCentroidsCache!;
+}
+
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const startDateStr = searchParams.get('start');
@@ -54,11 +51,15 @@ export async function GET(request: Request) {
     const district = searchParams.get('district');
     const type = searchParams.get('type') || 'bicycle'; // bicycle, car, both
 
+    if (startDateStr && isNaN(new Date(startDateStr).getTime())) {
+        return NextResponse.json({ error: 'Invalid start date' }, { status: 400 });
+    }
+    if (endDateStr && isNaN(new Date(endDateStr).getTime())) {
+        return NextResponse.json({ error: 'Invalid end date' }, { status: 400 });
+    }
+
     try {
-        const lorPath = path.join(process.cwd(), 'src', 'lib', 'lor-centroids.json');
-        if (!fs.existsSync(lorPath)) throw new Error(`LOR centroids file not found at ${lorPath}`);
-        const lorText = fs.readFileSync(lorPath, 'utf-8');
-        const lorCentroids: Record<string, LorCentroid> = JSON.parse(lorText);
+        const lorCentroids = loadLorCentroids();
 
         const getMappedData = async (theftType: 'bicycle' | 'car') => {
             const isBike = theftType === 'bicycle';

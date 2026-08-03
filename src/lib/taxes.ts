@@ -49,7 +49,6 @@ export async function getQuickTaxMetrics(): Promise<{ totalMonthly: number }> {
 export async function getTaxMetrics(): Promise<TaxMetrics> {
     "use cache";
     try {
-        console.log('[Taxes Proxy] Fetching from Neon...');
         // Simply fetch all relevant records from Neon
         const allRecords = await db
             .select({
@@ -62,8 +61,6 @@ export async function getTaxMetrics(): Promise<TaxMetrics> {
             })
             .from(financialRecords)
             .where(ilike(financialRecords.chapter, '29%'));
-
-        console.log(`[Taxes Proxy] Successfully fetched ${allRecords.length} tax records`);
 
         // Filter for latest year available and only actual tax titles
         // Tax titles usually have range 10-18 in the first two digits of title_code

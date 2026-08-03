@@ -14,6 +14,7 @@ export async function getCachedFinancialData() {
 
 import { HISTORICAL_DATA } from './historical-data';
 import { getTitleName } from './budget-mappings';
+import { getDistrictPrefix } from './constants';
 
 const PROCESSED_DIR = path.join(process.cwd(), 'data', 'processed');
 
@@ -346,24 +347,6 @@ export async function getLastSyncTime() {
     if (!fs.existsSync(filePath)) return null;
     const stats = fs.statSync(filePath);
     return stats.mtime;
-}
-
-function getDistrictPrefix(district: string): string | null {
-    const prefixes: Record<string, string> = {
-        'Mitte': '01',
-        'Friedrichshain-Kreuzberg': '02',
-        'Pankow': '03',
-        'Charlottenburg-Wilmersdorf': '04',
-        'Spandau': '05',
-        'Steglitz-Zehlendorf': '06',
-        'Tempelhof-Schöneberg': '07',
-        'Neukölln': '08',
-        'Treptow-Köpenick': '09',
-        'Marzahn-Hellersdorf': '10',
-        'Lichtenberg': '11',
-        'Reinickendorf': '12'
-    };
-    return prefixes[district] || null;
 }
 
 export async function getDistrictCompareStats(district: string) {

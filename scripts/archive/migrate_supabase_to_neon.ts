@@ -3,7 +3,7 @@ import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import * as schema from '../src/db/schema';
+import * as schema from '../../src/db/schema';
 
 // Load .env.local
 dotenv.config({ path: path.join(process.cwd(), '.env.local') });

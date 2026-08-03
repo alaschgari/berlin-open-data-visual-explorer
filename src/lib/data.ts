@@ -45,7 +45,6 @@ import { eq, and, sql as drizzleSql, SQL } from 'drizzle-orm';
 
 // Fetch from Supabase instead of local file
 export async function getQuickFinancialMetrics(district?: string): Promise<{ budget: number, actual: number }> {
-    console.log('[getQuickFinancialMetrics] Quick fetch Neon...');
     try {
         let whereClause: SQL | undefined = eq(financialRecords.year, 2024);
         
@@ -72,14 +71,11 @@ export async function getQuickFinancialMetrics(district?: string): Promise<{ bud
 }
 
 export async function getFinancialData(): Promise<FinancialRecord[]> {
-    console.log('[getFinancialData] Fetching from Neon...');
-
     try {
         // Fetch all records from Neon
         // For a larger dataset like 140k, Drizzle on Server Components handles this well
         const allRecords = await db.select().from(financialRecords).orderBy(financialRecords.year);
 
-        console.log(`[getFinancialData] Successfully fetched ${allRecords.length} records`);
         return allRecords as unknown as FinancialRecord[];
     } catch (error) {
         console.error('[getFinancialData] Unexpected error:', error);

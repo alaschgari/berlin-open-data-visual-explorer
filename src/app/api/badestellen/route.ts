@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getBadestellenLive, BadestelleFeature } from '@/lib/badestellen';
 
-export const dynamic = 'force-dynamic';
-
 export const revalidate = 10800; // 3 hours in seconds
 
 export async function GET(request: Request) {

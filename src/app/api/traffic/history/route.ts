@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { env } from '@/lib/env';
 
-const API_KEY = process.env.TELRAAM_API_KEY || 'hqvwl9UGykatsZvxCRIMJ9oDO692JuPu4h7zbJrV'; // Fallback for demo
+const API_KEY = env.TELRAAM_API_KEY || '';
 const BASE_URL = 'https://telraam-api.net/v1';
 
 export async function GET(request: Request) {
@@ -9,6 +10,10 @@ export async function GET(request: Request) {
 
     if (!segment_id) {
         return NextResponse.json({ error: 'Segment ID is required' }, { status: 400 });
+    }
+
+    if (!API_KEY) {
+        return NextResponse.json({ error: 'TELRAAM_API_KEY is not configured' }, { status: 401 });
     }
 
     try {

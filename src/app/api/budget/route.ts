@@ -56,12 +56,19 @@ function buildBudgetTree(records: any[]): TreeNode {
     return root;
 }
 
+const MIN_YEAR = 2000;
+const MAX_YEAR = 2100;
+
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
-    const year = parseInt(searchParams.get('year') || '2024');
+    const yearParam = searchParams.get('year');
+    const year = yearParam === null ? 2024 : parseInt(yearParam, 10);
+
+    if (Number.isNaN(year) || year < MIN_YEAR || year > MAX_YEAR) {
+        return NextResponse.json({ error: 'Invalid year parameter' }, { status: 400 });
+    }
 
     try {
-        console.log(`[API Budget] Fetching records for ${year} from Neon...`);
         const allRecords = await db
             .select()
             .from(financialRecords)

@@ -1,9 +1,19 @@
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { fetchBerlinData } from '@/lib/scraper';
 import { processFiles } from '@/lib/parser';
+import { env } from '@/lib/env';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+    if (!env.SYNC_SECRET) {
+        return NextResponse.json({ message: 'Sync endpoint is not configured' }, { status: 503 });
+    }
+
+    const providedSecret = request.headers.get('x-sync-secret') ?? new URL(request.url).searchParams.get('secret');
+    if (providedSecret !== env.SYNC_SECRET) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         const result = await fetchBerlinData();
 

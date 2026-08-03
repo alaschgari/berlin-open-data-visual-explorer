@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSnapshotBBoxString } from '@/lib/traffic';
+import { env } from '@/lib/env';
 
 const TELRAAM_API_URL = 'https://telraam-api.net/v1';
 
 const CACHE_TTL_MS = 300; // 5 minutes in Next.js revalidate value
+
+type TrafficApiErrorCode = 'API_RATE_LIMIT' | 'AUTH_ERROR' | 'API_ERROR';
+
+class TrafficApiError extends Error {
+    constructor(public code: TrafficApiErrorCode, message?: string) {
+        super(message ?? code);
+        this.name = 'TrafficApiError';
+    }
+}
 
 async function fetchTrafficSnapshot(area: string, timeOffsetHours: number) {
     // Format time as YYYY-MM-DD HH:MM:00 (UTC)
@@ -15,7 +25,7 @@ async function fetchTrafficSnapshot(area: string, timeOffsetHours: number) {
     const response = await fetch(`${TELRAAM_API_URL}/reports/traffic_snapshot`, {
         method: 'POST',
         headers: {
-            'X-Api-Key': process.env.TELRAAM_API_KEY || '',
+            'X-Api-Key': env.TELRAAM_API_KEY || '',
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -27,15 +37,15 @@ async function fetchTrafficSnapshot(area: string, timeOffsetHours: number) {
     });
 
     if (response.status === 429) {
-        throw new Error('API_RATE_LIMIT');
+        throw new TrafficApiError('API_RATE_LIMIT');
     }
 
     if (response.status === 401 || response.status === 403) {
-        throw new Error('AUTH_ERROR');
+        throw new TrafficApiError('AUTH_ERROR');
     }
 
     if (!response.ok) {
-        throw new Error(`API_ERROR_${response.status}`);
+        throw new TrafficApiError('API_ERROR', `API_ERROR_${response.status}`);
     }
 
     return await response.json();
@@ -53,14 +63,12 @@ export async function GET(request: NextRequest) {
 
         // Try T-1 hour first
         try {
-            console.log(`[API] Fetching T-1 for ${district}...`);
             data = await fetchTrafficSnapshot(area, 1);
-            console.log(`[API] T-1 features: ${data?.features?.length || 0}`);
         } catch (error) {
-            if ((error as Error).message === 'AUTH_ERROR') {
+            if (error instanceof TrafficApiError && error.code === 'AUTH_ERROR') {
                 return NextResponse.json({ error: 'API Key missing or invalid' }, { status: 401 });
             }
-            if ((error as Error).message === 'API_RATE_LIMIT') {
+            if (error instanceof TrafficApiError && error.code === 'API_RATE_LIMIT') {
                 return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
             }
             console.error('T-1 fetch failed:', error);
@@ -74,7 +82,7 @@ export async function GET(request: NextRequest) {
                     data = dataT2;
                 }
             } catch (error) {
-                if ((error as Error).message === 'API_RATE_LIMIT') {
+                if (error instanceof TrafficApiError && error.code === 'API_RATE_LIMIT') {
                     if (data) return NextResponse.json(data); // Return T-1 empty result if T-2 rate limits
                     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
                 }

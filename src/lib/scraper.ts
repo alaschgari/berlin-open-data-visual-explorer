@@ -6,6 +6,21 @@ import { CKAN_PACKAGES } from './constants';
 const DATA_DIR = path.join(process.cwd(), 'data/raw');
 const PROCESSED_DIR = path.join(process.cwd(), 'data/processed');
 
+const ALLOWED_HOSTS = new Set(['www.berlin.de', 'berlin.de', 'www.polizei-berlin.eu', 'polizei-berlin.eu']);
+
+// Only follow CKAN-provided resource URLs that point at an official Berlin.de host,
+// to avoid a compromised/spoofed CKAN registry response causing a server-side fetch
+// of an attacker-controlled URL.
+function resolveResourceUrl(candidate: string | null, fallback: string): string {
+  if (!candidate) return fallback;
+  try {
+    const host = new URL(candidate).hostname;
+    return ALLOWED_HOSTS.has(host) ? candidate : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 // Ensure directories exist
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -40,7 +55,7 @@ export async function fetchSubsidies() {
 
   console.log('Fetching Zuwendungsdatenbank (Subsidies)...');
   try {
-    const url = await getLatestResourceUrl(CKAN_PACKAGES.SUBSIDIES, 'CSV') || DEFAULT_URL;
+    const url = resolveResourceUrl(await getLatestResourceUrl(CKAN_PACKAGES.SUBSIDIES, 'CSV'), DEFAULT_URL);
     const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
@@ -60,7 +75,7 @@ export async function fetchBicycleTheftData() {
 
   console.log('Fetching Latest Bicycle Theft Data...');
   try {
-    const url = await getLatestResourceUrl(CKAN_PACKAGES.BICYCLE_THEFT, 'CSV') || DEFAULT_URL;
+    const url = resolveResourceUrl(await getLatestResourceUrl(CKAN_PACKAGES.BICYCLE_THEFT, 'CSV'), DEFAULT_URL);
     const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
@@ -80,7 +95,7 @@ export async function fetchCarTheftData() {
 
   console.log('Fetching Latest Car Theft Data...');
   try {
-    const url = await getLatestResourceUrl(CKAN_PACKAGES.CAR_THEFT, 'CSV') || DEFAULT_URL;
+    const url = resolveResourceUrl(await getLatestResourceUrl(CKAN_PACKAGES.CAR_THEFT, 'CSV'), DEFAULT_URL);
     const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
@@ -100,7 +115,7 @@ export async function fetchMarketsData() {
 
   console.log('Fetching Wochen- & Trödelmärkte (Markets)...');
   try {
-    const url = await getLatestResourceUrl(CKAN_PACKAGES.MARKETS, 'GeoJSON') || DEFAULT_URL;
+    const url = resolveResourceUrl(await getLatestResourceUrl(CKAN_PACKAGES.MARKETS, 'GeoJSON'), DEFAULT_URL);
     const response = await fetch(url);
     if (!response.ok) {
       console.error(`Error fetching markets data: HTTP ${response.status}`);
