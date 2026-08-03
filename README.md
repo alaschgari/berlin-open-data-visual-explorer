@@ -79,10 +79,18 @@ npx vercel
 
 > ⚠️ **Umgebungsvariablen:** Alle Einträge aus `.env.local` müssen im Vercel-Dashboard unter *Settings → Environment Variables* hinterlegt werden.
 
+### 🔑 Umgebungsvariablen
+
+| Variable | Pflicht | Beschreibung |
+|---|---|---|
+| `DATABASE_URL` | ✅ | Connection String der Neon-Postgres-Datenbank |
+| `TELRAAM_API_KEY` | optional | API-Key für die Telraam-Verkehrsdaten-API |
+| `SYNC_SECRET` | optional | Schützt `GET /api/sync`; ohne gesetztes Secret antwortet der Endpoint mit `503` |
+
 ### 🛠️ Tech Stack
 
 - **Framework:** [Next.js 16](https://nextjs.org) (App Router, SSR)
-- **Datenbank:** [Supabase](https://supabase.com) (PostgreSQL) für High-Scale Datenverarbeitung
+- **Datenbank:** [Neon](https://neon.tech) (Serverless PostgreSQL) mit Drizzle ORM
 - **Sprache:** TypeScript
 - **Styling:** Tailwind CSS v4
 - **Karten:** Leaflet / React-Leaflet
@@ -168,10 +176,18 @@ npx vercel
 
 > ⚠️ **Environment Variables:** All entries from `.env.local` must be added in the Vercel dashboard under *Settings → Environment Variables*.
 
+### 🔑 Environment Variables
+
+| Variable | Required | Description |
+|---|---|---|
+| `DATABASE_URL` | ✅ | Connection string for the Neon Postgres database |
+| `TELRAAM_API_KEY` | optional | API key for the Telraam traffic data API |
+| `SYNC_SECRET` | optional | Protects `GET /api/sync`; without it set, the endpoint returns `503` |
+
 ### 🛠️ Tech Stack
 
 - **Framework:** [Next.js 16](https://nextjs.org) (App Router, SSR)
-- **Database:** [Supabase](https://supabase.com) (PostgreSQL) for large-scale data handling
+- **Database:** [Neon](https://neon.tech) (Serverless PostgreSQL) with Drizzle ORM
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS v4
 - **Maps:** Leaflet / React-Leaflet
