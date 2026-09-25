@@ -186,6 +186,21 @@ async function main() {
     const args = process.argv.slice(2);
     const dryRun = args.includes('--dry-run');
 
+    // Discovery helper: `pnpm db:sync --probe=<url> [--probe=<url>]` prints status and the start of each response
+    const probes = args.filter(a => a.startsWith('--probe=')).map(a => a.slice('--probe='.length));
+    if (probes.length > 0) {
+        for (const url of probes) {
+            try {
+                const response = await fetch(url, { signal: AbortSignal.timeout(30_000), headers: { Accept: 'application/json,*/*' } });
+                const body = await response.text();
+                console.log(`\n=== ${url}\n${response.status} ${response.headers.get('content-type')} (${body.length} bytes)\n${body.slice(0, 1500)}`);
+            } catch (error) {
+                console.log(`\n=== ${url}\nfailed: ${error instanceof Error ? error.message : error}`);
+            }
+        }
+        return;
+    }
+
     // Discovery helper: `pnpm db:sync --find=<query>` lists matching CKAN resources and exits
     const find = args.find(a => a.startsWith('--find='));
     if (find) {
