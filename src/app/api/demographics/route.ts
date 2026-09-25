@@ -12,7 +12,8 @@ export async function GET() {
             return NextResponse.json({ error: 'No demographics data found' }, { status: 404 });
         }
 
-        return NextResponse.json(data);
+        // The full uppercase source record is stored in the jsonb `data` column; the UI reads those keys
+        return NextResponse.json(data.map(row => row.data));
     } catch (error) {
         console.error('Error fetching demographics:', error);
         return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });

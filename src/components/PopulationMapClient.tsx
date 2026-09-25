@@ -7,9 +7,13 @@ import L from 'leaflet';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, Cell } from 'recharts';
 import { Download, Users, Baby, School, UserRound, Map as MapIcon, ChevronRight, X as CloseIcon } from 'lucide-react';
 import { useLanguage } from './LanguageContext';
+import type { DemographicsRecord, LorFeature, LorFeatureCollection } from '@/lib/geo-types';
+
+type Theme = 'total' | 'density' | 'kita' | 'school' | 'seniors' | 'women_ratio';
+type SelectedFeature = LorFeature & { demographics?: DemographicsRecord; shouldZoom: boolean };
 
 // Helper component to auto-zoom to GeoJSON data
-function FitBounds({ data }: { data: any }) {
+function FitBounds({ data }: { data: LorFeatureCollection | null }) {
     const map = useMap();
     useEffect(() => {
         if (data && data.features && data.features.length > 0) {
@@ -25,7 +29,7 @@ function FitBounds({ data }: { data: any }) {
 }
 
 // Helper component to fly the map to a specific feature
-function FlyToFeature({ selection }: { selection: any }) {
+function FlyToFeature({ selection }: { selection: SelectedFeature | null }) {
     const map = useMap();
     useEffect(() => {
         if (selection && selection.geometry && selection.shouldZoom) {
@@ -56,14 +60,14 @@ const getDistrictName = (bezId: number | string) => {
 
 export default function PopulationMapClient({ district }: { district: string }) {
     const { t, language } = useLanguage();
-    const [geoJsonData, setGeoJsonData] = useState<any>(null);
-    const [demographicsData, setDemographicsData] = useState<any[]>([]);
+    const [geoJsonData, setGeoJsonData] = useState<LorFeatureCollection | null>(null);
+    const [demographicsData, setDemographicsData] = useState<DemographicsRecord[]>([]);
     const [loading, setLoading] = useState(true);
     const [featureCount, setFeatureCount] = useState<number>(0);
 
     const locale = language === 'de' ? 'de-DE' : 'en-GB';
-    const [selectedTheme, setSelectedTheme] = useState<'total' | 'density' | 'kita' | 'school' | 'seniors' | 'women_ratio'>('total');
-    const [selectedFeature, setSelectedFeature] = useState<any>(null);
+    const [selectedTheme, setSelectedTheme] = useState<Theme>('total');
+    const [selectedFeature, setSelectedFeature] = useState<SelectedFeature | null>(null);
     const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
 
     const getPopData = useCallback((plrId: string) => {
@@ -85,9 +89,9 @@ export default function PopulationMapClient({ district }: { district: string }) 
         if (!geoJsonData) return null;
         if (!district || district === 'Berlin' || district === 'All') return geoJsonData;
 
-        const filteredFeatures = geoJsonData.features.filter((f: any) => {
+        const filteredFeatures = geoJsonData.features.filter((f) => {
             const data = demographicsData.find(d => String(d.RAUMID).padStart(8, '0') === f.properties.PLR_ID);
-            return data && getDistrictName(data.BEZ) === district;
+            return !!data && getDistrictName(data.BEZ) === district;
         });
 
         return { ...geoJsonData, features: filteredFeatures };
@@ -118,7 +122,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
         fetchData();
     }, []);
 
-    const getMetricValue = useCallback((feature: any, theme: string) => {
+    const getMetricValue = useCallback((feature: LorFeature, theme: string) => {
         const plrId = feature.properties.PLR_ID;
         const data = demographicsData.find(d => String(d.RAUMID).padStart(8, '0') === plrId);
         if (!data) return 0;
@@ -177,7 +181,8 @@ export default function PopulationMapClient({ district }: { district: string }) 
         return scale.colors[0];
     }, []);
 
-    const style = useCallback((feature: any) => {
+    const style = useCallback((feature?: LorFeature) => {
+        if (!feature) return {};
         const val = getMetricValue(feature, selectedTheme);
         return {
             fillColor: getThemeColor(val, selectedTheme),
@@ -199,7 +204,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
 
     if (!geoJsonData) return <div className="h-[600px] flex items-center justify-center text-rose-400 bg-slate-800/50 rounded-3xl border border-slate-700">{t('error')}</div>;
 
-    const onEachFeature = (feature: any, layer: L.Layer) => {
+    const onEachFeature = (feature: LorFeature, layer: L.Layer) => {
         const pop = getPopulation(feature.properties.PLR_ID);
         const data = getPopData(feature.properties.PLR_ID);
         const districtName = data ? getDistrictName(data.BEZ) : 'Unbekannt';
@@ -207,7 +212,8 @@ export default function PopulationMapClient({ district }: { district: string }) 
         // Visibility check based on district
         if (district && district !== 'Berlin' && district !== 'All') {
             if (districtName !== district) {
-                (layer as any).setStyle({ opacity: 0, fillOpacity: 0, interactive: false });
+                (layer as L.Path).setStyle({ opacity: 0, fillOpacity: 0 });
+                (layer as L.Path).options.interactive = false;
                 return;
             }
         }
@@ -257,8 +263,8 @@ export default function PopulationMapClient({ district }: { district: string }) 
         });
 
         layer.on({
-            mouseover: (e: any) => {
-                const l = e.target;
+            mouseover: (e: L.LeafletMouseEvent) => {
+                const l = e.target as L.Path;
                 l.setStyle({
                     weight: 2,
                     color: '#fff',
@@ -266,15 +272,15 @@ export default function PopulationMapClient({ district }: { district: string }) 
                 });
                 l.bringToFront();
             },
-            mouseout: (e: any) => {
-                const l = e.target;
+            mouseout: (e: L.LeafletMouseEvent) => {
+                const l = e.target as L.Path;
                 l.setStyle({
                     weight: 1,
                     color: '#334155',
                     fillOpacity: 0.8
                 });
             },
-            click: (e: any) => {
+            click: () => {
                 const data = getPopData(feature.properties.PLR_ID);
                 setSelectedFeature({
                     ...feature,
@@ -288,11 +294,11 @@ export default function PopulationMapClient({ district }: { district: string }) 
 
     const handleExportCSV = () => {
         const headers = ["ID", "Name", "Total", "Density (pers/km2)", "Kita (1-6)", "School (6-15)", "Seniors (65+)", "Women %"];
-        const rows = geoJsonData.features.map((f: any) => {
+        const rows = geoJsonData.features.map((f) => {
             const data = getPopData(f.properties.PLR_ID);
             const density = f.properties.GROESSE_M2 > 0 ? (data?.E_E || 0) / (f.properties.GROESSE_M2 / 1000000) : 0;
             const seniors = (Number(data?.E_E65U80) || 0) + (Number(data?.E_E80U110) || 0);
-            const womenPct = data?.E_E > 0 ? (data.E_EW / data.E_E) * 100 : 0;
+            const womenPct = data && data.E_E > 0 ? (data.E_EW / data.E_E) * 100 : 0;
 
             return [
                 f.properties.PLR_ID,
@@ -308,7 +314,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
 
         const csvContent = "data:text/csv;charset=utf-8,"
             + headers.join(";") + "\n"
-            + rows.map((e: any) => e.join(";")).join("\n");
+            + rows.map((e) => e.join(";")).join("\n");
 
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
@@ -376,7 +382,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
                         ].map((t) => (
                             <button
                                 key={t.id}
-                                onClick={() => setSelectedTheme(t.id as any)}
+                                onClick={() => setSelectedTheme(t.id as Theme)}
                                 title={t.label}
                                 className={`p-2.5 rounded-xl transition-all flex items-center gap-2 ${selectedTheme === t.id ? 'bg-emerald-500 text-slate-900 shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
                             >
@@ -505,8 +511,8 @@ export default function PopulationMapClient({ district }: { district: string }) 
                                             return (
                                                 <ResponsiveContainer width="100%" height="100%">
                                                     <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' } as any} />
-                                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' } as any} />
+                                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
                                                         <RechartsTooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: 10 }} />
                                                         <Bar dataKey="val" radius={[4, 4, 0, 0]}>
                                                             {chartData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
@@ -591,21 +597,22 @@ export default function PopulationMapClient({ district }: { district: string }) 
                             {(() => {
                                 if (!filteredGeoJson || !demographicsData.length) return null;
 
-                                const rankedData = filteredGeoJson.features.map((f: any) => ({
+                                const rankedData = filteredGeoJson.features.map((f) => ({
                                     id: f.properties.PLR_ID,
                                     name: f.properties.PLR_NAME,
                                     val: getMetricValue(f, selectedTheme)
                                 }))
-                                    .sort((a: any, b: any) => b.val - a.val)
+                                    .sort((a, b) => b.val - a.val)
                                     .slice(0, 10);
 
                                 const maxVal = rankedData[0]?.val || 1;
 
-                                return rankedData.map((item: any, index: number) => (
+                                return rankedData.map((item, index) => (
                                     <tr
                                         key={item.id}
                                         onClick={() => {
-                                            const feature = geoJsonData.features.find((f: any) => f.properties.PLR_ID === item.id);
+                                            const feature = geoJsonData.features.find((f) => f.properties.PLR_ID === item.id);
+                                            if (!feature) return;
                                             const data = getPopData(item.id);
                                             setSelectedFeature({
                                                 ...feature,

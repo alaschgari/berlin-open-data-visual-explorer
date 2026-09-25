@@ -8,9 +8,47 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTo
 import { Download, Briefcase, Building2, Store, Factory, PlusCircle, Map as MapIcon, ChevronRight, X as CloseIcon, Info, Users, Calendar, MapPin, Search, Filter, ArrowUp, ArrowDown, ListTree, ChevronDown, BarChart3, TrendingUp, Zap, Scale, Copy, Crosshair } from 'lucide-react';
 import { useLanguage } from './LanguageContext';
 import { getDistrictPrefix, getDistrictNameByBezId } from '@/lib/constants';
+import type { LorFeature, LorFeatureCollection } from '@/lib/geo-types';
+
+/** A single business as returned by /api/business/details and /api/business/search. */
+interface Business {
+    id: string;
+    branch: string | null;
+    top_branch?: string | null;
+    employees: string | null;
+    type: string | null;
+    age: string | null;
+    city: string | null;
+    postcode: string | null;
+    lat: number | null;
+    lng: number | null;
+    lorId?: string | null;
+    planungsraum?: string;
+}
+
+/** Pre-aggregated business counts for one planning area. */
+interface LorBusinessSummary {
+    count: number;
+    branches: Record<string, number>;
+}
+
+interface BusinessOverview {
+    byLor: Record<string, LorBusinessSummary>;
+}
+
+interface BusinessSearchResult {
+    points: Business[];
+    lorCounts: Record<string, number>;
+    totalMatched: number;
+}
+
+type Theme = 'total' | 'gastro' | 'tech' | 'retail';
+type SortKey = 'postcode' | 'branch' | 'age';
+type GroupKey = 'branch' | 'postcode' | 'type' | 'employees';
+type SelectedLor = LorFeature & { business?: LorBusinessSummary };
 
 // Helper component to auto-zoom to GeoJSON data
-function FitBounds({ data }: { data: any }) {
+function FitBounds({ data }: { data: LorFeatureCollection | null }) {
     const map = useMap();
     useEffect(() => {
         if (data && data.features && data.features.length > 0) {
@@ -31,32 +69,32 @@ const getDistrictId = (name: string) => getDistrictPrefix(name) ?? undefined;
 
 export default function BusinessMapClient({ district }: { district: string }) {
     const { t, language } = useLanguage();
-    const [geoJsonData, setGeoJsonData] = useState<any>(null);
-    const [businessData, setBusinessData] = useState<any>(null);
+    const [geoJsonData, setGeoJsonData] = useState<LorFeatureCollection | null>(null);
+    const [businessData, setBusinessData] = useState<BusinessOverview | null>(null);
     const [loading, setLoading] = useState(true);
-    const [selectedTheme, setSelectedTheme] = useState<'total' | 'gastro' | 'tech' | 'retail'>('total');
-    const [selectedFeature, setSelectedFeature] = useState<any>(null);
-    const [compareFeature, setCompareFeature] = useState<any>(null);
+    const [selectedTheme, setSelectedTheme] = useState<Theme>('total');
+    const [selectedFeature, setSelectedFeature] = useState<SelectedLor | null>(null);
+    const [compareFeature, setCompareFeature] = useState<SelectedLor | null>(null);
     const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
     const [isCompareMode, setIsCompareMode] = useState(false);
 
     const locale = language === 'de' ? 'de-DE' : 'en-GB';
-    const [businessDetails, setBusinessDetails] = useState<any[]>([]);
-    const [compareDetails, setCompareDetails] = useState<any[]>([]);
+    const [businessDetails, setBusinessDetails] = useState<Business[]>([]);
+    const [compareDetails, setCompareDetails] = useState<Business[]>([]);
     const [loadingDetails, setLoadingDetails] = useState(false);
     const [chartFilter, setChartFilter] = useState<string | null>(null);
 
     // Global Branch Search & POV State
     const [globalBranchSearch, setGlobalBranchSearch] = useState('');
-    const [searchResult, setSearchResult] = useState<{ points: any[], lorCounts: Record<string, number>, totalMatched: number } | null>(null);
+    const [searchResult, setSearchResult] = useState<BusinessSearchResult | null>(null);
     const [isSearching, setIsSearching] = useState(false);
     const [isPointMode, setIsPointMode] = useState(false);
 
     // Table state
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'age', direction: 'desc' });
+    const [sortConfig, setSortConfig] = useState<{ key: SortKey, direction: 'asc' | 'desc' } | null>({ key: 'age', direction: 'desc' });
     const [filterType, setFilterType] = useState('all');
-    const [groupBy, setGroupBy] = useState<string | null>(null);
+    const [groupBy, setGroupBy] = useState<GroupKey | null>(null);
     const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
     const currentLorId = useRef<string | null>(null);
 
@@ -166,7 +204,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
 
             // Filter by district if one is selected
             if (district && district !== 'Berlin' && district !== 'All') {
-                points = points.filter((p: any) => {
+                points = points.filter((p) => {
                     if (!p.lorId) return false;
                     const districtIdStr = p.lorId.substring(0, 2);
                     const normalizedId = districtIdStr.startsWith('0') ? districtIdStr.substring(1) : districtIdStr;
@@ -182,9 +220,9 @@ export default function BusinessMapClient({ district }: { district: string }) {
         if (searchTerm) {
             const lowSearch = searchTerm.toLowerCase();
             filtered = filtered.filter(b =>
-                b.branch.toLowerCase().includes(lowSearch) ||
-                b.postcode.includes(lowSearch) ||
-                b.type.toLowerCase().includes(lowSearch)
+                (b.branch ?? '').toLowerCase().includes(lowSearch) ||
+                (b.postcode ?? '').includes(lowSearch) ||
+                (b.type ?? '').toLowerCase().includes(lowSearch)
             );
         }
 
@@ -196,22 +234,22 @@ export default function BusinessMapClient({ district }: { district: string }) {
         // Theme Filter (Gastro, Tech, Retail)
         if (selectedTheme !== 'total') {
             if (selectedTheme === 'gastro') {
-                filtered = filtered.filter(b =>
-                    b.branch.includes('Gastronomie') ||
-                    b.branch.includes('Gastgewerbe') ||
-                    b.branch.includes('Beherbergung')
+                filtered = filtered.filter(({ branch = '' }) =>
+                    branch?.includes('Gastronomie') ||
+                    branch?.includes('Gastgewerbe') ||
+                    branch?.includes('Beherbergung')
                 );
             } else if (selectedTheme === 'tech') {
-                filtered = filtered.filter(b =>
-                    b.branch.includes('Informationstechnologie') ||
-                    b.branch.includes('Information und Kommunikation') ||
-                    b.branch.includes('Software') ||
-                    b.branch.includes('Datenverarbeitung')
+                filtered = filtered.filter(({ branch = '' }) =>
+                    branch?.includes('Informationstechnologie') ||
+                    branch?.includes('Information und Kommunikation') ||
+                    branch?.includes('Software') ||
+                    branch?.includes('Datenverarbeitung')
                 );
             } else if (selectedTheme === 'retail') {
-                filtered = filtered.filter(b =>
-                    b.branch.includes('Einzelhandel') ||
-                    b.branch.includes('Großhandel')
+                filtered = filtered.filter(({ branch = '' }) =>
+                    branch?.includes('Einzelhandel') ||
+                    branch?.includes('Großhandel')
                 );
             }
         }
@@ -221,7 +259,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
             const lowGlobal = globalBranchSearch.toLowerCase().trim();
             if (lowGlobal.length > 0) {
                 filtered = filtered.filter(b =>
-                    b.branch.toLowerCase().includes(lowGlobal)
+                    (b.branch ?? '').toLowerCase().includes(lowGlobal)
                 );
             }
         }
@@ -238,13 +276,9 @@ export default function BusinessMapClient({ district }: { district: string }) {
         // Sorting
         if (sortConfig) {
             filtered.sort((a, b) => {
-                let aVal = a[sortConfig.key];
-                let bVal = b[sortConfig.key];
-
-                if (sortConfig.key === 'age') {
-                    aVal = Number(aVal) || 0;
-                    bVal = Number(bVal) || 0;
-                }
+                const key = sortConfig.key;
+                const aVal: string | number = key === 'age' ? Number(a.age) || 0 : a[key] ?? '';
+                const bVal: string | number = key === 'age' ? Number(b.age) || 0 : b[key] ?? '';
 
                 if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
                 if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
@@ -305,7 +339,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
-        link.setAttribute("download", `Gewerbe_${selectedFeature.properties.PLR_NAME.replace(/\s+/g, '_')}.csv`);
+        link.setAttribute("download", `Gewerbe_${(selectedFeature?.properties.PLR_NAME ?? 'Berlin').replace(/\s+/g, '_')}.csv`);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
@@ -315,7 +349,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
     const groupedBusinesses = useMemo(() => {
         if (!groupBy) return null;
 
-        const groups: Record<string, any[]> = {};
+        const groups: Record<string, Business[]> = {};
         processedBusinesses.forEach(b => {
             const val = b[groupBy] || 'Unbekannt';
             if (!groups[val]) groups[val] = [];
@@ -325,7 +359,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
         return Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
     }, [processedBusinesses, groupBy]);
 
-    const toggleSort = (key: string) => {
+    const toggleSort = (key: SortKey) => {
         setSortConfig(current => {
             if (current?.key === key) {
                 return { key, direction: current.direction === 'asc' ? 'desc' : 'asc' };
@@ -345,7 +379,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
         // Note: LOR geometry doesn't have district info directly in properties for all versions, 
         // we might need to join it or use a heuristic. 
         // In this project, lor_planungsraeume_2021 usually has PLR_ID where first 2 digits are district.
-        const filteredFeatures = geoJsonData.features.filter((f: any) => {
+        const filteredFeatures = geoJsonData.features.filter((f) => {
             const districtId = f.properties.PLR_ID.substring(0, 2);
             // Removing leading zero for mapping if necessary
             const id = districtId.startsWith('0') ? districtId.substring(1) : districtId;
@@ -355,7 +389,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
         return { ...geoJsonData, features: filteredFeatures };
     }, [geoJsonData, businessData, district]);
 
-    const getMetricValue = useCallback((feature: any, theme: string) => {
+    const getMetricValue = useCallback((feature: LorFeature, theme: string) => {
         const plrId = String(feature.properties.PLR_ID);
 
         const data = businessData?.byLor[plrId];
@@ -382,7 +416,8 @@ export default function BusinessMapClient({ district }: { district: string }) {
         return scale.colors[0];
     }, [scales]);
 
-    const style = useCallback((feature: any) => {
+    const style = useCallback((feature?: LorFeature) => {
+        if (!feature) return {};
         const val = getMetricValue(feature, selectedTheme);
         return {
             fillColor: getThemeColor(val, selectedTheme),
@@ -394,7 +429,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
     }, [getMetricValue, getThemeColor, selectedTheme]);
 
 
-    const onEachFeature = useCallback((feature: any, layer: L.Layer) => {
+    const onEachFeature = useCallback((feature: LorFeature, layer: L.Layer) => {
         const plrId = String(feature.properties.PLR_ID);
         const data = businessData?.byLor[plrId];
 
@@ -418,7 +453,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                     ${!searchResult ? `
                     <span style="color: #64748b;">${t('biz_top_industry')}:</span>
                     <span style="font-weight: bold; text-align: right; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                        ${data ? Object.entries(data.branches).sort((a: any, b: any) => b[1] - a[1])[0]?.[0] || '-' : '-'}
+                        ${data ? Object.entries(data.branches).sort((a, b) => b[1] - a[1])[0]?.[0] || '-' : '-'}
                     </span>
                     ` : ''}
                 </div>
@@ -432,22 +467,22 @@ export default function BusinessMapClient({ district }: { district: string }) {
         }
 
         layer.on({
-            mouseover: (e: any) => {
-                const l = e.target;
+            mouseover: (e: L.LeafletMouseEvent) => {
+                const l = e.target as L.Path;
                 l.setStyle({
                     weight: 3,
                     color: '#fff'
                 });
                 l.bringToFront();
             },
-            mouseout: (e: any) => {
-                const l = e.target;
+            mouseout: (e: L.LeafletMouseEvent) => {
+                const l = e.target as L.Path;
                 l.setStyle({
                     weight: 1,
                     color: '#334155'
                 });
             },
-            click: async (e: any) => {
+            click: async () => {
                 const clickedPlrId = String(feature.properties.PLR_ID);
                 if (isCompareMode && selectedFeature) {
                     setCompareFeature({
@@ -538,7 +573,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                         {isPointMode && (
                             <Pane name="pois" style={{ zIndex: 600 }}>
                                 {selectedFeature ? (
-                                    processedBusinesses.map((b: any, i) => (
+                                    processedBusinesses.map((b, i) => (
                                         b.lat && b.lng ? (
                                             <CircleMarker
                                                 key={`kiez-point-${i}`}
@@ -588,14 +623,15 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                     ))
                                 ) : (
                                     searchResult && searchResult.points
-                                        .filter((p: any) => {
+                                        .filter((p): p is Business & { lat: number; lng: number } => {
+                                            if (p.lat == null || p.lng == null) return false;
                                             if (!district || district === 'Berlin' || district === 'All') return true;
                                             if (!p.lorId) return false;
                                             const districtIdStr = p.lorId.substring(0, 2);
                                             const normalizedId = districtIdStr.startsWith('0') ? districtIdStr.substring(1) : districtIdStr;
                                             return getDistrictName(normalizedId) === district;
                                         })
-                                        .map((p: any, i: number) => (
+                                        .map((p, i) => (
                                             <CircleMarker
                                                 key={`point-${i}`}
                                                 center={[p.lat, p.lng]}
@@ -654,7 +690,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                             ].map((t) => (
                                 <button
                                     key={t.id}
-                                    onClick={() => setSelectedTheme(t.id as any)}
+                                    onClick={() => setSelectedTheme(t.id as Theme)}
                                     title={t.label}
                                     className={`p-2.5 rounded-xl transition-all flex items-center gap-2 ${selectedTheme === t.id ? 'bg-amber-500 text-slate-900 shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
                                 >
@@ -883,9 +919,9 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                     </h3>
                                     <div className="space-y-3">
                                         {Object.entries(selectedFeature.business?.branches || {})
-                                            .sort((a: any, b: any) => b[1] - a[1])
+                                            .sort((a, b) => b[1] - a[1])
                                             .slice(0, 5)
-                                            .map(([name, val]: [string, any], i) => (
+                                            .map(([name, val], i) => (
                                                 <div key={i} className="flex items-center gap-2 group/row">
                                                     <div
                                                         onClick={() => setChartFilter(chartFilter === name ? null : name)}
@@ -897,7 +933,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                         </div>
                                                         <div className="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
                                                             <div
-                                                                style={{ width: `${selectedFeature.business.count > 0 ? (val / selectedFeature.business.count) * 100 : 0}%` }}
+                                                                style={{ width: `${(selectedFeature.business?.count ?? 0) > 0 ? (val / selectedFeature.business!.count) * 100 : 0}%` }}
                                                                 className={`h-full transition-all ${chartFilter === name ? 'bg-amber-400' : 'bg-amber-500'}`}
                                                             ></div>
                                                         </div>
@@ -1007,7 +1043,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                         value={groupBy || ''}
                                         onChange={(e) => {
                                             const val = e.target.value;
-                                            setGroupBy(val === '' ? null : val);
+                                            setGroupBy(val === '' ? null : val as GroupKey);
                                             setExpandedGroups({});
                                         }}
                                     >
@@ -1120,7 +1156,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
     );
 }
 
-function BusinessRow({ biz, isGrouped }: { biz: any, isGrouped?: boolean }) {
+function BusinessRow({ biz, isGrouped }: { biz: Business, isGrouped?: boolean }) {
     return (
         <tr className={`hover:bg-slate-800/30 transition-colors group ${isGrouped ? 'bg-slate-900/40' : ''}`}>
             <td className="px-6 py-4">
@@ -1135,7 +1171,7 @@ function BusinessRow({ biz, isGrouped }: { biz: any, isGrouped?: boolean }) {
                 </span>
             </td>
             <td className="px-6 py-4">
-                <span className="text-sm text-slate-300 group-hover:text-white block max-w-md truncate" title={biz.branch}>
+                <span className="text-sm text-slate-300 group-hover:text-white block max-w-md truncate" title={biz.branch ?? undefined}>
                     {biz.branch}
                 </span>
             </td>
