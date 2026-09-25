@@ -57,6 +57,7 @@ const LOR_PREFIX_TO_DISTRICT: Record<string, string> = {
 };
 
 import { districtCoordinates } from '@/lib/district-coords';
+import { BASEMAP_URL, BASEMAP_ATTRIBUTION, BASEMAP_MAX_ZOOM } from '@/lib/basemap';
 
 function MapViewHandler({ district, selectedLorCoord }: { district?: string, selectedLorCoord?: { lat: number, lng: number } | null }) {
   const map = useMap();
@@ -604,8 +605,9 @@ export default function BicycleTheftMap({ district }: { district?: string }) {
         >
           <MapViewHandler district={district} selectedLorCoord={selectedLorCoord} />
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            attribution={BASEMAP_ATTRIBUTION}
+            url={BASEMAP_URL}
+                            maxNativeZoom={BASEMAP_MAX_ZOOM}
           />
           {lorData && (
             <GeoJSON

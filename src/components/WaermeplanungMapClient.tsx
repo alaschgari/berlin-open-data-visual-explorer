@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, WMSTileLayer, GeoJSON, useMap } from 'react-le
 import { Info, Settings, Layers, Eye } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import { useLanguage } from './LanguageContext';
+import { BASEMAP_URL, BASEMAP_ATTRIBUTION, BASEMAP_MAX_ZOOM } from '@/lib/basemap';
 
 interface LayerOption {
     id: string;
@@ -240,8 +241,9 @@ export default function WaermeplanungMapClient({ district }: { district?: string
                         aria-label="Wärmeplanung WMS Map"
                     >
                         <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                            attribution={BASEMAP_ATTRIBUTION}
+                            url={BASEMAP_URL}
+                            maxNativeZoom={BASEMAP_MAX_ZOOM}
                         />
                         <WMSTileLayer
                             url="https://gdi.berlin.de/services/wms/waermeplanung"

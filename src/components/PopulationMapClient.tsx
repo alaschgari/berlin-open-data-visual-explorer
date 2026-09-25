@@ -8,6 +8,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTo
 import { Download, Users, Baby, School, UserRound, Map as MapIcon, ChevronRight, X as CloseIcon } from 'lucide-react';
 import { useLanguage } from './LanguageContext';
 import type { DemographicsRecord, LorFeature, LorFeatureCollection } from '@/lib/geo-types';
+import { BASEMAP_URL, BASEMAP_ATTRIBUTION, BASEMAP_MAX_ZOOM } from '@/lib/basemap';
 
 type Theme = 'total' | 'density' | 'kita' | 'school' | 'seniors' | 'women_ratio';
 type SelectedFeature = LorFeature & { demographics?: DemographicsRecord; shouldZoom: boolean };
@@ -355,8 +356,9 @@ export default function PopulationMapClient({ district }: { district: string }) 
                         aria-label={language === 'de' ? 'Bevölkerungskarte' : 'Population map'}
                     >
                         <TileLayer
-                            attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                            attribution={BASEMAP_ATTRIBUTION}
+                            url={BASEMAP_URL}
+                            maxNativeZoom={BASEMAP_MAX_ZOOM}
                         />
                         {filteredGeoJson && <FitBounds data={filteredGeoJson} />}
                         {selectedFeature && <FlyToFeature selection={selectedFeature} />}

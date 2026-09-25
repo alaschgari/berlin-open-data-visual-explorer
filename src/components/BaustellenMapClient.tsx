@@ -6,6 +6,7 @@ import { MapPin, Info, AlertTriangle, Calendar, Search, X, HardHat, ExternalLink
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useLanguage } from './LanguageContext';
+import { BASEMAP_URL, BASEMAP_ATTRIBUTION, BASEMAP_MAX_ZOOM } from '@/lib/basemap';
 
 // Fix for Leaflet icon issues in Next.js
 // @ts-ignore
@@ -331,8 +332,9 @@ export default function BaustellenMapClient({ district }: { district?: string })
                         className="z-0"
                     >
                         <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                            attribution={BASEMAP_ATTRIBUTION}
+                            url={BASEMAP_URL}
+                            maxNativeZoom={BASEMAP_MAX_ZOOM}
                         />
                         <MapController selectedSite={selectedSite} />
                         {filteredSites.map((site, idx) => {

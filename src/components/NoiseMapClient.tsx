@@ -16,6 +16,7 @@ import {
     type NoisePeriod,
     type NoiseSource,
 } from '@/lib/noise';
+import { BASEMAP_URL, BASEMAP_ATTRIBUTION, BASEMAP_MAX_ZOOM } from '@/lib/basemap';
 
 const WMS_ATTRIBUTION = '&copy; <a href="https://www.berlin.de/umweltatlas/">Umweltatlas Berlin</a>';
 
@@ -44,8 +45,9 @@ export default function NoiseMapClient() {
                 <div className="flex-1 h-[600px] rounded-3xl overflow-hidden border border-slate-700/50">
                     <MapContainer center={[52.52, 13.405]} zoom={11} minZoom={10} className="h-full w-full" style={{ background: '#0f172a' }}>
                         <TileLayer
-                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                            url={BASEMAP_URL}
+                            maxNativeZoom={BASEMAP_MAX_ZOOM}
+                            attribution={BASEMAP_ATTRIBUTION}
                         />
                         {/* key forces a fresh layer when the WMS layer changes */}
                         <WMSTileLayer

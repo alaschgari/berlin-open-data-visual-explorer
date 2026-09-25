@@ -4,6 +4,7 @@ import { MapPin, ExternalLink, Clock, Calendar, ShoppingBag, Search, Accessibili
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useLanguage } from './LanguageContext';
+import { BASEMAP_URL, BASEMAP_ATTRIBUTION, BASEMAP_MAX_ZOOM } from '@/lib/basemap';
 
 // Fix for Leaflet icon issues in Next.js
 // @ts-ignore
@@ -285,8 +286,9 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                         aria-label={t('markets_map_label')}
                     >
                         <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                            attribution={BASEMAP_ATTRIBUTION}
+                            url={BASEMAP_URL}
+                            maxNativeZoom={BASEMAP_MAX_ZOOM}
                         />
                         <MapController selectedMarket={selectedMarket} />
                         {filteredMarkets.map((market, idx) => {

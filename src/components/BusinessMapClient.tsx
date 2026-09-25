@@ -9,6 +9,7 @@ import { Download, Briefcase, Building2, Store, Factory, PlusCircle, Map as MapI
 import { useLanguage } from './LanguageContext';
 import { getDistrictPrefix, getDistrictNameByBezId } from '@/lib/constants';
 import type { LorFeature, LorFeatureCollection } from '@/lib/geo-types';
+import { BASEMAP_URL, BASEMAP_ATTRIBUTION, BASEMAP_MAX_ZOOM } from '@/lib/basemap';
 
 /** A single business as returned by /api/business/details and /api/business/search. */
 interface Business {
@@ -557,8 +558,9 @@ export default function BusinessMapClient({ district }: { district: string }) {
                         aria-label={language === 'de' ? 'Gewerbedaten-Karte' : 'Business data map'}
                     >
                         <TileLayer
-                            attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                            attribution={BASEMAP_ATTRIBUTION}
+                            url={BASEMAP_URL}
+                            maxNativeZoom={BASEMAP_MAX_ZOOM}
                         />
                         <FitBounds data={filteredGeoJson} />
                         {filteredGeoJson && (
