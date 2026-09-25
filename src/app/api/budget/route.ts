@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { financialRecords } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, type InferSelectModel } from 'drizzle-orm';
 import { getTitleName } from '@/lib/budget-mappings';
 
 export const revalidate = 3600; // 1 hour
@@ -12,7 +12,9 @@ interface TreeNode {
     children?: TreeNode[];
 }
 
-function buildBudgetTree(records: any[]): TreeNode {
+type FinancialRecord = InferSelectModel<typeof financialRecords>;
+
+function buildBudgetTree(records: FinancialRecord[]): TreeNode {
     const root: TreeNode = {
         name: 'Gesamthaushalt Berlin',
         value: 0,
@@ -47,10 +49,11 @@ function buildBudgetTree(records: any[]): TreeNode {
         }
 
         // Update values
-        titleNode.value += record.budget;
-        chapterNode.value += record.budget;
-        districtNode.value += record.budget;
-        root.value += record.budget;
+        const budget = record.budget ?? 0;
+        titleNode.value += budget;
+        chapterNode.value += budget;
+        districtNode.value += budget;
+        root.value += budget;
     });
 
     return root;

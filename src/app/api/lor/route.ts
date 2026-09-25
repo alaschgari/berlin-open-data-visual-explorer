@@ -18,10 +18,10 @@ export async function GET() {
                 type: 'name',
                 properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' }
             },
-            features: data.map((item: any) => ({
+            features: data.map((item) => ({
                 type: 'Feature',
                 properties: {
-                    ...item.properties
+                    ...(item.properties as Record<string, unknown>)
                 },
                 geometry: item.geometry
             }))

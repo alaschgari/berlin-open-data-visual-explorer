@@ -227,7 +227,7 @@ export async function getSubsidiesMetrics(district?: string): Promise<SubsidyMet
         // Fetch history for top recipients in a single fast query or dynamically
         // To prevent multiple queries, we can get history for top recipients
         const topRecipientNames = topRecipientsResult.map(r => r.recipient);
-        let historyResult: any[] = [];
+        let historyResult: { recipient: string; year: number; amount: string | null }[] = [];
         if (topRecipientNames.length > 0) {
             historyResult = await db
                 .select({

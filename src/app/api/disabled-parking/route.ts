@@ -11,7 +11,7 @@ export async function GET() {
         // Reconstruct GeoJSON
         const geojson = {
             type: 'FeatureCollection',
-            features: data.map((item: any) => ({
+            features: data.map((item) => ({
                 type: 'Feature',
                 id: item.id,
                 geometry: item.geometry,

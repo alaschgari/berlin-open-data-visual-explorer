@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { businessByLor, businesses } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { businessByLor } from '@/db/schema';
 
 export async function GET() {
     try {
         const data = await db.select().from(businessByLor);
 
         // Convert back to the expected format
-        const byLor: Record<string, any> = {};
+        const byLor: Record<string, unknown> = {};
         if (data) {
-            data.forEach((row: any) => {
+            data.forEach((row) => {
                 byLor[row.lor_id] = row.data;
             });
         }

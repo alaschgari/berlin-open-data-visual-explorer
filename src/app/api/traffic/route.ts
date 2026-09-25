@@ -4,7 +4,7 @@ import { env } from '@/lib/env';
 
 const TELRAAM_API_URL = 'https://telraam-api.net/v1';
 
-const CACHE_TTL_MS = 300; // 5 minutes in Next.js revalidate value
+const CACHE_REVALIDATE_SECONDS = 300; // 5 minutes
 
 type TrafficApiErrorCode = 'API_RATE_LIMIT' | 'AUTH_ERROR' | 'API_ERROR';
 
@@ -33,7 +33,7 @@ async function fetchTrafficSnapshot(area: string, timeOffsetHours: number) {
             time: timeString,
             contents: "full"
         }),
-        next: { revalidate: CACHE_TTL_MS }
+        next: { revalidate: CACHE_REVALIDATE_SECONDS }
     });
 
     if (response.status === 429) {

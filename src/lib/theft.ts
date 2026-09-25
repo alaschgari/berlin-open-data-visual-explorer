@@ -30,8 +30,11 @@ const DEFAULT_BIKE_THEFT_URL = 'https://www.polizei-berlin.eu/Fahrraddiebstahl/F
 const DEFAULT_CAR_THEFT_URL = 'https://www.polizei-berlin.eu/Kfzdiebstahl/Kfzdiebstahl.csv';
 
 // Cache structure
+/** A raw CSV row; columns differ between bicycle and car theft datasets. */
+export type TheftCsvRow = Record<string, string | undefined>;
+
 interface TheftCache {
-    data: any[] | null;
+    data: TheftCsvRow[] | null;
     timestamp: number;
 }
 
@@ -42,7 +45,7 @@ const cache: Record<string, TheftCache> = {
 
 const CACHE_TTL = 60 * 60 * 1000; // 60 minutes
 
-export async function fetchLiveTheftData(type: 'bicycle' | 'car'): Promise<any[]> {
+export async function fetchLiveTheftData(type: 'bicycle' | 'car'): Promise<TheftCsvRow[]> {
     const now = Date.now();
     if (cache[type].data && (now - cache[type].timestamp < CACHE_TTL)) {
         return cache[type].data!;
@@ -63,7 +66,7 @@ export async function fetchLiveTheftData(type: 'bicycle' | 'car'): Promise<any[]
         const decoder = new TextDecoder('windows-1252'); // Better for latin1 with special chars
         const csvText = decoder.decode(arrayBuffer);
 
-        const parseResult = Papa.parse(csvText, {
+        const parseResult = Papa.parse<TheftCsvRow>(csvText, {
             header: true,
             skipEmptyLines: true,
             delimiter: delimiter

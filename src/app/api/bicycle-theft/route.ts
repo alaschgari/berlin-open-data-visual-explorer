@@ -3,9 +3,25 @@ import Papa from 'papaparse';
 import fs from 'fs';
 import path from 'path';
 import { DISTRICT_TO_LOR_PREFIX } from '@/lib/constants';
+import { fetchLiveTheftData } from '@/lib/theft';
 
 // Interfaces and types are now imported from @/lib/theft where appropriate
 // or handled dynamically.
+
+interface TheftPoint {
+    id: string;
+    category: 'bicycle' | 'car';
+    lat: number;
+    lng: number;
+    amount: number;
+    date: string;
+    hour: number;
+    registeredDate: string | null;
+    type: string | undefined;
+    lor: string;
+    rawLor: string;
+    details: string | undefined;
+}
 
 interface LorCentroid {
     lat: number;
@@ -22,16 +38,6 @@ function addJitter(lat: number, lng: number, radiusDeg: number = 0.002) {
         lng: lng + r * Math.sin(theta) * 1.5
     };
 }
-
-const globalForCache = global as unknown as {
-    bicycleTheftCacheV2: any[] | null;
-    carTheftCacheV2: any[] | null;
-};
-
-if (globalForCache.bicycleTheftCacheV2 === undefined) globalForCache.bicycleTheftCacheV2 = null;
-if (globalForCache.carTheftCacheV2 === undefined) globalForCache.carTheftCacheV2 = null;
-
-import { fetchLiveTheftData } from '@/lib/theft';
 
 let lorCentroidsCache: Record<string, LorCentroid> | null = null;
 
@@ -65,7 +71,7 @@ export async function GET(request: Request) {
             const isBike = theftType === 'bicycle';
             const rawData = await fetchLiveTheftData(theftType);
 
-            return rawData.reduce((acc: any[], record, index) => {
+            return rawData.reduce((acc: TheftPoint[], record, index) => {
                 if (!record.TATZEIT_ANFANG_DATUM || !record.LOR) return acc;
 
                 const dateParts = record.TATZEIT_ANFANG_DATUM.split('.');
@@ -73,7 +79,8 @@ export async function GET(request: Request) {
                 const theftDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
                 if (isNaN(theftDate.getTime())) return acc;
 
-                let lorData = lorCentroids[record.LOR];
+                const lor = record.LOR;
+                const lorData = lorCentroids[lor];
                 if (lorData) {
                     const coords = addJitter(lorData.lat, lorData.lng, 0.003);
 
@@ -84,17 +91,17 @@ export async function GET(request: Request) {
                         : null;
 
                     acc.push({
-                        id: `${theftType}-${index}-${record.LOR}`,
+                        id: `${theftType}-${index}-${lor}`,
                         category: theftType,
                         lat: coords.lat,
                         lng: coords.lng,
-                        amount: parseInt(record.SCHADENSHOEHE) || 0,
+                        amount: parseInt(record.SCHADENSHOEHE ?? '') || 0,
                         date: theftDate.toISOString(),
                         hour: parseInt((record.TATZEIT_ANFANG_STUNDE || '0').split(':')[0]) || 0,
                         registeredDate,
                         type: isBike ? record.ART_DES_FAHRRADS : (record.ERLANGTES_GUT || 'KFZ'),
                         lor: lorData.name,
-                        rawLor: record.LOR,
+                        rawLor: lor,
                         details: isBike ? record.DELIKT : (record.EINDRINGEN_IN_KFZ || record.DELIKT)
                     });
                 }
@@ -102,7 +109,7 @@ export async function GET(request: Request) {
             }, []);
         };
 
-        let allData: any[] = [];
+        let allData: TheftPoint[] = [];
         if (type === 'bicycle' || type === 'both') {
             allData = [...allData, ...await getMappedData('bicycle')];
         }

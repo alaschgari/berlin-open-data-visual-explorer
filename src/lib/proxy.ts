@@ -1,7 +1,14 @@
-import fs from 'fs';
-import path from 'path';
-
 import { getFinancialData as fetchRawData, calculateMetrics, calculateEnhancedMetrics, MetricType } from './data';
+import { HISTORICAL_DATA } from './historical-data';
+import { getTitleName } from './budget-mappings';
+import { getDistrictPrefix } from './constants';
+import { DISTRICT_SOCIAL_DATA } from './social-data';
+import { getPopulation } from './demographics';
+import { SCHOOL_RENOVATION_DATA } from './school-data';
+import { ROAD_CONDITION_DATA } from './road-data';
+import { db } from '@/db';
+import { businesses, financialRecords } from '@/db/schema';
+import { max } from 'drizzle-orm';
 
 // "use cache" directive for Next.js 16 dynamic IO
 // This function will be cached automatically by Next.js
@@ -10,11 +17,7 @@ export async function getCachedFinancialData() {
     return fetchRawData();
 }
 
-import { HISTORICAL_DATA } from './historical-data';
-import { getTitleName } from './budget-mappings';
-import { getDistrictPrefix } from './constants';
 
-const PROCESSED_DIR = path.join(process.cwd(), 'data', 'processed');
 
 export async function getCachedSummaryMetrics(metric: MetricType = 'nominal') {
     "use cache";
@@ -106,8 +109,6 @@ export async function enrichMetricsWithHistory(data: YearlyItem | AggregatedMetr
     return data;
 }
 
-import { DISTRICT_SOCIAL_DATA } from './social-data';
-import { getPopulation } from './demographics';
 
 export async function getSocialCorrelationData(year?: number) {
     let data = await fetchRawData();
@@ -140,7 +141,6 @@ export async function getSocialCorrelationData(year?: number) {
     return correlationData;
 }
 
-import { SCHOOL_RENOVATION_DATA } from './school-data';
 
 export async function getSchoolRenovationData(year?: number) {
     let data = await fetchRawData();
@@ -164,7 +164,6 @@ export async function getSchoolRenovationData(year?: number) {
     return result.sort((a, b) => b.backlog - a.backlog);
 }
 
-import { ROAD_CONDITION_DATA } from './road-data';
 
 export async function getRoadConditionData(year?: number) {
     let data = await fetchRawData();
@@ -341,10 +340,14 @@ export async function getTimelineData(district: string) {
 
 export async function getLastSyncTime() {
     "use cache";
-    const filePath = path.join(PROCESSED_DIR, 'financial_data.json');
-    if (!fs.existsSync(filePath)) return null;
-    const stats = fs.statSync(filePath);
-    return stats.mtime;
+    // Derived from the database, since the filesystem is not persistent on serverless hosts
+    try {
+        const [row] = await db.select({ lastSync: max(financialRecords.created_at) }).from(financialRecords);
+        return row?.lastSync ?? null;
+    } catch (error) {
+        console.error('[Proxy] Failed to read last sync time:', error);
+        return null;
+    }
 }
 
 export async function getDistrictCompareStats(district: string) {
@@ -352,8 +355,6 @@ export async function getDistrictCompareStats(district: string) {
     const { getDistrictMetrics } = await import('./proxy');
     const { getQuickSubsidiesMetrics } = await import('./subsidies-proxy');
     const { getPopulation } = await import('./demographics');
-    const { db } = await import('@/db');
-    const { businesses } = await import('@/db/schema');
     const { like, sql: drizzleSql } = await import('drizzle-orm');
 
     // 1. Finance Stats
