@@ -115,6 +115,8 @@ const jobs: Record<string, (db: Db, dryRun: boolean) => Promise<void>> = {
         }
         const rows = parseDemographicsCsv(csv);
         if (rows.length < MIN_DEMOGRAPHICS_ROWS) {
+            // Show the start of the file so format changes can be diagnosed from the log
+            console.error(`demographics: file starts with:\n${csv.slice(0, 600)}`);
             throw new Error(`demographics: only ${rows.length} planning areas parsed, expected at least ${MIN_DEMOGRAPHICS_ROWS}`);
         }
 
