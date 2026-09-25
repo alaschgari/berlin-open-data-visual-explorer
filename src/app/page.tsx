@@ -8,7 +8,7 @@ import DashboardClient from '@/components/DashboardClient';
 export default async function Dashboard({ searchParams }: { searchParams: Promise<{ district?: string, tab?: string, budgetMode?: string }> }) {
   const resolvedSearchParams = await searchParams;
   const district = resolvedSearchParams.district || 'Berlin';
-  const activeTab = (resolvedSearchParams.tab || 'hub') as 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets' | 'baustellen' | 'disabled_parking' | 'waermeplanung' | 'air_quality';
+  const activeTab = (resolvedSearchParams.tab || 'hub') as 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets' | 'baustellen' | 'disabled_parking' | 'waermeplanung' | 'air_quality' | 'noise';
   const budgetMode = (resolvedSearchParams.budgetMode || 'explorer') as 'historic' | 'explorer';
 
   // SSR Core Data (fast or critical)
