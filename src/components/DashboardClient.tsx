@@ -25,7 +25,7 @@ import { WastewaterRecord } from '@/lib/wastewater';
 import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets, ShoppingBag, LayoutGrid, Accessibility, Flame } from 'lucide-react';
 
 import type { SubsidyMetrics } from '@/lib/subsidies-proxy';
-import { SubsidyRecord } from '@/lib/parser';
+import type { SubsidyRecord } from '@/lib/sync/transform';
 import { TaxMetrics } from '@/lib/taxes';
 
 import { useRouter } from 'next/navigation';

@@ -1,4 +1,4 @@
-import { SubsidyRecord } from './parser';
+import type { SubsidyRecord } from './sync/transform';
 import { db } from '@/db';
 import { subsidies } from '@/db/schema';
 import { desc, eq, ilike, or, and, sql as drizzleSql, sum, count, min, max, countDistinct, inArray } from 'drizzle-orm';

@@ -49,10 +49,10 @@ git clone https://github.com/alaschgari/berlin-open-data-visual-explorer.git
 cd berlin-open-data-visual-explorer
 
 # Abhängigkeiten installieren
-npm install
+pnpm install
 
 # Entwicklungsserver starten
-npm run dev
+pnpm dev
 ```
 
 Die App ist dann unter [http://localhost:3000](http://localhost:3000) erreichbar.
@@ -61,12 +61,18 @@ Die App ist dann unter [http://localhost:3000](http://localhost:3000) erreichbar
 
 | Befehl | Beschreibung |
 |---|---|
-| `npm run dev` | Entwicklungsserver starten |
-| `npm run build` | Produktions­build erstellen |
-| `npm run start` | Produktions­server starten |
-| `npm run lint` | Code-Analyse mit ESLint |
-| `npm run sync` | Berliner Open-Data-Quellen synchronisieren |
-| `npm run update-theft` | Fahrraddiebstahl-Daten aktualisieren |
+| `pnpm dev` | Entwicklungsserver starten |
+| `pnpm build` | Produktions­build erstellen |
+| `pnpm start` | Produktions­server starten |
+| `pnpm lint` | Code-Analyse mit ESLint |
+| `pnpm test` | Unit-Tests (Vitest) ausführen |
+| `pnpm db:sync [job …] [--dry-run]` | Tabellen aus Open-Data-Quellen aktualisieren (`markets`, `disabled-parking`, `subsidies`) |
+
+### 🔄 Datenaktualisierung
+
+Das Workflow `.github/workflows/db-sync.yml` führt `pnpm db:sync` jeden Montag aus und lässt sich unter *Actions* auch manuell starten (optional mit einzelnen Jobs oder als Probelauf). Es benötigt das Repository-Secret `DATABASE_URL`.
+
+Jeder Job ersetzt seine Tabelle in einer Transaktion. Liefert eine Quelle keine oder deutlich weniger Zeilen als bisher (unter 50 %), wird die Tabelle nicht angefasst. Diebstahl-, Baustellen- und Verkehrsdaten werden live abgerufen und brauchen keinen Sync.
 
 ### 🌐 Deployment
 
@@ -145,10 +151,10 @@ git clone https://github.com/alaschgari/berlin-open-data-visual-explorer.git
 cd berlin-open-data-visual-explorer
 
 # Install dependencies
-npm install
+pnpm install
 
 # Start the development server
-npm run dev
+pnpm dev
 ```
 
 The app will be available at [http://localhost:3000](http://localhost:3000).
@@ -157,12 +163,18 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 
 | Command | Description |
 |---|---|
-| `npm run dev` | Start the development server |
-| `npm run build` | Create a production build |
-| `npm run start` | Start the production server |
-| `npm run lint` | Lint code with ESLint |
-| `npm run sync` | Sync Berlin open data sources |
-| `npm run update-theft` | Update bicycle theft data |
+| `pnpm dev` | Start the development server |
+| `pnpm build` | Create a production build |
+| `pnpm start` | Start the production server |
+| `pnpm lint` | Lint code with ESLint |
+| `pnpm test` | Run unit tests (Vitest) |
+| `pnpm db:sync [job …] [--dry-run]` | Refresh tables from open data sources (`markets`, `disabled-parking`, `subsidies`) |
+
+### 🔄 Data refresh
+
+The workflow `.github/workflows/db-sync.yml` runs `pnpm db:sync` every Monday and can be started manually under *Actions* (optionally for single jobs or as a dry run). It needs the repository secret `DATABASE_URL`.
+
+Each job replaces its table in one transaction. If a source returns no rows or far fewer than before (below 50%), the table is left untouched. Theft, construction and traffic data are fetched live and need no sync.
 
 ### 🌐 Deployment
 

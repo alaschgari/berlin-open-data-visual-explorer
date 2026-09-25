@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import type { SubsidyMetrics } from '@/lib/subsidies-proxy';
 import { searchSubsidiesAction as searchSubsidies } from '@/app/actions';
-import { SubsidyRecord } from '@/lib/parser';
+import type { SubsidyRecord } from '@/lib/sync/transform';
 import { useLanguage } from './LanguageContext';
 import {
     TrendingUp, TrendingDown, Minus,

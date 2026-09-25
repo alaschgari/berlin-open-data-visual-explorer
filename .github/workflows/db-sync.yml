@@ -1,0 +1,52 @@
+name: Sync open data to database
+
+on:
+  schedule:
+    - cron: '17 3 * * 1' # Mondays 03:17 UTC
+  workflow_dispatch:
+    inputs:
+      jobs:
+        description: 'Jobs to run (space separated: markets disabled-parking subsidies). Empty = all.'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Fetch and validate only, do not write'
+        type: boolean
+        default: false
+
+concurrency:
+  group: db-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Sync
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JOBS: ${{ inputs.jobs }}
+          DRY_RUN: ${{ inputs.dry_run && '--dry-run' || '' }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::Repository secret DATABASE_URL is not set"
+            exit 1
+          fi
+          pnpm db:sync $JOBS $DRY_RUN

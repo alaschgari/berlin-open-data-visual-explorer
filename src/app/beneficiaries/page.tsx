@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { searchSubsidiesAction as searchSubsidies } from '@/app/actions';
-import { SubsidyRecord } from '@/lib/parser';
+import type { SubsidyRecord } from '@/lib/sync/transform';
 import { Search, FileText, CheckCircle, CircleAlert, Sparkles, Database } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useLanguage } from '@/components/LanguageContext';
