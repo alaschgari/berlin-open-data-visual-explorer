@@ -3,6 +3,7 @@
  *
  * Usage: pnpm db:sync [markets|disabled-parking|subsidies|demographics ...]   (default: all jobs)
  *        pnpm db:sync --dry-run                                   (fetch and validate only)
+ *        pnpm db:sync --find=<query>                              (list CKAN resources, _ = space)
  *
  * Each job fetches the source, validates it and replaces the table in a single
  * transaction, so a failed run never leaves a table half-empty.
@@ -173,6 +174,16 @@ const jobs: Record<string, (db: Db, dryRun: boolean) => Promise<void>> = {
 async function main() {
     const args = process.argv.slice(2);
     const dryRun = args.includes('--dry-run');
+
+    // Discovery helper: `pnpm db:sync --find=<query>` lists matching CKAN resources and exits
+    const find = args.find(a => a.startsWith('--find='));
+    if (find) {
+        const query = find.slice('--find='.length).replace(/_/g, ' ');
+        for (const r of await searchCkanResources(query)) {
+            console.log(`${r.packageName} | ${r.format} | ${r.name} | ${r.url}`);
+        }
+        return;
+    }
     const requested = args.filter(a => !a.startsWith('--'));
     const selected = requested.length > 0 ? requested : Object.keys(jobs);
 
