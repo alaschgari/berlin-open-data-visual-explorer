@@ -20,9 +20,10 @@ import MarketsMapWrapper from '@/components/MarketsMapWrapper';
 import BaustellenMapWrapper from '@/components/BaustellenMapWrapper';
 import DisabledParkingMapWrapper from '@/components/DisabledParkingMapWrapper';
 import WaermeplanungMapWrapper from '@/components/WaermeplanungMapWrapper';
+import AirQualityWrapper from '@/components/AirQualityWrapper';
 import HubView from '@/components/HubView';
 import { WastewaterRecord } from '@/lib/wastewater';
-import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets, ShoppingBag, LayoutGrid, Accessibility, Flame } from 'lucide-react';
+import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets, ShoppingBag, LayoutGrid, Accessibility, Flame, Wind } from 'lucide-react';
 
 import type { SubsidyMetrics } from '@/lib/subsidies-proxy';
 import type { SubsidyRecord } from '@/lib/sync/transform';
@@ -33,7 +34,7 @@ import { CardSkeleton, ChartSkeleton, SubsidiesListSkeleton, MapSkeleton } from 
 
 interface DashboardClientProps {
     district: string;
-    activeTab: 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets' | 'baustellen' | 'disabled_parking' | 'waermeplanung';
+    activeTab: 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets' | 'baustellen' | 'disabled_parking' | 'waermeplanung' | 'air_quality';
     budgetMode: 'historic' | 'explorer';
     lastSync: string | null;
     districts: string[];
@@ -50,7 +51,7 @@ interface DashboardClientProps {
 
 // Local cache-enabled AsyncView implemented inside DashboardClient
 
-type TabType = 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets' | 'baustellen' | 'disabled_parking' | 'waermeplanung';
+type TabType = 'hub' | 'budget' | 'subsidies' | 'theft' | 'demographics' | 'business' | 'taxes' | 'wastewater' | 'badestellen' | 'traffic' | 'markets' | 'baustellen' | 'disabled_parking' | 'waermeplanung' | 'air_quality';
 
 interface NavItem {
     id: TabType;
@@ -74,6 +75,7 @@ const NAV_ITEMS: NavItem[] = [
     { id: 'waermeplanung', labelKey: 'tab_waermeplanung', icon: <Flame className="w-3.5 h-3.5" />, category: 'infrastructure', priority: 11 },
     { id: 'markets', labelKey: 'tab_markets', icon: <ShoppingBag className="w-3.5 h-3.5" />, category: 'society', priority: 12 },
     { id: 'disabled_parking', labelKey: 'tab_disabled_parking', icon: <Accessibility className="w-3.5 h-3.5" />, category: 'society', priority: 13 },
+    { id: 'air_quality', labelKey: 'tab_air_quality', icon: <Wind className="w-3.5 h-3.5" />, category: 'society', priority: 14 },
 ];
 
 // Client-side persistent cache for resolved promises (module level singleton)
@@ -238,6 +240,8 @@ export default function DashboardClient({
                             <BadestellenWrapper district={district} />
                         ) : activeTab === 'disabled_parking' ? (
                             <DisabledParkingMapWrapper district={district} />
+                        ) : activeTab === 'air_quality' ? (
+                            <AirQualityWrapper />
                         ) : (
                             <HubView
                                 district={district}
