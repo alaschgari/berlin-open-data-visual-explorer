@@ -66,13 +66,15 @@ Die App ist dann unter [http://localhost:3000](http://localhost:3000) erreichbar
 | `pnpm start` | Produktions­server starten |
 | `pnpm lint` | Code-Analyse mit ESLint |
 | `pnpm test` | Unit-Tests (Vitest) ausführen |
-| `pnpm db:sync [job …] [--dry-run]` | Tabellen aus Open-Data-Quellen aktualisieren (`markets`, `disabled-parking`, `subsidies`) |
+| `pnpm db:sync [job …] [--dry-run]` | Tabellen aus Open-Data-Quellen aktualisieren (`markets`, `disabled-parking`, `subsidies`, `demographics`) |
 
 ### 🔄 Datenaktualisierung
 
 Das Workflow `.github/workflows/db-sync.yml` führt `pnpm db:sync` jeden Montag aus und lässt sich unter *Actions* auch manuell starten (optional mit einzelnen Jobs oder als Probelauf). Es benötigt das Repository-Secret `DATABASE_URL`.
 
 Jeder Job ersetzt seine Tabelle in einer Transaktion. Liefert eine Quelle keine oder deutlich weniger Zeilen als bisher (unter 50 %), wird die Tabelle nicht angefasst. Diebstahl-, Baustellen- und Verkehrsdaten werden live abgerufen und brauchen keinen Sync.
+
+Der Job `demographics` lädt das Einwohnerregister je Planungsraum (`EWR_L21_<Stichtag>E_Matrix.csv`). Für einen neueren Stichtag die URL im Workflow-Feld *demographics_url* oder lokal über `DEMOGRAPHICS_CSV_URL` angeben. Eine bereits heruntergeladene Datei liest `DEMOGRAPHICS_CSV_FILE=pfad/zur/datei.csv pnpm db:sync demographics`.
 
 ### 🌐 Deployment
 
@@ -168,13 +170,15 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 | `pnpm start` | Start the production server |
 | `pnpm lint` | Lint code with ESLint |
 | `pnpm test` | Run unit tests (Vitest) |
-| `pnpm db:sync [job …] [--dry-run]` | Refresh tables from open data sources (`markets`, `disabled-parking`, `subsidies`) |
+| `pnpm db:sync [job …] [--dry-run]` | Refresh tables from open data sources (`markets`, `disabled-parking`, `subsidies`, `demographics`) |
 
 ### 🔄 Data refresh
 
 The workflow `.github/workflows/db-sync.yml` runs `pnpm db:sync` every Monday and can be started manually under *Actions* (optionally for single jobs or as a dry run). It needs the repository secret `DATABASE_URL`.
 
 Each job replaces its table in one transaction. If a source returns no rows or far fewer than before (below 50%), the table is left untouched. Theft, construction and traffic data are fetched live and need no sync.
+
+The `demographics` job loads the resident register per planning area (`EWR_L21_<date>E_Matrix.csv`). For a newer reporting date, pass the URL via the workflow field *demographics_url* or locally via `DEMOGRAPHICS_CSV_URL`. To import a downloaded file, run `DEMOGRAPHICS_CSV_FILE=path/to/file.csv pnpm db:sync demographics`.
 
 ### 🌐 Deployment
 

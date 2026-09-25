@@ -107,6 +107,64 @@ export function parseSubsidiesCsv(csv: string): SubsidyRow[] {
     return uniqueById(rows);
 }
 
+export interface DemographicsRow {
+    zeit: number | null;
+    raumid: number;
+    bez: number | null;
+    pgr: number | null;
+    bzr: number | null;
+    plr: number | null;
+    bezpgr: number | null;
+    e_e: number | null;
+    e_em: number | null;
+    e_ew: number | null;
+    data: Record<string, number>;
+}
+
+/** Berlin has 542 LOR planning areas (2021 boundaries); far fewer rows means a broken file. */
+export const MIN_DEMOGRAPHICS_ROWS = 400;
+
+/**
+ * Parses the resident register matrix per planning area (EWR_L21_<date>E_Matrix.csv, semicolon separated).
+ * The full numeric record is kept in `data`, which is what /api/demographics serves.
+ */
+export function parseDemographicsCsv(csv: string): DemographicsRow[] {
+    const { data } = Papa.parse<Record<string, string>>(csv.replace(/^\uFEFF/, ''), {
+        header: true,
+        delimiter: ';',
+        skipEmptyLines: true,
+        transformHeader: header => header.trim().toUpperCase(),
+    });
+
+    const rows: DemographicsRow[] = [];
+    for (const raw of data) {
+        const record: Record<string, number> = {};
+        for (const [key, value] of Object.entries(raw)) {
+            const num = Number(String(value ?? '').trim().replace(',', '.'));
+            if (key && String(value ?? '').trim() !== '' && Number.isFinite(num)) record[key] = num;
+        }
+        if (!Number.isInteger(record.RAUMID)) continue;
+
+        const pick = (key: string) => (key in record ? record[key] : null);
+        rows.push({
+            zeit: pick('ZEIT'),
+            raumid: record.RAUMID,
+            bez: pick('BEZ'),
+            pgr: pick('PGR'),
+            bzr: pick('BZR'),
+            plr: pick('PLR'),
+            bezpgr: pick('BEZPGR'),
+            e_e: pick('E_E'),
+            e_em: pick('E_EM'),
+            e_ew: pick('E_EW'),
+            data: record,
+        });
+    }
+
+    const seen = new Set<number>();
+    return rows.filter(row => (seen.has(row.raumid) ? false : (seen.add(row.raumid), true)));
+}
+
 /**
  * Refuses to replace a table when the new dataset is suspiciously small,
  * e.g. because the source returned an error page or a truncated file.

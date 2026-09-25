@@ -6,7 +6,11 @@ on:
   workflow_dispatch:
     inputs:
       jobs:
-        description: 'Jobs to run (space separated: markets disabled-parking subsidies). Empty = all.'
+        description: 'Jobs to run (space separated: markets disabled-parking subsidies demographics). Empty = all.'
+        required: false
+        default: ''
+      demographics_url:
+        description: 'Optional CSV URL for the demographics job (EWR_L21_<date>E_Matrix.csv)'
         required: false
         default: ''
       dry_run:
@@ -43,6 +47,7 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           JOBS: ${{ inputs.jobs }}
+          DEMOGRAPHICS_CSV_URL: ${{ inputs.demographics_url }}
           DRY_RUN: ${{ inputs.dry_run && '--dry-run' || '' }}
         run: |
           if [ -z "$DATABASE_URL" ]; then

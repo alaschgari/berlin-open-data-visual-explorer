@@ -1,16 +1,19 @@
 /**
  * Refreshes database tables from official Berlin open data sources.
  *
- * Usage: pnpm db:sync [markets|disabled-parking|subsidies ...]   (default: all jobs)
+ * Usage: pnpm db:sync [markets|disabled-parking|subsidies|demographics ...]   (default: all jobs)
  *        pnpm db:sync --dry-run                                   (fetch and validate only)
  *
  * Each job fetches the source, validates it and replaces the table in a single
  * transaction, so a failed run never leaves a table half-empty.
+ *
+ * DEMOGRAPHICS_CSV_URL overrides the resident register CSV (EWR_L21_<date>E_Matrix.csv),
+ * e.g. when a newer reporting date is published. DEMOGRAPHICS_CSV_FILE reads a local copy instead.
  */
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import postgres from 'postgres';
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { count, sql } from 'drizzle-orm';
+import { count, sql, type SQL } from 'drizzle-orm';
 import type { PgTable } from 'drizzle-orm/pg-core';
 import * as schema from '../src/db/schema';
 import { getLatestResourceUrl } from '../src/lib/ckan';
@@ -19,6 +22,8 @@ import {
     checkReplaceIsSafe,
     geoJsonToRows,
     marketsToRows,
+    MIN_DEMOGRAPHICS_ROWS,
+    parseDemographicsCsv,
     parseSubsidiesCsv,
     type GeoJsonFeatureCollection,
 } from '../src/lib/sync/transform';
@@ -27,7 +32,8 @@ if (existsSync('.env.local')) process.loadEnvFile('.env.local');
 
 type Db = PostgresJsDatabase<typeof schema>;
 
-const ALLOWED_HOSTS = new Set(['www.berlin.de', 'berlin.de', 'gdi.berlin.de']);
+const ALLOWED_HOSTS = new Set(['www.berlin.de', 'berlin.de', 'gdi.berlin.de', 'www.statistik-berlin-brandenburg.de', 'download.statistik-berlin-brandenburg.de']);
+const DEFAULT_DEMOGRAPHICS_URL = 'https://www.statistik-berlin-brandenburg.de/opendata/EWR_L21_202412E_Matrix.csv';
 const INSERT_CHUNK_SIZE = 1000;
 
 /** Only follow CKAN resource URLs that point at an official Berlin host. */
@@ -41,13 +47,19 @@ async function resolveUrl(packageId: string, format: string, fallback: string): 
     }
 }
 
+function assertAllowedHost(url: string) {
+    const host = new URL(url).hostname;
+    if (!ALLOWED_HOSTS.has(host)) throw new Error(`Host not allowed: ${host}`);
+}
+
 async function fetchOk(url: string): Promise<Response> {
     const response = await fetch(url, { signal: AbortSignal.timeout(120_000) });
     if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
     return response;
 }
 
-async function replaceTable<T extends PgTable>(db: Db, table: T, rows: T['$inferInsert'][], name: string, dryRun: boolean) {
+/** `prepare` runs inside the transaction before the delete, e.g. for schema fixes. */
+async function replaceTable<T extends PgTable>(db: Db, table: T, rows: T['$inferInsert'][], name: string, dryRun: boolean, prepare?: SQL) {
     const [{ value: existing }] = await db.select({ value: count() }).from(table as PgTable);
     const safety = checkReplaceIsSafe(rows.length, existing);
     if (!safety.ok) throw new Error(`${name}: refusing to replace table, ${safety.reason}`);
@@ -58,6 +70,7 @@ async function replaceTable<T extends PgTable>(db: Db, table: T, rows: T['$infer
     }
 
     await db.transaction(async (tx) => {
+        if (prepare) await tx.execute(prepare);
         await tx.delete(table);
         for (let i = 0; i < rows.length; i += INSERT_CHUNK_SIZE) {
             await tx.insert(table).values(rows.slice(i, i + INSERT_CHUNK_SIZE));
@@ -88,6 +101,42 @@ const jobs: Record<string, (db: Db, dryRun: boolean) => Promise<void>> = {
         const rows = parseSubsidiesCsv(csv).map(row => ({ ...row, created_at: now }));
         await replaceTable(db, schema.subsidies, rows, 'subsidies', dryRun);
     },
+
+    async demographics(db, dryRun) {
+        let csv: string;
+        if (process.env.DEMOGRAPHICS_CSV_FILE) {
+            console.log(`demographics: reading ${process.env.DEMOGRAPHICS_CSV_FILE}`);
+            csv = readFileSync(process.env.DEMOGRAPHICS_CSV_FILE, 'utf8');
+        } else {
+            const url = process.env.DEMOGRAPHICS_CSV_URL || DEFAULT_DEMOGRAPHICS_URL;
+            assertAllowedHost(url);
+            console.log(`demographics: fetching ${url}`);
+            csv = await (await fetchOk(url)).text();
+        }
+        const rows = parseDemographicsCsv(csv);
+        if (rows.length < MIN_DEMOGRAPHICS_ROWS) {
+            throw new Error(`demographics: only ${rows.length} planning areas parsed, expected at least ${MIN_DEMOGRAPHICS_ROWS}`);
+        }
+
+        // The table was created with `zeit` as primary key, which is the same for every
+        // planning area, so only one row survived. Move the key to `raumid` (idempotent).
+        const fixPrimaryKey = sql`
+            DO $$
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1 FROM pg_index i
+                    JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)
+                    WHERE i.indrelid = 'demographics'::regclass AND i.indisprimary AND a.attname = 'raumid'
+                ) THEN
+                    ALTER TABLE demographics DROP CONSTRAINT IF EXISTS demographics_pkey;
+                    DELETE FROM demographics;
+                    ALTER TABLE demographics ALTER COLUMN raumid SET NOT NULL;
+                    ALTER TABLE demographics ADD PRIMARY KEY (raumid);
+                END IF;
+            END $$;`;
+
+        await replaceTable(db, schema.demographics, rows, 'demographics', dryRun, fixPrimaryKey);
+    },
 };
 
 async function main() {
@@ -108,7 +157,8 @@ async function main() {
         process.exit(1);
     }
 
-    const client = postgres(databaseUrl, { max: 1, ssl: 'require' });
+    const isLocal = ['localhost', '127.0.0.1'].includes(new URL(databaseUrl).hostname);
+    const client = postgres(databaseUrl, { max: 1, ssl: isLocal ? false : 'require' });
     const db = drizzle(client, { schema });
     await db.execute(sql`select 1`);
 

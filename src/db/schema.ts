@@ -46,8 +46,8 @@ export const subsidies = pgTable('subsidies', {
 });
 
 export const demographics = pgTable('demographics', {
-  zeit: integer('zeit').primaryKey(),
-  raumid: integer('raumid'),
+  zeit: integer('zeit'),
+  raumid: integer('raumid').primaryKey(),
   bez: integer('bez'),
   pgr: integer('pgr'),
   bzr: integer('bzr'),
