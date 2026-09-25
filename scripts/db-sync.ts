@@ -83,7 +83,14 @@ function isAllowedHost(url: string): boolean {
 }
 
 async function fetchOk(url: string): Promise<Response> {
-    const response = await fetch(url, { signal: AbortSignal.timeout(120_000) });
+    const response = await fetch(url, {
+        signal: AbortSignal.timeout(120_000),
+        // Some portals serve an HTML shell to clients without a browser-like user agent
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; berlin-open-data-sync/1.0; +https://github.com/alaschgari/berlin-open-data-visual-explorer)',
+            'Accept': 'text/csv,application/json,application/geo+json,*/*;q=0.8',
+        },
+    });
     if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
     return response;
 }
