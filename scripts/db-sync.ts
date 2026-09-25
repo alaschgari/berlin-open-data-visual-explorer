@@ -16,7 +16,7 @@ import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { count, sql, type SQL } from 'drizzle-orm';
 import type { PgTable } from 'drizzle-orm/pg-core';
 import * as schema from '../src/db/schema';
-import { getLatestResourceUrl } from '../src/lib/ckan';
+import { getLatestResourceUrl, searchCkanResources } from '../src/lib/ckan';
 import { CKAN_PACKAGES } from '../src/lib/constants';
 import {
     checkReplaceIsSafe,
@@ -52,6 +52,31 @@ function assertAllowedHost(url: string) {
     if (!ALLOWED_HOSTS.has(host)) throw new Error(`Host not allowed: ${host}`);
 }
 
+/** The newest resident register matrix (EWR_L21_<yyyymm>E_Matrix.csv) listed in the CKAN registry. */
+async function findDemographicsUrl(): Promise<string | null> {
+    const pattern = /EWR_L21_(\d{6})E_Matrix\.csv$/i;
+    const candidates = (await searchCkanResources('EWR_L21 Einwohnerregister Planungsräume'))
+        .map(r => ({ url: r.url, date: r.url.match(pattern)?.[1] }))
+        .filter((c): c is { url: string; date: string } => !!c.date && isAllowedHost(c.url))
+        .sort((a, b) => b.date.localeCompare(a.date));
+    return candidates[0]?.url ?? null;
+}
+
+/** The markets GeoJSON from the CKAN registry, searched by title because the package id changed. */
+async function findMarketsUrl(): Promise<string | null> {
+    const resource = (await searchCkanResources('Wochen- und Trödelmärkte'))
+        .find(r => /geo\s*json|json/i.test(r.format) && isAllowedHost(r.url));
+    return resource?.url ?? null;
+}
+
+function isAllowedHost(url: string): boolean {
+    try {
+        return ALLOWED_HOSTS.has(new URL(url).hostname);
+    } catch {
+        return false;
+    }
+}
+
 async function fetchOk(url: string): Promise<Response> {
     const response = await fetch(url, { signal: AbortSignal.timeout(120_000) });
     if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
@@ -81,8 +106,9 @@ async function replaceTable<T extends PgTable>(db: Db, table: T, rows: T['$infer
 
 const jobs: Record<string, (db: Db, dryRun: boolean) => Promise<void>> = {
     async markets(db, dryRun) {
-        const url = await resolveUrl(CKAN_PACKAGES.MARKETS, 'GeoJSON',
+        const url = await findMarketsUrl() ?? await resolveUrl(CKAN_PACKAGES.MARKETS, 'GeoJSON',
             'https://www.berlin.de/sen/web/service/maerkte-feste/wochen-troedelmaerkte/index.php/index/all.geojson?q=');
+        console.log(`markets: fetching ${url}`);
         const geojson = await (await fetchOk(url)).json() as GeoJsonFeatureCollection;
         await replaceTable(db, schema.markets, marketsToRows(geojson), 'markets', dryRun);
     },
@@ -108,10 +134,13 @@ const jobs: Record<string, (db: Db, dryRun: boolean) => Promise<void>> = {
             console.log(`demographics: reading ${process.env.DEMOGRAPHICS_CSV_FILE}`);
             csv = readFileSync(process.env.DEMOGRAPHICS_CSV_FILE, 'utf8');
         } else {
-            const url = process.env.DEMOGRAPHICS_CSV_URL || DEFAULT_DEMOGRAPHICS_URL;
+            const url = process.env.DEMOGRAPHICS_CSV_URL || await findDemographicsUrl() || DEFAULT_DEMOGRAPHICS_URL;
             assertAllowedHost(url);
             console.log(`demographics: fetching ${url}`);
             csv = await (await fetchOk(url)).text();
+            if (/^\s*</.test(csv)) {
+                throw new Error(`demographics: ${url} returned an HTML page instead of CSV; pass the direct CSV link via DEMOGRAPHICS_CSV_URL`);
+            }
         }
         const rows = parseDemographicsCsv(csv);
         if (rows.length < MIN_DEMOGRAPHICS_ROWS) {

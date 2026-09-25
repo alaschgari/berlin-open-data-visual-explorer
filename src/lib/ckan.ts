@@ -76,3 +76,23 @@ export async function getPackageLastModified(packageId: string): Promise<string 
   const metadata = await getPackageMetadata(packageId);
   return metadata?.metadata_modified || null;
 }
+
+/**
+ * Full-text search over all packages; returns every resource of the matching packages.
+ */
+export async function searchCkanResources(query: string, rows: number = 50): Promise<(CkanResource & { packageName: string })[]> {
+  try {
+    const response = await fetch(`${CKAN_BASE_URL}/package_search?q=${encodeURIComponent(query)}&rows=${rows}`);
+    if (!response.ok) {
+      console.warn(`CKAN: search for "${query}" failed: ${response.statusText}`);
+      return [];
+    }
+    const json = await response.json();
+    if (!json.success) return [];
+    const packages = json.result.results as CkanPackage[];
+    return packages.flatMap(pkg => (pkg.resources ?? []).map(r => ({ ...r, packageName: pkg.name })));
+  } catch (error) {
+    console.error(`CKAN: Error searching for "${query}":`, error);
+    return [];
+  }
+}
