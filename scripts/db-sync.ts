@@ -3,7 +3,7 @@
  *
  * Usage: pnpm db:sync [markets|disabled-parking|subsidies|demographics ...]   (default: all jobs)
  *        pnpm db:sync --dry-run                                   (fetch and validate only)
- *        pnpm db:sync --find=<query>                              (list CKAN resources, _ = space)
+ *        pnpm db:sync --find=<query> [--match=<regex>]            (list CKAN resources, _ = space)
  *
  * Each job fetches the source, validates it and replaces the table in a single
  * transaction, so a failed run never leaves a table half-empty.
@@ -17,7 +17,7 @@ import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { count, sql, type SQL } from 'drizzle-orm';
 import type { PgTable } from 'drizzle-orm/pg-core';
 import * as schema from '../src/db/schema';
-import { getLatestResourceUrl, searchCkanResources } from '../src/lib/ckan';
+import { getLatestResourceUrl, getPackageMetadata, searchCkanResources } from '../src/lib/ckan';
 import { CKAN_PACKAGES } from '../src/lib/constants';
 import {
     checkReplaceIsSafe,
@@ -53,14 +53,18 @@ function assertAllowedHost(url: string) {
     if (!ALLOWED_HOSTS.has(host)) throw new Error(`Host not allowed: ${host}`);
 }
 
-/** The newest resident register matrix (EWR_L21_<yyyymm>E_Matrix.csv) listed in the CKAN registry. */
+/**
+ * The newest resident register matrix per planning area. The registry publishes one package per
+ * reporting date (31 December), so look up the packages by name, newest year first.
+ */
 async function findDemographicsUrl(): Promise<string | null> {
-    const pattern = /EWR_L21_(\d{6})E_Matrix\.csv$/i;
-    const candidates = (await searchCkanResources('EWR_L21 Einwohnerregister Planungsräume'))
-        .map(r => ({ url: r.url, date: r.url.match(pattern)?.[1] }))
-        .filter((c): c is { url: string; date: string } => !!c.date && isAllowedHost(c.url))
-        .sort((a, b) => b.date.localeCompare(a.date));
-    return candidates[0]?.url ?? null;
+    const currentYear = new Date().getFullYear();
+    for (let year = currentYear; year >= currentYear - 3; year--) {
+        const pkg = await getPackageMetadata(`einwohnerinnen-und-einwohner-in-berlin-in-lor-planungsraumen-am-31-12-${year}`);
+        const resource = pkg?.resources.find(r => /E_Matrix\.csv$/i.test(r.url) && isAllowedHost(r.url));
+        if (resource) return resource.url;
+    }
+    return null;
 }
 
 /** The markets GeoJSON from the CKAN registry, searched by title because the package id changed. */
@@ -179,7 +183,10 @@ async function main() {
     const find = args.find(a => a.startsWith('--find='));
     if (find) {
         const query = find.slice('--find='.length).replace(/_/g, ' ');
-        for (const r of await searchCkanResources(query)) {
+        const match = args.find(a => a.startsWith('--match='))?.slice('--match='.length);
+        const filter = match ? new RegExp(match, 'i') : null;
+        for (const r of await searchCkanResources(query, 200)) {
+            if (filter && !filter.test(`${r.packageName} ${r.format} ${r.name} ${r.url}`)) continue;
             console.log(`${r.packageName} | ${r.format} | ${r.name} | ${r.url}`);
         }
         return;
