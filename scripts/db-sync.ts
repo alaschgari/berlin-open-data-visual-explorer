@@ -1,7 +1,7 @@
 /**
  * Refreshes database tables from official Berlin open data sources.
  *
- * Usage: pnpm db:sync [markets|disabled-parking|subsidies|demographics ...]   (default: all except markets)
+ * Usage: pnpm db:sync [markets|disabled-parking|subsidies|demographics ...]   (default: all except markets and demographics)
  *        pnpm db:sync --dry-run                                   (fetch and validate only)
  *        pnpm db:sync --find=<query> [--match=<regex>]            (list CKAN resources, _ = space)
  *
@@ -199,8 +199,10 @@ async function main() {
         return;
     }
     const requested = args.filter(a => !a.startsWith('--'));
-    // The markets source was removed from the registry (old URL returns 404), so it only runs on request
-    const selected = requested.length > 0 ? requested : Object.keys(jobs).filter(name => name !== 'markets');
+    // Only run on request: the markets source was removed from the registry (old URL returns 404),
+    // and the statistics office serves an HTML page instead of the demographics CSV to automated clients
+    const onRequestOnly = new Set(['markets', 'demographics']);
+    const selected = requested.length > 0 ? requested : Object.keys(jobs).filter(name => !onRequestOnly.has(name));
 
     const unknown = selected.filter(name => !jobs[name]);
     if (unknown.length > 0) {

@@ -70,7 +70,7 @@ Die App ist dann unter [http://localhost:3000](http://localhost:3000) erreichbar
 
 ### 🔄 Datenaktualisierung
 
-Das Workflow `.github/workflows/db-sync.yml` führt `pnpm db:sync` jeden Montag aus (ohne `markets`, dessen Quelle derzeit nicht mehr verfügbar ist) und lässt sich unter *Actions* auch manuell starten (optional mit einzelnen Jobs oder als Probelauf). Es benötigt das Repository-Secret `DATABASE_URL`.
+Das Workflow `.github/workflows/db-sync.yml` führt `pnpm db:sync` jeden Montag aus (ohne `markets` und `demographics`, deren Quellen sich derzeit nicht automatisch abrufen lassen) und lässt sich unter *Actions* auch manuell starten (optional mit einzelnen Jobs oder als Probelauf). Es benötigt das Repository-Secret `DATABASE_URL`.
 
 Jeder Job ersetzt seine Tabelle in einer Transaktion. Liefert eine Quelle keine oder deutlich weniger Zeilen als bisher (unter 50 %), wird die Tabelle nicht angefasst. Diebstahl-, Baustellen- und Verkehrsdaten werden live abgerufen und brauchen keinen Sync.
 
@@ -174,7 +174,7 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 
 ### 🔄 Data refresh
 
-The workflow `.github/workflows/db-sync.yml` runs `pnpm db:sync` every Monday (except `markets`, whose source is currently unavailable) and can be started manually under *Actions* (optionally for single jobs or as a dry run). It needs the repository secret `DATABASE_URL`.
+The workflow `.github/workflows/db-sync.yml` runs `pnpm db:sync` every Monday (except `markets` and `demographics`, whose sources currently cannot be fetched automatically) and can be started manually under *Actions* (optionally for single jobs or as a dry run). It needs the repository secret `DATABASE_URL`.
 
 Each job replaces its table in one transaction. If a source returns no rows or far fewer than before (below 50%), the table is left untouched. Theft, construction and traffic data are fetched live and need no sync.
 
