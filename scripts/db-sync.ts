@@ -193,7 +193,8 @@ async function main() {
             try {
                 const response = await fetch(url, { signal: AbortSignal.timeout(30_000), headers: { Accept: 'application/json,*/*' } });
                 const body = await response.text();
-                console.log(`\n=== ${url}\n${response.status} ${response.headers.get('content-type')} (${body.length} bytes)\n${body.slice(0, 1500)}`);
+                const bytes = Number(args.find(a => a.startsWith('--probe-bytes='))?.slice('--probe-bytes='.length)) || 1500;
+                console.log(`\n=== ${url}\n${response.status} ${response.headers.get('content-type')} (${body.length} bytes)\n${body.slice(0, bytes)}`);
             } catch (error) {
                 console.log(`\n=== ${url}\nfailed: ${error instanceof Error ? error.message : error}`);
             }
