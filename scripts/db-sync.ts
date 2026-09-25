@@ -194,7 +194,12 @@ async function main() {
                 const response = await fetch(url, { signal: AbortSignal.timeout(30_000), headers: { Accept: 'application/json,*/*' } });
                 const body = await response.text();
                 const bytes = Number(args.find(a => a.startsWith('--probe-bytes='))?.slice('--probe-bytes='.length)) || 1500;
-                console.log(`\n=== ${url}\n${response.status} ${response.headers.get('content-type')} (${body.length} bytes)\n${body.slice(0, bytes)}`);
+                // --probe-extract=<regex> prints every distinct match instead of the start of the body
+                const extract = args.find(a => a.startsWith('--probe-extract='))?.slice('--probe-extract='.length);
+                const output = extract
+                    ? [...new Set(body.match(new RegExp(extract, 'g')) ?? [])].join('\n')
+                    : body.slice(0, bytes);
+                console.log(`\n=== ${url}\n${response.status} ${response.headers.get('content-type')} (${body.length} bytes)\n${output}`);
             } catch (error) {
                 console.log(`\n=== ${url}\nfailed: ${error instanceof Error ? error.message : error}`);
             }
