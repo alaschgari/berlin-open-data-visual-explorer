@@ -24,7 +24,7 @@ import HubView from '@/components/HubView';
 import { WastewaterRecord } from '@/lib/wastewater';
 import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets, ShoppingBag, LayoutGrid, Accessibility, Flame } from 'lucide-react';
 
-import { SubsidyMetrics } from '@/lib/subsidies-proxy';
+import type { SubsidyMetrics } from '@/lib/subsidies-proxy';
 import { SubsidyRecord } from '@/lib/parser';
 import { TaxMetrics } from '@/lib/taxes';
 

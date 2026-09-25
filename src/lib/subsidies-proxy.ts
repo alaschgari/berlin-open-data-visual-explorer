@@ -1,5 +1,3 @@
-'use server';
-
 import { SubsidyRecord } from './parser';
 import { db } from '@/db';
 import { subsidies } from '@/db/schema';

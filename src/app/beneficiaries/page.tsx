@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useTransition } from 'react';
-import { searchSubsidies } from '@/lib/subsidies-proxy';
+import { searchSubsidiesAction as searchSubsidies } from '@/app/actions';
 import { SubsidyRecord } from '@/lib/parser';
 import { Search, FileText, CheckCircle, CircleAlert, Sparkles, Database } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';

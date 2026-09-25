@@ -1,5 +1,3 @@
-'use server';
-
 import Papa from 'papaparse';
 
 export interface TheftRecord {

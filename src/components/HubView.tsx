@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/components/LanguageContext';
 import { Search, TrendingUp, Star, Loader2 } from 'lucide-react';
 
-import { SubsidyMetrics } from '@/lib/subsidies-proxy';
+import type { SubsidyMetrics } from '@/lib/subsidies-proxy';
 import { TaxMetrics } from '@/lib/taxes';
 
 import { SESSION_CACHE } from './DashboardClient';

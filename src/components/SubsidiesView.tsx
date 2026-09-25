@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { SubsidyMetrics, searchSubsidies } from '@/lib/subsidies-proxy';
+import type { SubsidyMetrics } from '@/lib/subsidies-proxy';
+import { searchSubsidiesAction as searchSubsidies } from '@/app/actions';
 import { SubsidyRecord } from '@/lib/parser';
 import { useLanguage } from './LanguageContext';
 import {

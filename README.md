@@ -85,7 +85,7 @@ npx vercel
 |---|---|---|
 | `DATABASE_URL` | ✅ | Connection String der Neon-Postgres-Datenbank |
 | `TELRAAM_API_KEY` | optional | API-Key für die Telraam-Verkehrsdaten-API |
-| `SYNC_SECRET` | optional | Schützt `GET /api/sync`; ohne gesetztes Secret antwortet der Endpoint mit `503` |
+| `SYNC_SECRET` | optional | Schützt `GET /api/sync` und `POST /api/bicycle-theft/refresh` (Header `x-sync-secret`); ohne gesetztes Secret antworten die Endpoints mit `503` |
 
 ### 🛠️ Tech Stack
 
@@ -182,7 +182,7 @@ npx vercel
 |---|---|---|
 | `DATABASE_URL` | ✅ | Connection string for the Neon Postgres database |
 | `TELRAAM_API_KEY` | optional | API key for the Telraam traffic data API |
-| `SYNC_SECRET` | optional | Protects `GET /api/sync`; without it set, the endpoint returns `503` |
+| `SYNC_SECRET` | optional | Protects `GET /api/sync` and `POST /api/bicycle-theft/refresh` (header `x-sync-secret`); without it set, the endpoints return `503` |
 
 ### 🛠️ Tech Stack
 

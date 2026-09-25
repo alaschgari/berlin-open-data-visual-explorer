@@ -1,7 +1,16 @@
 import { NextResponse } from 'next/server';
 import { fetchBicycleTheftData, fetchCarTheftData } from '@/lib/scraper';
+import { checkSyncSecret } from '@/lib/auth';
 
-export async function POST() {
+export async function POST(request: Request) {
+    const auth = checkSyncSecret(request);
+    if (auth === 'unconfigured') {
+        return NextResponse.json({ success: false, error: 'Refresh endpoint is not configured' }, { status: 503 });
+    }
+    if (auth === 'unauthorized') {
+        return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
     console.log('API Trigger: Updating vehicle theft data from official sources...');
 
     try {
@@ -26,7 +35,7 @@ export async function POST() {
         console.error('Error in refresh-theft API:', error);
         return NextResponse.json({
             success: false,
-            error: error instanceof Error ? error.message : 'Unknown error during data refresh'
+            error: 'Internal error during data refresh'
         }, { status: 500 });
     }
 }

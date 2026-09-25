@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { getChapterDetails } from '@/lib/proxy';
+import { getChapterDetailsAction as getChapterDetails } from '@/app/actions';
 
 interface Chapter {
     name: string;

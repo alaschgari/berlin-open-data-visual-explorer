@@ -2,15 +2,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchBerlinData } from '@/lib/scraper';
 import { processFiles } from '@/lib/parser';
-import { env } from '@/lib/env';
+import { checkSyncSecret } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
-    if (!env.SYNC_SECRET) {
+    const auth = checkSyncSecret(request);
+    if (auth === 'unconfigured') {
         return NextResponse.json({ message: 'Sync endpoint is not configured' }, { status: 503 });
     }
-
-    const providedSecret = request.headers.get('x-sync-secret') ?? new URL(request.url).searchParams.get('secret');
-    if (providedSecret !== env.SYNC_SECRET) {
+    if (auth === 'unauthorized') {
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
@@ -25,15 +24,15 @@ export async function GET(request: NextRequest) {
                 processedCount: (records.financialRecords?.length || 0) + (records.subsidyRecords?.length || 0)
             });
         } else {
+            console.error('[API Sync] Sync failed:', result.error);
             return NextResponse.json({
-                message: 'Data synchronization failed',
-                error: result.error
+                message: 'Data synchronization failed'
             }, { status: 500 });
         }
     } catch (error) {
+        console.error('[API Sync] Error:', error);
         return NextResponse.json({
-            message: 'Internal Server Error',
-            error: String(error)
+            message: 'Internal Server Error'
         }, { status: 500 });
     }
 }

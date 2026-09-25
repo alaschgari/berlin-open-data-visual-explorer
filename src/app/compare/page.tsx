@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useTransition } from 'react';
-import { getDistrictCompareStats } from '@/lib/proxy';
+import { getDistrictCompareStatsAction as getDistrictCompareStats } from '@/app/actions';
 import { ArrowLeft, ArrowRightLeft, Users, Landmark, LandmarkIcon, Building2, HelpingHand, Scale, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/components/LanguageContext';
