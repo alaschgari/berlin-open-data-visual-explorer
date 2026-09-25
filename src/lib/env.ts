@@ -3,7 +3,6 @@ import { z } from 'zod';
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   TELRAAM_API_KEY: z.string().optional(),
-  SYNC_SECRET: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

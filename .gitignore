@@ -41,3 +41,5 @@ yarn-error.log*
 next-env.d.ts
 data/raw/IHKBerlin_Gewerbedaten.csv
 /data/raw/
+*.log
+.agent/
