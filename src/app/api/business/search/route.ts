@@ -2,35 +2,22 @@ import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { businesses } from '@/db/schema';
 import { and, ilike, like, sql as drizzleSql } from 'drizzle-orm';
-
-const DEFAULT_LIMIT = 2000;
-const MAX_LIMIT = 5000;
-const MAX_QUERY_LENGTH = 100;
+import { escapeLike, parseBusinessSearchParams } from '@/lib/validation';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q')?.trim();
-    const limitParam = parseInt(searchParams.get('limit') || String(DEFAULT_LIMIT), 10);
-    const limit = Number.isNaN(limitParam) ? DEFAULT_LIMIT : Math.min(Math.max(limitParam, 1), MAX_LIMIT);
-    const districtId = searchParams.get('districtId');
-
-    if (!query) {
-        return NextResponse.json({ error: 'query is required' }, { status: 400 });
+    const params = parseBusinessSearchParams(searchParams);
+    if (!params.ok) {
+        return NextResponse.json({ error: params.error }, { status: 400 });
     }
-    if (query.length > MAX_QUERY_LENGTH) {
-        return NextResponse.json({ error: 'query is too long' }, { status: 400 });
-    }
-    if (districtId && !/^\d{1,8}$/.test(districtId)) {
-        return NextResponse.json({ error: 'Invalid districtId' }, { status: 400 });
-    }
-
-    // Escape LIKE wildcards so user input is matched literally
-    const escapedQuery = query.replace(/[\\%_]/g, (c) => `\\${c}`);
+    const { limit, districtId } = params;
+    const escapedQuery = escapeLike(params.query);
 
     try {
         // Stage 1: Get 100% accurate counts using the RPC function
         // In Drizzle, we can call the function using raw SQL
-        const countData = await db.execute(drizzleSql`SELECT * FROM get_business_counts(${escapedQuery}, ${districtId || null})`) as unknown as { lor_id: string, count: string }[];
+        const countResult = await db.execute<{ lor_id: string, count: string }>(drizzleSql`SELECT * FROM get_business_counts(${escapedQuery}, ${districtId || null})`);
+        const countData = countResult.rows;
 
         // Convert RPC result back to the expected key-value object
         const lorCounts: Record<string, number> = {};

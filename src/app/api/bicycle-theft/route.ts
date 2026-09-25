@@ -4,40 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { DISTRICT_TO_LOR_PREFIX } from '@/lib/constants';
 import { fetchLiveTheftData } from '@/lib/theft';
-
-// Interfaces and types are now imported from @/lib/theft where appropriate
-// or handled dynamically.
-
-interface TheftPoint {
-    id: string;
-    category: 'bicycle' | 'car';
-    lat: number;
-    lng: number;
-    amount: number;
-    date: string;
-    hour: number;
-    registeredDate: string | null;
-    type: string | undefined;
-    lor: string;
-    rawLor: string;
-    details: string | undefined;
-}
-
-interface LorCentroid {
-    lat: number;
-    lng: number;
-    name: string;
-}
-
-function addJitter(lat: number, lng: number, radiusDeg: number = 0.002) {
-    const r = radiusDeg * Math.sqrt(Math.random());
-    const theta = Math.random() * 2 * Math.PI;
-
-    return {
-        lat: lat + r * Math.cos(theta),
-        lng: lng + r * Math.sin(theta) * 1.5
-    };
-}
+import { mapTheftRows, type LorCentroid, type TheftPoint } from '@/lib/theft-mapping';
 
 let lorCentroidsCache: Record<string, LorCentroid> | null = null;
 
@@ -68,45 +35,9 @@ export async function GET(request: Request) {
         const lorCentroids = loadLorCentroids();
 
         const getMappedData = async (theftType: 'bicycle' | 'car') => {
-            const isBike = theftType === 'bicycle';
             const rawData = await fetchLiveTheftData(theftType);
 
-            return rawData.reduce((acc: TheftPoint[], record, index) => {
-                if (!record.TATZEIT_ANFANG_DATUM || !record.LOR) return acc;
-
-                const dateParts = record.TATZEIT_ANFANG_DATUM.split('.');
-                if (dateParts.length !== 3) return acc;
-                const theftDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
-                if (isNaN(theftDate.getTime())) return acc;
-
-                const lor = record.LOR;
-                const lorData = lorCentroids[lor];
-                if (lorData) {
-                    const coords = addJitter(lorData.lat, lorData.lng, 0.003);
-
-                    // Parse registered date
-                    const regDateParts = (record.ANGELEGT_AM || '').split('.');
-                    const registeredDate = regDateParts.length === 3
-                        ? `${regDateParts[2]}-${regDateParts[1]}-${regDateParts[0]}`
-                        : null;
-
-                    acc.push({
-                        id: `${theftType}-${index}-${lor}`,
-                        category: theftType,
-                        lat: coords.lat,
-                        lng: coords.lng,
-                        amount: parseInt(record.SCHADENSHOEHE ?? '') || 0,
-                        date: theftDate.toISOString(),
-                        hour: parseInt((record.TATZEIT_ANFANG_STUNDE || '0').split(':')[0]) || 0,
-                        registeredDate,
-                        type: isBike ? record.ART_DES_FAHRRADS : (record.ERLANGTES_GUT || 'KFZ'),
-                        lor: lorData.name,
-                        rawLor: lor,
-                        details: isBike ? record.DELIKT : (record.EINDRINGEN_IN_KFZ || record.DELIKT)
-                    });
-                }
-                return acc;
-            }, []);
+            return mapTheftRows(rawData, theftType, lorCentroids);
         };
 
         let allData: TheftPoint[] = [];
