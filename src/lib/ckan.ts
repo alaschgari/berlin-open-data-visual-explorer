@@ -23,12 +23,22 @@ export interface CkanPackage {
   notes: string;
 }
 
+/** Fetches from the registry, retrying with backoff when it rate-limits (HTTP 429). */
+async function ckanFetch(url: string, init?: RequestInit): Promise<Response> {
+  let response = await fetch(url, init);
+  for (let attempt = 1; response.status === 429 && attempt <= 3; attempt++) {
+    await new Promise(resolve => setTimeout(resolve, 2000 * 2 ** (attempt - 1)));
+    response = await fetch(url, init);
+  }
+  return response;
+}
+
 /**
  * Fetches metadata for a specific CKAN package.
  */
 export async function getPackageMetadata(packageId: string): Promise<CkanPackage | null> {
   try {
-    const response = await fetch(`${CKAN_BASE_URL}/package_show?id=${packageId}`, {
+    const response = await ckanFetch(`${CKAN_BASE_URL}/package_show?id=${packageId}`, {
       next: { revalidate: 3600 } // Cache for 1 hour
     });
 
@@ -82,7 +92,7 @@ export async function getPackageLastModified(packageId: string): Promise<string 
  */
 export async function searchCkanResources(query: string, rows: number = 50): Promise<(CkanResource & { packageName: string })[]> {
   try {
-    const response = await fetch(`${CKAN_BASE_URL}/package_search?q=${encodeURIComponent(query)}&rows=${rows}`);
+    const response = await ckanFetch(`${CKAN_BASE_URL}/package_search?q=${encodeURIComponent(query)}&rows=${rows}`);
     if (!response.ok) {
       console.warn(`CKAN: search for "${query}" failed: ${response.statusText}`);
       return [];
