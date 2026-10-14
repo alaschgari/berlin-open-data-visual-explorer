@@ -22,6 +22,7 @@ Ein interaktives Dashboard zur Visualisierung öffentlicher Berliner Daten. Die 
 | 🚲 **Fahrraddiebstahl** | Interaktive Karte der Fahrraddiebstähle nach Bezirk |
 | 🛒 **Wochenmärkte** | Karte aller Wochenmärkte in Berlin |
 | 🏊 **Badestellen** | Wasserqualität an Berliner Badestellen mit Live-Daten |
+| 🎓 **Kitas & Schulen** | Karte aller ~2.900 Kitas (mit Platzzahlen) und ~930 Schulen, filterbar nach Bezirk und Art |
 
 ### 🗂️ Projektstruktur
 
@@ -126,6 +127,7 @@ An interactive dashboard for visualising Berlin's public open data. The applicat
 | 🚲 **Bicycle Theft** | Interactive map of bicycle thefts by district |
 | 🛒 **Markets** | Map of all weekly markets in Berlin |
 | 🏊 **Bathing Spots** | Water quality at Berlin bathing spots with live data |
+| 🎓 **Day Care & Schools** | Map of all ~2,900 day-care centres (with licensed places) and ~930 schools, filterable by district and type |
 
 ### 🗂️ Project Structure
 
