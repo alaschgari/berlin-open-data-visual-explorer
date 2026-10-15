@@ -94,8 +94,8 @@ const MarketPopupContent = ({ market, t }: { market: MarketFeature; t: (key: str
                     {d.bezeichnung}
                 </h3>
                 <div className="flex items-center gap-1.5">
-                    <MapPin className="w-3 h-3 text-slate-500" />
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    <MapPin className="w-3 h-3 text-slate-400" />
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                         {d.bezirk}
                     </span>
                 </div>
@@ -103,11 +103,11 @@ const MarketPopupContent = ({ market, t }: { market: MarketFeature; t: (key: str
 
             <div className="grid grid-cols-2 gap-2 mb-4 items-start">
                 <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 flex flex-col min-h-full">
-                    <span className="text-[9px] text-slate-500 uppercase font-black tracking-widest block mb-1 opacity-80">{t('markets_days')}</span>
+                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-widest block mb-1 opacity-80">{t('markets_days')}</span>
                     <span className="text-sm font-bold text-white leading-tight">{d.tage}</span>
                 </div>
                 <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 flex flex-col min-h-full">
-                    <span className="text-[9px] text-slate-500 uppercase font-black tracking-widest block mb-2 opacity-80">{t('markets_times')}</span>
+                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-widest block mb-2 opacity-80">{t('markets_times')}</span>
                     <div className="flex flex-col gap-1.5 min-h-0 flex-1">
                         {d.zeiten.split('\n').map(l => l.trim()).filter(Boolean).map((line, i) => {
                             const isClosed = line.toLowerCase().includes('geschloss');
@@ -131,15 +131,15 @@ const MarketPopupContent = ({ market, t }: { market: MarketFeature; t: (key: str
 
             <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2 text-xs text-slate-400">
-                    <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
+                    <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
                     <span>{d.strasse}, {d.plz}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-400">
-                    <Calendar className="w-3 h-3 text-slate-500 shrink-0" />
+                    <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
                     <span>{d.zeitraum}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-400">
-                    <User className="w-3 h-3 text-slate-500 shrink-0" />
+                    <User className="w-3 h-3 text-slate-400 shrink-0" />
                     <span>{d.betreiber}</span>
                 </div>
                 {d.barrierefreiheit === 'Ja' && (
@@ -225,7 +225,7 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-3">
-                            <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent leading-tight">
+                            <h2 className="text-2xl font-bold text-white leading-tight">
                                 {t('markets_title')}
                             </h2>
                         </div>
@@ -237,7 +237,7 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                                 href="https://www.berlin.de/sen/web/service/maerkte-feste/wochen-troedelmaerkte/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500/80 hover:text-emerald-500 transition-all group bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30 active:scale-[0.98]"
+                                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400/80 hover:text-emerald-500 transition-all group bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30 active:scale-[0.98]"
                             >
                                 <span className="opacity-60">{t('source')}:</span>
                                 <span className="text-slate-400 group-hover:text-emerald-400">berlin.de</span>
@@ -249,7 +249,7 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                     {/* Search & Count */}
                     <div className="flex items-center gap-3">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                             <input
                                 type="text"
                                 placeholder={t('markets_search')}
@@ -262,7 +262,7 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                         <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-900/50 rounded-xl border border-slate-700/50">
                             <ShoppingBag className="w-4 h-4 text-emerald-500" />
                             <span className="text-sm font-black text-white tabular-nums">{filteredMarkets.length}</span>
-                            <span className="text-[10px] font-bold text-slate-500 uppercase">{t('markets_count')}</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">{t('markets_count')}</span>
                         </div>
                     </div>
                 </div>
@@ -361,7 +361,7 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                                         <h3 className="font-bold text-sm text-white truncate mb-0.5">
                                             {d.bezeichnung}
                                         </h3>
-                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
                                             {d.bezirk}
                                         </p>
                                         <div className="flex flex-col gap-2">
@@ -409,7 +409,7 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                 </div>
 
                 {filteredMarkets.length === 0 && !loading && (
-                    <div className="text-center py-12 text-slate-500">
+                    <div className="text-center py-12 text-slate-400">
                         <ShoppingBag className="w-12 h-12 mx-auto mb-4 opacity-30" />
                         <p className="font-bold">{t('no_results')}</p>
                     </div>

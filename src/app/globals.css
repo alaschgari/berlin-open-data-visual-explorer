@@ -117,3 +117,37 @@ body {
 .leaflet-popup-pane {
   z-index: 2000 !important;
 }
+/* Browser surfaces themed from the palette */
+::selection {
+  background: rgba(16, 185, 129, 0.35);
+  color: #ffffff;
+}
+
+html {
+  color-scheme: dark;
+  scrollbar-color: #334155 transparent;
+  accent-color: #10b981;
+}
+
+:focus-visible {
+  outline: 2px solid #34d399;
+  outline-offset: 2px;
+}
+
+/* Numbers in stats and tables line up */
+.font-black, td, th {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Keep state changes, drop decorative looping motion */
+  .animate-pulse, .animate-ping, .animate-bounce {
+    animation: none;
+  }
+  .animate-spin {
+    animation-duration: 2.5s;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

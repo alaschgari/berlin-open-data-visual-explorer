@@ -116,17 +116,17 @@ export default function EducationMapClient() {
                     </div>
                     <div className="flex items-center gap-4 bg-slate-800/40 border border-slate-700/30 rounded-2xl px-4 py-2.5">
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-slate-500 uppercase">{t('edu_kitas')}</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">{t('edu_kitas')}</span>
                             <span className="text-sm font-black" style={{ color: KIND_COLORS.kita }}>{fmt(stats.kitas)}</span>
                         </div>
                         <div className="w-px h-8 bg-slate-700/40"></div>
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-slate-500 uppercase">{t('edu_places')}</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">{t('edu_places')}</span>
                             <span className="text-sm font-black text-white">{fmt(stats.places)}</span>
                         </div>
                         <div className="w-px h-8 bg-slate-700/40"></div>
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-slate-500 uppercase">{t('edu_schools')}</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">{t('edu_schools')}</span>
                             <span className="text-sm font-black" style={{ color: KIND_COLORS.school }}>{fmt(stats.schools)}</span>
                         </div>
                     </div>
@@ -153,7 +153,7 @@ export default function EducationMapClient() {
                         {types.map(([name, count]) => <option key={name} value={name}>{name} ({fmt(count)})</option>)}
                     </select>
                     <div className="relative flex-1 min-w-[180px]">
-                        <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                         <input
                             value={query}
                             onChange={e => setQuery(e.target.value)}
@@ -212,17 +212,17 @@ export default function EducationMapClient() {
                                 <div>
                                     <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: KIND_COLORS[selected.kind] }}>{selected.type}</span>
                                     <h3 className="text-lg font-bold text-white leading-tight">{selected.name}</h3>
-                                    <p className="text-xs text-slate-500 mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" />{selected.address}</p>
+                                    <p className="text-xs text-slate-400 mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" />{selected.address}</p>
                                 </div>
                                 <button onClick={() => setSelected(null)} className="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white" aria-label={t('air_close')}>
                                     <X className="w-4 h-4" />
                                 </button>
                             </div>
                             <div className="p-6 space-y-3 text-sm">
-                                <div className="flex justify-between gap-4"><span className="text-slate-500">{t('edu_district')}</span><span className="text-slate-200 font-bold text-right">{selected.district}</span></div>
-                                <div className="flex justify-between gap-4"><span className="text-slate-500">{t('edu_provider')}</span><span className="text-slate-200 font-bold text-right">{selected.provider || '–'}</span></div>
+                                <div className="flex justify-between gap-4"><span className="text-slate-400">{t('edu_district')}</span><span className="text-slate-200 font-bold text-right">{selected.district}</span></div>
+                                <div className="flex justify-between gap-4"><span className="text-slate-400">{t('edu_provider')}</span><span className="text-slate-200 font-bold text-right">{selected.provider || '–'}</span></div>
                                 {selected.kind === 'kita' && (
-                                    <div className="flex justify-between gap-4"><span className="text-slate-500">{t('edu_places')}</span><span className="text-slate-200 font-bold">{selected.places !== null ? fmt(selected.places) : '–'}</span></div>
+                                    <div className="flex justify-between gap-4"><span className="text-slate-400">{t('edu_places')}</span><span className="text-slate-200 font-bold">{selected.places !== null ? fmt(selected.places) : '–'}</span></div>
                                 )}
                                 {selected.website && (
                                     <a href={selected.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 text-xs font-bold pt-2">
@@ -235,7 +235,7 @@ export default function EducationMapClient() {
                         <div className="flex flex-col h-full">
                             <div className="p-6 border-b border-slate-700/50">
                                 <h3 className="text-xs font-bold text-white uppercase tracking-widest">{t('edu_by_district')}</h3>
-                                <p className="text-xs text-slate-500 mt-1">{t('edu_select_hint')}</p>
+                                <p className="text-xs text-slate-400 mt-1">{t('edu_select_hint')}</p>
                             </div>
                             <div className="overflow-y-auto divide-y divide-slate-800/60">
                                 {byDistrict.map(([name, row]) => (
@@ -257,7 +257,7 @@ export default function EducationMapClient() {
                                                 <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
                                                     <div className="h-full rounded-full" style={{ width: `${(row.places / maxPlaces) * 100}%`, backgroundColor: KIND_COLORS.kita }}></div>
                                                 </div>
-                                                <span className="text-[10px] text-slate-500 w-24 text-right">{fmt(row.places)} {t('edu_places_short')}</span>
+                                                <span className="text-[10px] text-slate-400 w-24 text-right">{fmt(row.places)} {t('edu_places_short')}</span>
                                             </div>
                                         )}
                                     </button>
@@ -268,7 +268,7 @@ export default function EducationMapClient() {
                 </div>
             </div>
 
-            <p className="text-center text-xs text-slate-500">{t('edu_source')}</p>
+            <p className="text-center text-xs text-slate-400">{t('edu_source')}</p>
         </div>
     );
 }

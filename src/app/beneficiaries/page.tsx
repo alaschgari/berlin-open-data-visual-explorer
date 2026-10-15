@@ -53,7 +53,7 @@ export default function BeneficiariesPage() {
                 {/* Main section title */}
                 <div className="space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="flex items-center gap-3">
-                        <h2 className="text-3xl font-black bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent tracking-tight">
+                        <h2 className="text-3xl font-black text-white tracking-tight">
                             {t('tab_subsidies')}
                         </h2>
                         <div className="flex items-center gap-1 px-2.5 py-0.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
@@ -72,7 +72,7 @@ export default function BeneficiariesPage() {
                 {/* Quick Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-600">
                     <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl flex flex-col justify-between">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
                             {language === 'de' ? 'Matching Einträge' : 'Matching Entries'}
                         </span>
                         <div className="flex items-baseline gap-2">
@@ -88,7 +88,7 @@ export default function BeneficiariesPage() {
                     </div>
 
                     <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl flex flex-col justify-between">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
                             {language === 'de' ? 'Gesamtfördersumme (Sichtbar)' : 'Total Sum (Visible)'}
                         </span>
                         <span className="text-3xl font-black text-emerald-400 leading-none">
@@ -97,7 +97,7 @@ export default function BeneficiariesPage() {
                     </div>
 
                     <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl flex flex-col justify-between">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
                             {language === 'de' ? 'Durchschnittliche Zuwendung' : 'Average Grant'}
                         </span>
                         <span className="text-3xl font-black text-blue-400 leading-none">
@@ -109,11 +109,11 @@ export default function BeneficiariesPage() {
                 {/* Filter and Search Bar */}
                 <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl flex flex-col md:flex-row gap-4 items-center">
                     <div className="relative flex-1 w-full">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
                         <input
                             type="text"
                             placeholder={t('placeholder_search') || 'Empfänger oder Verwendungszweck suchen...'}
-                            className="w-full bg-slate-900/60 border border-slate-700 rounded-xl pl-12 pr-4 py-3.5 text-slate-100 placeholder-slate-500 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+                            className="w-full bg-slate-900/60 border border-slate-700 rounded-xl pl-12 pr-4 py-3.5 text-slate-100 placeholder-slate-400 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -127,7 +127,7 @@ export default function BeneficiariesPage() {
                             <option value="All">{t('all_districts')}</option>
                             {DISTRICTS.map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M19 9l-7 7-7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
@@ -153,7 +153,7 @@ export default function BeneficiariesPage() {
                                         <td colSpan={4} className="px-6 py-16 text-center">
                                             <div className="flex flex-col items-center gap-3">
                                                 <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-                                                <span className="text-slate-500 font-bold uppercase tracking-widest text-xs">
+                                                <span className="text-slate-400 font-bold uppercase tracking-widest text-xs">
                                                     {t('loading')}
                                                 </span>
                                             </div>
@@ -168,7 +168,7 @@ export default function BeneficiariesPage() {
                                             <span className="block text-[10px] text-emerald-400 font-bold uppercase tracking-wide mb-0.5">{b.area}</span>
                                             {b.purpose || '-'}
                                         </td>
-                                        <td className="px-6 py-4 text-slate-500 text-xs font-bold" title={b.provider}>
+                                        <td className="px-6 py-4 text-slate-400 text-xs font-bold" title={b.provider}>
                                             {b.provider} ({b.year})
                                         </td>
                                         <td className="px-6 py-4 text-right font-mono text-emerald-400 font-black">
@@ -178,8 +178,8 @@ export default function BeneficiariesPage() {
                                 ))}
                                 {!loading && records.length === 0 && (
                                     <tr>
-                                        <td colSpan={4} className="px-6 py-16 text-center text-slate-500 font-bold">
-                                            <CircleAlert className="w-8 h-8 mx-auto mb-2 text-slate-600" />
+                                        <td colSpan={4} className="px-6 py-16 text-center text-slate-400 font-bold">
+                                            <CircleAlert className="w-8 h-8 mx-auto mb-2 text-slate-400" />
                                             {t('no_results') || 'Keine Einträge gefunden.'}
                                         </td>
                                     </tr>
@@ -190,7 +190,7 @@ export default function BeneficiariesPage() {
                 </div>
 
                 {/* Footer source badge */}
-                <div className="flex justify-center items-center gap-2 text-xs text-slate-500">
+                <div className="flex justify-center items-center gap-2 text-xs text-slate-400">
                     <Database className="w-3.5 h-3.5" />
                     <span>
                         {language === 'de' 

@@ -103,12 +103,12 @@ export default function TrafficView({ district }: TrafficViewProps) {
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <div className="flex flex-col">
                         <div className="flex items-center gap-3">
-                            <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+                            <h2 className="text-2xl font-bold text-white">
                                 {t('traffic_title')}
                             </h2>
                             <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-full border border-slate-700/50">
                                 <span className={`w-1.5 h-1.5 rounded-full ${trafficData?.features?.length > 0 ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'} `}></span>
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                                     {trafficData?.features?.length > 0 ? t('traffic_live_api') : t('traffic_no_data')}
                                 </span>
                             </div>
@@ -119,10 +119,10 @@ export default function TrafficView({ district }: TrafficViewProps) {
                     </div>
 
                     {/* Meta Info */}
-                    <div className="flex flex-col lg:items-end gap-1 text-xs text-slate-500 font-mono">
+                    <div className="flex flex-col lg:items-end gap-1 text-xs text-slate-400 font-mono">
                         {trafficData?.features?.[0]?.properties?.date && (
                             <div className="flex items-center gap-2">
-                                <span className="text-slate-600">{t('traffic_time_range')}:</span>
+                                <span className="text-slate-400">{t('traffic_time_range')}:</span>
                                 <span className="text-emerald-400">
                                     {(() => {
                                         const date = new Date(trafficData.features[0].properties.date);
@@ -133,7 +133,7 @@ export default function TrafficView({ district }: TrafficViewProps) {
                             </div>
                         )}
                         <div className="flex items-center gap-2">
-                            <span className="text-slate-600">{t('traffic_source')}:</span>
+                            <span className="text-slate-400">{t('traffic_source')}:</span>
                             <a
                                 href="https://telraam.net"
                                 target="_blank"
@@ -171,7 +171,7 @@ export default function TrafficView({ district }: TrafficViewProps) {
                                     Real data cannot be displayed without it.
                                 </p>
                                 <div className="bg-slate-950 p-4 rounded-lg text-left mb-6 border border-slate-800">
-                                    <p className="text-xs text-slate-500 font-mono mb-2">Add to .env.local:</p>
+                                    <p className="text-xs text-slate-400 font-mono mb-2">Add to .env.local:</p>
                                     <code className="text-sm text-emerald-400 font-mono block overflow-x-auto">
                                         TELRAAM_API_KEY=your_key_here
                                     </code>

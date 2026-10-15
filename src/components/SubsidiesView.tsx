@@ -63,7 +63,7 @@ const MiniSparkline = ({ data }: { data: { year: number; amount: number }[] }) =
                     className="drop-shadow-[0_0_2px_rgba(16,185,129,0.5)]"
                 />
             </svg>
-            <span className="text-[8px] text-slate-500 font-medium whitespace-nowrap">Trend</span>
+            <span className="text-[8px] text-slate-400 font-medium whitespace-nowrap">Trend</span>
         </div>
     );
 };
@@ -306,7 +306,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
             <div className="bg-slate-800/40 px-4 sm:px-6 py-4 rounded-3xl border border-slate-700/50 flex flex-wrap items-center justify-between gap-4 sm:gap-6 backdrop-blur-md shadow-xl">
                 <div className="grid grid-cols-2 gap-4 sm:flex sm:items-center sm:gap-8 w-full sm:w-auto">
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">{t('total_volume')}</span>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{t('total_volume')}</span>
                         <div className="flex items-baseline gap-1">
                             <span className="text-xl sm:text-2xl font-black text-emerald-400 tracking-tighter">
                                 {(Number(activeMetrics?.totalAmount || metrics?.totalAmount || 0) / 1000000).toLocaleString(locale, { maximumFractionDigits: 1 })}
@@ -316,28 +316,28 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                     </div>
                     <div className="w-px h-10 bg-slate-700/50 hidden sm:block"></div>
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">{t('count_subsidies')}</span>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{t('count_subsidies')}</span>
                         <span className="text-xl sm:text-2xl font-black text-blue-400 tracking-tighter">
                             {Number(activeMetrics?.totalCount || metrics?.totalCount || 0).toLocaleString(locale)}
                         </span>
                     </div>
                     <div className="w-px h-10 bg-slate-700/50 hidden lg:block"></div>
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">{t('count_recipients')}</span>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{t('count_recipients')}</span>
                         <span className="text-xl sm:text-2xl font-black text-purple-400 tracking-tighter">
                             {Number(activeMetrics?.recipientCount || metrics?.recipientCount || 0).toLocaleString(locale)}
                         </span>
                     </div>
                     <div className="w-px h-10 bg-slate-700/50 hidden lg:block"></div>
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">{t('count_providers')}</span>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{t('count_providers')}</span>
                         <span className="text-xl sm:text-2xl font-black text-amber-400 tracking-tighter">
                             {Number(activeMetrics?.providerCount || metrics?.providerCount || 0).toLocaleString(locale)}
                         </span>
                     </div>
                     <div className="w-px h-10 bg-slate-700/50 hidden lg:block"></div>
                     <div className="flex flex-col col-span-2 sm:col-span-1">
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">{t('time_period')}</span>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{t('time_period')}</span>
                         <span className="text-xl sm:text-2xl font-black text-slate-300 tracking-tighter">
                             {(activeMetrics || metrics)?.minYear} — {(activeMetrics || metrics)?.maxYear}
                         </span>
@@ -373,13 +373,13 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                     <div className="flex items-center justify-between mb-5 gap-4">
                         <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">{t('top_recipients')}</h2>
                         <div className="relative flex-1 max-w-[180px]">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-500" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" />
                             <input
                                 type="text"
                                 value={topRecipientQuery}
                                 onChange={(e) => setTopRecipientQuery(e.target.value)}
                                 placeholder={t('placeholder_search')}
-                                className="w-full bg-slate-900/40 border border-slate-700/50 rounded-xl py-1.5 pl-8 pr-3 text-[10px] text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 transition-all font-medium"
+                                className="w-full bg-slate-900/40 border border-slate-700/50 rounded-xl py-1.5 pl-8 pr-3 text-[10px] text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500/50 transition-all font-medium"
                             />
                         </div>
                     </div>
@@ -391,7 +391,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
 
                                 // Simple trend logic
                                 let TrendIcon = Minus;
-                                let trendColor = "text-slate-600";
+                                let trendColor = "text-slate-400";
 
                                 if (r.history && r.history.length >= 2) {
                                     const last = r.history[r.history.length - 1].amount;
@@ -409,7 +409,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                     >
                                         <div className="flex items-center gap-3 flex-1 min-w-0 mr-4">
                                             <div className="flex flex-col items-center min-w-[1.5rem]">
-                                                <span className="text-slate-600 font-bold text-[10px]">#{i + 1}</span>
+                                                <span className="text-slate-400 font-bold text-[10px]">#{i + 1}</span>
                                                 <TrendIcon className={`w-3 h-3 ${trendColor}`} />
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -417,7 +417,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                                     }`}>
                                                     {r.name.replace(/^"|"$/g, '')}
                                                 </p>
-                                                <p className="text-slate-500 text-[10px]">{r.count} {t('resolutions')}</p>
+                                                <p className="text-slate-400 text-[10px]">{r.count} {t('resolutions')}</p>
                                             </div>
                                         </div>
                                         <div className="text-right">
@@ -444,13 +444,13 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                     <div className="flex items-center justify-between mb-5 gap-4">
                         <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">{t('top_areas')}</h2>
                         <div className="relative flex-1 max-w-[180px]">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-500" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" />
                             <input
                                 type="text"
                                 value={topAreaQuery}
                                 onChange={(e) => setTopAreaQuery(e.target.value)}
                                 placeholder={t('placeholder_search')}
-                                className="w-full bg-slate-900/40 border border-slate-700/50 rounded-xl py-1.5 pl-8 pr-3 text-[10px] text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 transition-all font-medium"
+                                className="w-full bg-slate-900/40 border border-slate-700/50 rounded-xl py-1.5 pl-8 pr-3 text-[10px] text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500/50 transition-all font-medium"
                             />
                         </div>
                     </div>
@@ -494,13 +494,13 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                     <div className="flex items-center justify-between mb-5 gap-4">
                         <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">{t('top_providers')}</h2>
                         <div className="relative flex-1 max-w-[180px]">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-500" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" />
                             <input
                                 type="text"
                                 value={topProviderQuery}
                                 onChange={(e) => setTopProviderQuery(e.target.value)}
                                 placeholder={t('placeholder_search')}
-                                className="w-full bg-slate-900/40 border border-slate-700/50 rounded-xl py-1.5 pl-8 pr-3 text-[10px] text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 transition-all font-medium"
+                                className="w-full bg-slate-900/40 border border-slate-700/50 rounded-xl py-1.5 pl-8 pr-3 text-[10px] text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500/50 transition-all font-medium"
                             />
                         </div>
                     </div>
@@ -566,7 +566,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                             {/* Grouping Controls */}
                             <div className="flex flex-wrap items-center gap-2">
-                                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mr-2">{t('group_by')}:</span>
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">{t('group_by')}:</span>
                                 {[
                                     { key: 'year', label: t('by_year') },
                                     { key: 'recipient', label: t('by_recipient') },
@@ -759,7 +759,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                                     </div>
                                                 </td>
                                                 {!groupBy.includes('provider') && (
-                                                    <td className="py-3 px-4 text-slate-500 text-xs w-40 align-top" title={detail.provider.replace(/^"|"$/g, '')}>
+                                                    <td className="py-3 px-4 text-slate-400 text-xs w-40 align-top" title={detail.provider.replace(/^"|"$/g, '')}>
                                                         <div className="line-clamp-2 leading-tight">
                                                             {detail.provider.replace(/^"|"$/g, '')}
                                                         </div>
@@ -779,7 +779,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                                 </tbody>
                             </table>
                         </div>
-                        <div className="mt-4 text-sm text-slate-500">
+                        <div className="mt-4 text-sm text-slate-400">
                             {t('total_label')}: {recipientDetails.length} {t('resolutions')}
                         </div>
                     </div>

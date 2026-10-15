@@ -28,7 +28,7 @@ export default function Error({
                     Die Daten konnten nicht geladen werden. Bitte versuchen Sie es erneut.
                 </p>
                 {error.digest && (
-                    <p className="text-slate-500 text-xs mb-4 font-mono">
+                    <p className="text-slate-400 text-xs mb-4 font-mono">
                         Fehler-ID: {error.digest}
                     </p>
                 )}

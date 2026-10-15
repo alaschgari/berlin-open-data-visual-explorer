@@ -147,7 +147,7 @@ export default function NoiseMapClient() {
                 </div>
             </div>
 
-            <p className="text-center text-xs text-slate-500">{t('noise_source_note')}</p>
+            <p className="text-center text-xs text-slate-400">{t('noise_source_note')}</p>
         </div>
     );
 }

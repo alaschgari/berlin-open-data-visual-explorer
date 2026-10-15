@@ -124,7 +124,7 @@ export default function TrafficHistoryChart({ segmentId }: TrafficHistoryChartPr
 
     if (!segmentId) {
         return (
-            <div className="h-full flex flex-col items-center justify-center text-slate-500 p-8 border border-dashed border-slate-700 rounded-xl">
+            <div className="h-full flex flex-col items-center justify-center text-slate-400 p-8 border border-dashed border-slate-700 rounded-xl">
                 <Calendar className="w-8 h-8 mb-2 opacity-50" />
                 <p className="text-sm">{t('traffic_select_segment')}</p>
             </div>
@@ -139,7 +139,7 @@ export default function TrafficHistoryChart({ segmentId }: TrafficHistoryChartPr
         <div className="w-full h-full flex flex-col">
             {/* Controls */}
             <div className="flex justify-between items-center mb-2 px-1">
-                <div className="flex items-center gap-2 text-[10px] text-slate-500 bg-slate-900/30 px-2 py-1 rounded-md border border-slate-800/50">
+                <div className="flex items-center gap-2 text-[10px] text-slate-400 bg-slate-900/30 px-2 py-1 rounded-md border border-slate-800/50">
                     <Info className="w-3 h-3 text-amber-500/70" />
                     <span>{t('traffic_night_gap')}</span>
                 </div>
@@ -182,7 +182,7 @@ export default function TrafficHistoryChart({ segmentId }: TrafficHistoryChartPr
                             tick={{ fill: '#94a3b8', fontSize: 10 }}
                             tickLine={false}
                             axisLine={false}
-                            label={{ value: t('traffic_vol'), angle: -90, position: 'insideLeft', fill: '#64748b', fontSize: 10 }}
+                            label={{ value: t('traffic_vol'), angle: -90, position: 'insideLeft', fill: '#94a3b8', fontSize: 10 }}
                         />
                         <YAxis
                             yAxisId="right"

@@ -37,7 +37,7 @@ function MetricValue({ promise, field, cacheKey, format, label }: {
     format: (val: any) => string,
     label: string
 }) {
-    if (!promise) return <span className="text-slate-600">---</span>;
+    if (!promise) return <span className="text-slate-400">---</span>;
 
     // Check global session cache first for instant Hub values
     if (cacheKey && SESSION_CACHE[cacheKey]) {
@@ -125,7 +125,6 @@ export default function HubView({
         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 mt-8 relative">
 
             {/* Background Blob */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
 
             <div className="text-center space-y-8 max-w-3xl mx-auto relative z-10">
                 <div className="space-y-4">
@@ -139,15 +138,16 @@ export default function HubView({
 
                 {/* Command Center Search */}
                 <div className="relative max-w-2xl mx-auto group">
-                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                        <Search className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                    <div className="absolute inset-y-0 left-4 z-10 flex items-center pointer-events-none">
+                        <Search className="h-5 w-5 text-slate-400 group-focus-within:text-emerald-400 transition-colors" />
                     </div>
                     <input
                         type="text"
                         placeholder={t('hub_search_placeholder')}
+                        aria-label={t('hub_search_placeholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-slate-900/80 backdrop-blur-md border border-slate-700/50 text-slate-200 text-lg rounded-2xl pl-12 pr-4 py-4 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all placeholder:text-slate-500 shadow-xl shadow-black/20"
+                        className="w-full bg-slate-900/80 backdrop-blur-md border border-slate-700/50 text-slate-200 text-lg rounded-2xl pl-12 pr-4 py-4 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all placeholder:text-slate-400 shadow-xl shadow-black/20"
                     />
                 </div>
             </div>
@@ -195,7 +195,7 @@ export default function HubView({
                                     {/* Micro-metric */}
                                     {metricsMap[item.id] && metricsMap[item.id].value && (
                                         <div className="mt-auto pt-4 border-t border-slate-700/50 flex items-center justify-between">
-                                            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">{metricsMap[item.id].label}</span>
+                                            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">{metricsMap[item.id].label}</span>
                                             <span className="text-sm font-black text-white bg-slate-900/50 px-3 py-1 rounded-lg border border-slate-700/50">{metricsMap[item.id].value}</span>
                                         </div>
                                     )}
@@ -222,7 +222,7 @@ export default function HubView({
                     return (
                         <section key={category.id} className="space-y-6">
                             <div className="flex items-center gap-4">
-                                <h3 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em]">
+                                <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
                                     {category.title}
                                 </h3>
                                 <div className="h-px flex-1 bg-gradient-to-r from-slate-700/50 to-transparent"></div>
@@ -251,7 +251,7 @@ export default function HubView({
                                             {/* Micro-metric */}
                                             {metricsMap[item.id] && metricsMap[item.id].value && (
                                                 <div className="mt-auto pt-4 border-t border-slate-700/30 flex items-center justify-between opacity-70 group-hover:opacity-100 transition-opacity">
-                                                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{metricsMap[item.id].label}</span>
+                                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{metricsMap[item.id].label}</span>
                                                     <span className="text-xs font-bold text-slate-300">{metricsMap[item.id].value}</span>
                                                 </div>
                                             )}
@@ -265,7 +265,7 @@ export default function HubView({
 
                 {filteredItems.length === 0 && (
                     <div className="text-center py-12">
-                        <p className="text-slate-500 text-lg font-medium">{t('no_data')}</p>
+                        <p className="text-slate-400 text-lg font-medium">{t('no_data')}</p>
                     </div>
                 )}
             </div>

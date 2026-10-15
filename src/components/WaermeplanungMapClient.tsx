@@ -130,7 +130,7 @@ export default function WaermeplanungMapClient({ district }: { district?: string
 
                         {/* Category Versorgungsgebiete */}
                         <div className="space-y-2">
-                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-2">
+                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">
                                 {language === 'de' ? 'Wärmeversorgungsgebiete' : 'Heat Supply Areas'}
                             </h4>
                             <div className="space-y-1">
@@ -152,7 +152,7 @@ export default function WaermeplanungMapClient({ district }: { district?: string
 
                         {/* Category Bestand */}
                         <div className="space-y-2">
-                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-2">
+                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">
                                 {language === 'de' ? 'Bestandsanalyse' : 'Current State Analysis'}
                             </h4>
                             <div className="space-y-1">
@@ -174,7 +174,7 @@ export default function WaermeplanungMapClient({ district }: { district?: string
 
                         {/* Category Potenzial */}
                         <div className="space-y-2">
-                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-2">
+                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">
                                 {language === 'de' ? 'Potenzialanalyse' : 'Potential Analysis'}
                             </h4>
                             <div className="space-y-1">
@@ -199,7 +199,7 @@ export default function WaermeplanungMapClient({ district }: { district?: string
                     <div className="space-y-3 pt-4 border-t border-slate-800">
                         <div className="flex items-center justify-between text-xs text-slate-400">
                             <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
-                                <Eye className="w-3.5 h-3.5 text-slate-500" />
+                                <Eye className="w-3.5 h-3.5 text-slate-400" />
                                 {t('opacity')}
                             </span>
                             <span className="font-mono text-emerald-400 font-bold">{Math.round(opacity * 100)}%</span>
@@ -218,7 +218,7 @@ export default function WaermeplanungMapClient({ district }: { district?: string
                     {/* Legend */}
                     <div className="space-y-3 pt-4 border-t border-slate-800">
                         <span className="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                            <Info className="w-3.5 h-3.5 text-slate-500" />
+                            <Info className="w-3.5 h-3.5 text-slate-400" />
                             {t('legend')}
                         </span>
                         <div className="bg-white p-4 rounded-xl border border-slate-800 flex items-center justify-center min-h-[60px] overflow-auto max-h-[250px]">

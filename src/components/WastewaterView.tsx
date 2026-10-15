@@ -118,7 +118,7 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm group hover:border-emerald-500/50 transition-all">
                     <h3 className="text-slate-400 text-sm font-medium mb-1">Klärwerke</h3>
                     <p className="text-3xl font-bold text-emerald-400">3</p>
-                    <span className="text-[10px] text-slate-500 font-medium">Ruhleben, Schönerlinde, Waßmannsdorf</span>
+                    <span className="text-[10px] text-slate-400 font-medium">Ruhleben, Schönerlinde, Waßmannsdorf</span>
                 </div>
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm group hover:border-blue-500/50 transition-all">
                     <h3 className="text-slate-400 text-sm font-medium mb-1">Letzte Messung</h3>
@@ -132,7 +132,7 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
             {/* Control Panel */}
             <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl flex flex-col lg:flex-row items-center justify-between gap-6 shadow-2xl">
                 <div className="flex flex-col gap-3 w-full lg:w-auto">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">Fokus: Klärwerk wählen</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Fokus: Klärwerk wählen</span>
                     <div className="flex bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 shadow-inner overflow-x-auto custom-scrollbar">
                         {['All', ...plants].map((p) => (
                             <button
@@ -149,7 +149,7 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
                 <div className="h-10 w-px bg-slate-700/50 hidden lg:block"></div>
 
                 <div className="flex flex-col gap-3 w-full lg:w-auto">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">Analyse: Erreger filtern</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Analyse: Erreger filtern</span>
                     <div className="flex bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 shadow-inner overflow-x-auto custom-scrollbar">
                         {(['All', 'Influenza A', 'Influenza B', 'RSV'] as PathogenType[]).map((p) => (
                             <button
@@ -169,7 +169,7 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
                 {/* Trend Chart */}
                 <div className="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 shadow-inner">
                     <h2 className="text-xl font-bold text-slate-100 mb-2">Virenlast-Verlauf</h2>
-                    <p className="text-slate-500 text-sm mb-8">Mittlere Konzentration (Kopien/ml)</p>
+                    <p className="text-slate-400 text-sm mb-8">Mittlere Konzentration (Kopien/ml)</p>
 
                     <div className="h-[400px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -226,7 +226,7 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
                 {/* Metrics Chart */}
                 <div className="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 shadow-inner">
                     <h2 className="text-xl font-bold text-slate-100 mb-2">Abwasser-Parameter</h2>
-                    <p className="text-slate-500 text-sm mb-8">Einfluss von Durchflussmenge und Temperatur</p>
+                    <p className="text-slate-400 text-sm mb-8">Einfluss von Durchflussmenge und Temperatur</p>
 
                     <div className="h-[400px] w-full">
                         <ResponsiveContainer width="100%" height="100%">

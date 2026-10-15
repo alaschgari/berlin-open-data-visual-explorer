@@ -81,7 +81,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
     if (!mounted) {
         return <div className="min-h-[600px] flex flex-col items-center justify-center gap-4">
             <Loader2 className="animate-spin h-8 w-8 text-emerald-500" />
-            <span className="text-slate-500 text-sm font-medium animate-pulse">Initialisiere Steuerdaten...</span>
+            <span className="text-slate-400 text-sm font-medium animate-pulse">Initialisiere Steuerdaten...</span>
         </div>;
     }
 
@@ -171,19 +171,19 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm">
                     <h3 className="text-slate-400 text-sm font-medium mb-1">Größte Quelle</h3>
                     <p className="text-2xl font-bold text-emerald-400 truncate">{activeMetrics.topSources[0]?.type}</p>
-                    <p className="text-sm text-slate-500">{formatCurrency(activeMetrics.topSources[0]?.monthlyAmount || 0)}</p>
+                    <p className="text-sm text-slate-400">{formatCurrency(activeMetrics.topSources[0]?.monthlyAmount || 0)}</p>
                 </div>
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm">
                     <h3 className="text-slate-400 text-sm font-medium mb-1">{language === 'de' ? 'Anzahl Posten' : 'Items Count'}</h3>
                     <p className="text-3xl font-bold text-blue-400">{filteredData.length}</p>
-                    <p className="text-[10px] text-slate-500 mt-1 uppercase font-bold">{language === 'de' ? 'In dieser Perspektive' : 'In this perspective'}</p>
+                    <p className="text-[10px] text-slate-400 mt-1 uppercase font-bold">{language === 'de' ? 'In dieser Perspektive' : 'In this perspective'}</p>
                 </div>
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm group hover:border-blue-500/50 transition-all">
                     <div className="flex items-center justify-between mb-1">
                         <h3 className="text-xs text-slate-400 font-bold uppercase tracking-wider">City Tax</h3>
                         <button
                             onClick={() => handleInfoClick('Übernachtungsteuer')}
-                            className="text-slate-500 hover:text-blue-400 transition-colors"
+                            className="text-slate-400 hover:text-blue-400 transition-colors"
                         >
                             <Info size={12} />
                         </button>
@@ -191,7 +191,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                     <p className="text-3xl font-bold text-blue-400">
                         {formatCurrency(metrics.allData?.find(s => s.type.includes('Übernachtung'))?.monthlyAmount || 0)}
                     </p>
-                    <p className="text-[10px] text-slate-500 mt-1 font-medium">{metrics.period}</p>
+                    <p className="text-[10px] text-slate-400 mt-1 font-medium">{metrics.period}</p>
                 </div>
             </div>
 
@@ -237,7 +237,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                                                 <div className="bg-slate-900 border border-slate-700 p-3 rounded-lg shadow-2xl">
                                                     <p className="text-xs font-bold text-white mb-1">{payload[0].payload.type}</p>
                                                     <p className="text-emerald-400 font-bold text-sm">{formatCurrency(payload[0].value as number)}</p>
-                                                    <p className="text-[10px] text-slate-500 mt-1">{payload[0].payload.category}</p>
+                                                    <p className="text-[10px] text-slate-400 mt-1">{payload[0].payload.category}</p>
                                                     {getTaxDescription(payload[0].payload.type) && (
                                                         <p className="text-[10px] text-blue-400 mt-2 italic font-medium">{language === 'de' ? 'Klicke in der Liste für Details' : 'Click in the list for details'}</p>
                                                     )}
@@ -319,7 +319,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="text-[10px] font-black uppercase tracking-widest text-slate-500 border-b border-slate-700/50">
+                            <tr className="text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-700/50">
                                 <th className="px-6 py-4">{language === 'de' ? 'Steuerart' : 'Tax Type'}</th>
                                 <th className="px-6 py-4">{language === 'de' ? 'Kategorie' : 'Category'}</th>
                                 <th className="px-6 py-4 text-right">{language === 'de' ? 'Einnahmen' : 'Revenue'} ({metrics.period})</th>
@@ -333,7 +333,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                                         {getTaxDescription(source.type) && (
                                             <button
                                                 onClick={() => handleInfoClick(source.type)}
-                                                className="p-1 hover:bg-white/10 rounded-full text-slate-500 hover:text-blue-400 transition-all opacity-0 group-hover:opacity-100"
+                                                className="p-1 hover:bg-white/10 rounded-full text-slate-400 hover:text-blue-400 transition-all opacity-0 group-hover:opacity-100"
                                                 title="Details anzeigen"
                                             >
                                                 <Info size={14} />

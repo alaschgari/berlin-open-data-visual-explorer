@@ -14,19 +14,19 @@ export default function DemoFeatures() {
                 </div>
                 <ul className="space-y-3">
                     <li className="flex justify-between text-sm">
-                        <span className="text-slate-600">Sportverein Berlin e.V.</span>
+                        <span className="text-slate-400">Sportverein Berlin e.V.</span>
                         <span className="font-medium">€45.000</span>
                     </li>
                     <li className="flex justify-between text-sm">
-                        <span className="text-slate-600">Kulturzentrum Kiez</span>
+                        <span className="text-slate-400">Kulturzentrum Kiez</span>
                         <span className="font-medium">€28.500</span>
                     </li>
                     <li className="flex justify-between text-sm">
-                        <span className="text-slate-600">Jugendhilfe gGmbH</span>
+                        <span className="text-slate-400">Jugendhilfe gGmbH</span>
                         <span className="font-medium">€120.000</span>
                     </li>
                 </ul>
-                <p className="mt-4 text-xs text-slate-500 italic">* Demo Data (No Open Data available)</p>
+                <p className="mt-4 text-xs text-slate-400 italic">* Demo Data (No Open Data available)</p>
             </div>
 
             {/* Investments */}
@@ -40,14 +40,14 @@ export default function DemoFeatures() {
                 <div className="space-y-4">
                     <div className="border-l-2 border-green-500 pl-3">
                         <p className="text-sm font-medium text-slate-100">Sanierung Rathaus</p>
-                        <p className="text-xs text-slate-500">2023-2025 • €4.5M Total</p>
+                        <p className="text-xs text-slate-400">2023-2025 • €4.5M Total</p>
                     </div>
                     <div className="border-l-2 border-blue-500 pl-3">
                         <p className="text-sm font-medium text-slate-900">Neubau Schule X</p>
-                        <p className="text-xs text-slate-500">2024-2027 • €12.0M Total</p>
+                        <p className="text-xs text-slate-400">2024-2027 • €12.0M Total</p>
                     </div>
                 </div>
-                <p className="mt-4 text-xs text-slate-500 italic">* Demo Data (No Open Data available)</p>
+                <p className="mt-4 text-xs text-slate-400 italic">* Demo Data (No Open Data available)</p>
             </div>
 
             {/* Personnel */}
@@ -69,11 +69,11 @@ export default function DemoFeatures() {
                                     {1400 + i * 50}
                                 </span>
                             </div>
-                            <span className="text-[10px] text-slate-500">{y}</span>
+                            <span className="text-[10px] text-slate-400">{y}</span>
                         </div>
                     ))}
                 </div>
-                <p className="mt-4 text-xs text-slate-500 italic">* Demo Data (No Open Data available)</p>
+                <p className="mt-4 text-xs text-slate-400 italic">* Demo Data (No Open Data available)</p>
             </div>
         </div>
     );

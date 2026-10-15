@@ -116,7 +116,7 @@ export default function AirQualityMapClient() {
                         </h2>
                         <p className="text-sm text-slate-400 mt-1">{t('air_subtitle')}</p>
                         {stats.measuredAt && (
-                            <p className="text-xs text-slate-500 mt-2 flex items-center gap-1.5">
+                            <p className="text-xs text-slate-400 mt-2 flex items-center gap-1.5">
                                 <Clock className="w-3.5 h-3.5" />
                                 {t('air_measured_at')} {new Date(stats.measuredAt).toLocaleString(locale, { dateStyle: 'short', timeStyle: 'short' })}
                             </p>
@@ -137,17 +137,17 @@ export default function AirQualityMapClient() {
                         </div>
                         <div className="flex items-center gap-4 bg-slate-800/40 border border-slate-700/30 rounded-2xl px-4 py-2.5">
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-slate-500 uppercase">{t('air_stations')}</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase">{t('air_stations')}</span>
                                 <span className="text-sm font-black text-white">{stats.reporting} / {visible.length}</span>
                             </div>
                             <div className="w-px h-8 bg-slate-700/40"></div>
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-slate-500 uppercase">{t('air_average')}</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase">{t('air_average')}</span>
                                 <span className="text-sm font-black text-white">{stats.average !== null ? stats.average.toFixed(1) : '–'}</span>
                             </div>
                             <div className="w-px h-8 bg-slate-700/40"></div>
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-slate-500 uppercase">{t('air_worst')}</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase">{t('air_worst')}</span>
                                 <span className="text-sm font-black" style={{ color: worstLevel?.color ?? NO_DATA_COLOR }}>
                                     {stats.worst ? stats.worst.name.replace(/^\d+\s*/, '') : '–'}
                                 </span>
@@ -210,7 +210,7 @@ export default function AirQualityMapClient() {
                                 <div>
                                     <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">{t(`air_category_${selected.category}`)}</span>
                                     <h3 className="text-lg font-bold text-white leading-tight">{selected.name}</h3>
-                                    <p className="text-xs text-slate-500 mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" />{selected.address}</p>
+                                    <p className="text-xs text-slate-400 mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" />{selected.address}</p>
                                 </div>
                                 <button onClick={() => setSelected(null)} className="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white" aria-label={t('air_close')}>
                                     <X className="w-4 h-4" />
@@ -226,7 +226,7 @@ export default function AirQualityMapClient() {
                                         {selected.lqi ?? '–'}
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-bold text-slate-500 uppercase">{t('air_index')}</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase">{t('air_index')}</p>
                                         <p className="text-base font-bold text-white">{lqiLevel(selected.lqi) ? t(lqiLevel(selected.lqi)!.labelKey) : t('air_no_index')}</p>
                                     </div>
                                 </div>
@@ -259,15 +259,15 @@ export default function AirQualityMapClient() {
                                     </div>
                                     <div className="h-48">
                                         {seriesLoading ? (
-                                            <div className="h-full flex items-center justify-center text-xs text-slate-500">{t('loading')}</div>
+                                            <div className="h-full flex items-center justify-center text-xs text-slate-400">{t('loading')}</div>
                                         ) : chartData.length === 0 ? (
-                                            <div className="h-full flex items-center justify-center text-xs text-slate-500">{t('air_no_series')}</div>
+                                            <div className="h-full flex items-center justify-center text-xs text-slate-400">{t('air_no_series')}</div>
                                         ) : (
                                             <ResponsiveContainer width="100%" height="100%">
                                                 <LineChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                                                     <CartesianGrid stroke="#1e293b" vertical={false} />
-                                                    <XAxis dataKey="time" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} minTickGap={24} />
-                                                    <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                                                    <XAxis dataKey="time" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} minTickGap={24} />
+                                                    <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                                                     <RechartsTooltip
                                                         contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: 11 }}
                                                         formatter={(value) => [`${value} µg/m³`, POLLUTANT_LABELS[pollutant]]}
@@ -277,7 +277,7 @@ export default function AirQualityMapClient() {
                                             </ResponsiveContainer>
                                         )}
                                     </div>
-                                    <p className="text-[10px] text-slate-500 mt-2">{t('air_unit_hint')}</p>
+                                    <p className="text-[10px] text-slate-400 mt-2">{t('air_unit_hint')}</p>
                                 </div>
                             </div>
                         </div>
@@ -285,7 +285,7 @@ export default function AirQualityMapClient() {
                         <div className="flex flex-col h-full">
                             <div className="p-6 border-b border-slate-700/50">
                                 <h3 className="text-xs font-bold text-white uppercase tracking-widest">{t('air_ranking')}</h3>
-                                <p className="text-xs text-slate-500 mt-1">{t('air_select_hint')}</p>
+                                <p className="text-xs text-slate-400 mt-1">{t('air_select_hint')}</p>
                             </div>
                             <div className="overflow-y-auto divide-y divide-slate-800/60">
                                 {[...visible]
@@ -300,7 +300,7 @@ export default function AirQualityMapClient() {
                                             >
                                                 <div className="min-w-0">
                                                     <p className="text-sm font-bold text-slate-200 truncate">{station.name}</p>
-                                                    <p className="text-[10px] text-slate-500 uppercase">{t(`air_category_${station.category}`)}</p>
+                                                    <p className="text-[10px] text-slate-400 uppercase">{t(`air_category_${station.category}`)}</p>
                                                 </div>
                                                 <span
                                                     className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black text-slate-900"
@@ -317,7 +317,7 @@ export default function AirQualityMapClient() {
                 </div>
             </div>
 
-            <p className="text-center text-xs text-slate-500">{t('air_source')}</p>
+            <p className="text-center text-xs text-slate-400">{t('air_source')}</p>
         </div>
     );
 }

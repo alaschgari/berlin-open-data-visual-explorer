@@ -165,7 +165,7 @@ export default function DashboardClient({
                                         onClick={() => startTransition(() => {
                                             router.push(`/?tab=budget&district=${district}&budgetMode=explorer`);
                                         })}
-                                        className={`text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${budgetMode === 'explorer' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-500 hover:text-white'}`}
+                                        className={`text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${budgetMode === 'explorer' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-400 hover:text-white'}`}
                                         disabled={isPending}
                                     >
                                         {t('budget_mode_explorer')}
@@ -174,7 +174,7 @@ export default function DashboardClient({
                                         onClick={() => startTransition(() => {
                                             router.push(`/?tab=budget&district=${district}&budgetMode=historic`);
                                         })}
-                                        className={`text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${budgetMode === 'historic' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-500 hover:text-white'}`}
+                                        className={`text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${budgetMode === 'historic' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-400 hover:text-white'}`}
                                         disabled={isPending}
                                     >
                                         {t('budget_mode_historic')}
@@ -268,7 +268,7 @@ export default function DashboardClient({
                 </div>
 
                 {/* Global Footer */}
-                <footer className="pt-8 pb-4 text-center text-slate-500 text-xs font-medium">
+                <footer className="pt-8 pb-4 text-center text-slate-400 text-xs font-medium">
                     {t('built_by')} <a href="https://github.com/alaschgari" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 transition-colors">@alaschgari</a>
                 </footer>
             </div>

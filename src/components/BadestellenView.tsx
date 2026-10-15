@@ -40,8 +40,8 @@ const SpotPopupContent = ({ spot, t }: { spot: BadestelleFeature; t: any }) => {
                     {spot.properties.data.badname}
                 </h3>
                 <div className="flex items-center gap-1.5">
-                    <MapPin className="w-3 h-3 text-slate-500" />
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    <MapPin className="w-3 h-3 text-slate-400" />
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                         {spot.properties.data.bezirk}
                     </span>
                 </div>
@@ -50,17 +50,17 @@ const SpotPopupContent = ({ spot, t }: { spot: BadestelleFeature; t: any }) => {
             {/* Environmental Data Grid - Compact 2-column */}
             <div className="grid grid-cols-2 gap-2 mb-4">
                 <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 group">
-                    <span className="text-[9px] text-slate-500 uppercase font-black tracking-widest block mb-1 opacity-80">{t('swim_water_temp')}</span>
+                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-widest block mb-1 opacity-80">{t('swim_water_temp')}</span>
                     <div className="flex items-baseline gap-1">
                         <span className="text-lg font-black text-white group-hover:text-blue-400 transition-colors tabular-nums">{spot.properties.data.temp}</span>
-                        <span className="text-[10px] font-bold text-slate-500 uppercase">°C</span>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase">°C</span>
                     </div>
                 </div>
                 <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 group">
-                    <span className="text-[9px] text-slate-500 uppercase font-black tracking-widest block mb-1 opacity-80">{t('swim_visibility')}</span>
+                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-widest block mb-1 opacity-80">{t('swim_visibility')}</span>
                     <div className="flex items-baseline gap-1">
                         <span className="text-lg font-black text-white group-hover:text-emerald-400 transition-colors tabular-nums">{spot.properties.data.sicht}</span>
-                        <span className="text-[10px] font-bold text-slate-500 uppercase">m</span>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase">m</span>
                     </div>
                 </div>
             </div>
@@ -80,7 +80,7 @@ const SpotPopupContent = ({ spot, t }: { spot: BadestelleFeature; t: any }) => {
                     </span>
                 </div>
                 <div className="flex flex-col items-end">
-                    <span className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter leading-none mb-0.5">
+                    <span className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter leading-none mb-0.5">
                         {t('swim_last_sample')}
                     </span>
                     <span className="text-[10px] font-black text-slate-400 pr-1">
@@ -280,14 +280,14 @@ export default function BadestellenView({ district }: { district?: string }) {
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-3">
-                            <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent leading-tight">
+                            <h2 className="text-2xl font-bold text-white leading-tight">
                                 {t('swim_title')}
                             </h2>
                             <button
                                 onClick={() => fetchData(true)}
                                 disabled={cooldownRemaining > 0 || refreshing}
                                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all ${cooldownRemaining > 0
-                                    ? 'bg-slate-900/50 border-slate-700/50 text-slate-600 cursor-not-allowed'
+                                    ? 'bg-slate-900/50 border-slate-700/50 text-slate-400 cursor-not-allowed'
                                     : 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/20 active:scale-[0.98]'
                                     }`}
                                 title={cooldownRemaining > 0 ? `${language === 'de' ? 'Verfügbar in' : 'Available in'} ${formatCooldown(cooldownRemaining)}` : ''}
@@ -298,7 +298,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                             {lastUpdated && (
                                 <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-full border border-slate-700/50 h-fit">
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">{formatLastUpdated(lastUpdated)}</span>
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">{formatLastUpdated(lastUpdated)}</span>
                                 </div>
                             )}
                         </div>
@@ -308,7 +308,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                             </p>
 
                             {latestUpdate && (
-                                <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500/80 bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30">
+                                <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400/80 bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30">
                                     <span className="opacity-60">{t('stand')}:</span>
                                     <span className="text-slate-400">{latestUpdate}</span>
                                 </div>
@@ -318,7 +318,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                                 href="https://www.berlin.de/lageso/gesundheit/gesundheitsschutz/badegewaesser/liste-der-badestellen/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500/80 hover:text-emerald-500 transition-all group bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30 active:scale-[0.98]"
+                                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400/80 hover:text-emerald-500 transition-all group bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30 active:scale-[0.98]"
                             >
                                 <span className="opacity-60">{t('source')}:</span>
                                 <span className="text-slate-400 group-hover:text-emerald-400">LAGeSo Berlin</span>
@@ -473,7 +473,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                                     return (
                                         <tr
                                             key={`group-${item.groupKey}`}
-                                            className="bg-slate-900/30 border-l-4 border-l-emerald-500/50 cursor-pointer hover:bg-slate-800/50 transition-colors"
+                                            className="bg-slate-900/30 cursor-pointer hover:bg-slate-800/50 transition-colors"
                                             onClick={() => toggleGroup(item.groupKey)}
                                         >
                                             <td colSpan={5} className="px-6 py-3">
@@ -484,7 +484,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                                                             {item.groupKey}
                                                         </span>
                                                     </div>
-                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
                                                         {item.count} {t('entries_label')}
                                                     </span>
                                                 </div>
@@ -517,7 +517,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-slate-500 tabular-nums">{spot.properties.data.dat}</td>
+                                        <td className="px-6 py-4 text-slate-400 tabular-nums">{spot.properties.data.dat}</td>
                                     </tr>
                                 );
                             })}

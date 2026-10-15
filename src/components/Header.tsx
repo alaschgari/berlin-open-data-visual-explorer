@@ -35,7 +35,7 @@ export default function Header({ showDistrictSelector }: HeaderProps) {
                     <h1 className="text-2xl font-black text-white tracking-tight leading-none mb-1.5">
                         {t('brand_name')}
                     </h1>
-                    <p className="text-slate-500 font-bold text-[10px] uppercase tracking-wider">{t('brand_sub')}</p>
+                    <p className="text-slate-400 font-bold text-[10px] uppercase tracking-wider">{t('brand_sub')}</p>
                 </div>
             </div>
 

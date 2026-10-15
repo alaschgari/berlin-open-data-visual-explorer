@@ -85,7 +85,7 @@ export default function ComparePage() {
 
                 {/* Title */}
                 <div className="space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <h2 className="text-3xl font-black bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent tracking-tight">
+                    <h2 className="text-3xl font-black text-white tracking-tight">
                         {language === 'de' ? 'Bezirk-Vergleich' : 'District Comparison'}
                     </h2>
                     <p className="text-slate-400 text-xs font-medium">
@@ -108,7 +108,7 @@ export default function ComparePage() {
                             >
                                 {DISTRICTS.map(d => <option key={d} value={d} disabled={d === district2}>{d}</option>)}
                             </select>
-                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M19 9l-7 7-7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
@@ -130,7 +130,7 @@ export default function ComparePage() {
                             >
                                 {DISTRICTS.map(d => <option key={d} value={d} disabled={d === district1}>{d}</option>)}
                             </select>
-                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M19 9l-7 7-7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
@@ -143,7 +143,7 @@ export default function ComparePage() {
                 {loading || !stats1 || !stats2 ? (
                     <div className="h-96 bg-slate-800/20 rounded-3xl border border-slate-700/50 flex flex-col items-center justify-center gap-4">
                         <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-                        <span className="text-slate-500 font-bold uppercase tracking-widest text-xs">{t('loading')}</span>
+                        <span className="text-slate-400 font-bold uppercase tracking-widest text-xs">{t('loading')}</span>
                     </div>
                 ) : (
                     /* Comparison Cards Container */
@@ -159,11 +159,11 @@ export default function ComparePage() {
                                 </div>
                                 <div className="grid grid-cols-2 text-center md:text-left gap-4">
                                     <div>
-                                        <p className="text-slate-500 text-xs font-bold">{district1}</p>
+                                        <p className="text-slate-400 text-xs font-bold">{district1}</p>
                                         <p className="text-2xl font-black text-white">{stats1.population.toLocaleString(language === 'de' ? 'de-DE' : 'en-US')}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-slate-500 text-xs font-bold">{district2}</p>
+                                        <p className="text-slate-400 text-xs font-bold">{district2}</p>
                                         <p className="text-2xl font-black text-white">{stats2.population.toLocaleString(language === 'de' ? 'de-DE' : 'en-US')}</p>
                                     </div>
                                 </div>
@@ -178,11 +178,11 @@ export default function ComparePage() {
                                 </div>
                                 <div className="grid grid-cols-2 text-center md:text-left gap-4">
                                     <div>
-                                        <p className="text-slate-500 text-xs font-bold">{district1}</p>
+                                        <p className="text-slate-400 text-xs font-bold">{district1}</p>
                                         <p className="text-2xl font-black text-white">{formatCurrency(stats1.budget)}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-slate-500 text-xs font-bold">{district2}</p>
+                                        <p className="text-slate-400 text-xs font-bold">{district2}</p>
                                         <p className="text-2xl font-black text-white">{formatCurrency(stats2.budget)}</p>
                                     </div>
                                 </div>
@@ -197,11 +197,11 @@ export default function ComparePage() {
                                 </div>
                                 <div className="grid grid-cols-2 text-center md:text-left gap-4">
                                     <div>
-                                        <p className="text-slate-500 text-xs font-bold">{district1}</p>
+                                        <p className="text-slate-400 text-xs font-bold">{district1}</p>
                                         <p className="text-2xl font-black text-white">{stats1.perCapita.toLocaleString(language === 'de' ? 'de-DE' : 'en-US')} €</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-slate-500 text-xs font-bold">{district2}</p>
+                                        <p className="text-slate-400 text-xs font-bold">{district2}</p>
                                         <p className="text-2xl font-black text-white">{stats2.perCapita.toLocaleString(language === 'de' ? 'de-DE' : 'en-US')} €</p>
                                     </div>
                                 </div>
@@ -216,14 +216,14 @@ export default function ComparePage() {
                                 </div>
                                 <div className="grid grid-cols-2 text-center md:text-left gap-4">
                                     <div>
-                                        <p className="text-slate-500 text-xs font-bold">{district1}</p>
+                                        <p className="text-slate-400 text-xs font-bold">{district1}</p>
                                         <p className="text-2xl font-black text-white">{formatCurrency(stats1.subsidiesAmount)}</p>
-                                        <p className="text-[10px] text-slate-500 font-bold mt-1 uppercase tracking-tight">{stats1.subsidiesCount} {language === 'de' ? 'Bescheide' : 'Grants'}</p>
+                                        <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-tight">{stats1.subsidiesCount} {language === 'de' ? 'Bescheide' : 'Grants'}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-slate-500 text-xs font-bold">{district2}</p>
+                                        <p className="text-slate-400 text-xs font-bold">{district2}</p>
                                         <p className="text-2xl font-black text-white">{formatCurrency(stats2.subsidiesAmount)}</p>
-                                        <p className="text-[10px] text-slate-500 font-bold mt-1 uppercase tracking-tight">{stats2.subsidiesCount} {language === 'de' ? 'Bescheide' : 'Grants'}</p>
+                                        <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-tight">{stats2.subsidiesCount} {language === 'de' ? 'Bescheide' : 'Grants'}</p>
                                     </div>
                                 </div>
                                 {renderBar(stats1.subsidiesAmount, stats2.subsidiesAmount)}
@@ -237,11 +237,11 @@ export default function ComparePage() {
                                 </div>
                                 <div className="grid grid-cols-2 text-center md:text-left gap-4">
                                     <div>
-                                        <p className="text-slate-500 text-xs font-bold">{district1}</p>
+                                        <p className="text-slate-400 text-xs font-bold">{district1}</p>
                                         <p className="text-2xl font-black text-white">{stats1.businessCount.toLocaleString(language === 'de' ? 'de-DE' : 'en-US')}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-slate-500 text-xs font-bold">{district2}</p>
+                                        <p className="text-slate-400 text-xs font-bold">{district2}</p>
                                         <p className="text-2xl font-black text-white">{stats2.businessCount.toLocaleString(language === 'de' ? 'de-DE' : 'en-US')}</p>
                                     </div>
                                 </div>

@@ -67,10 +67,10 @@ export default function BudgetExplanation({ node, year }: BudgetExplanationProps
         return (
             <div className="bg-slate-800/20 border border-slate-700/50 rounded-2xl p-6 h-full flex flex-col items-center justify-center text-center">
                 <div className="w-16 h-16 bg-slate-700/30 rounded-full flex items-center justify-center mb-4">
-                    <HelpCircle className="text-slate-500" size={32} />
+                    <HelpCircle className="text-slate-400" size={32} />
                 </div>
                 <h3 className="text-xl font-bold text-slate-300 mb-2">{t('brand_sub')}</h3>
-                <p className="text-sm text-slate-500 max-w-xs">{t('no_explanation')}</p>
+                <p className="text-sm text-slate-400 max-w-xs">{t('no_explanation')}</p>
             </div>
         );
     }
@@ -116,7 +116,7 @@ export default function BudgetExplanation({ node, year }: BudgetExplanationProps
                 <div className="space-y-3">
                     <div className="flex items-center gap-2">
                         <Lightbulb className="text-amber-400" size={16} />
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Beispiele</span>
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Beispiele</span>
                     </div>
                     <ul className="space-y-2">
                         {examples.map((example, i) => (
@@ -140,12 +140,12 @@ export default function BudgetExplanation({ node, year }: BudgetExplanationProps
                         <Search size={14} className="text-blue-400" />
                         <span className="text-xs font-bold text-slate-300">{t('deep_research')}</span>
                     </div>
-                    <ExternalLink size={14} className="text-slate-500 group-hover:text-blue-400 transition-colors" />
+                    <ExternalLink size={14} className="text-slate-400 group-hover:text-blue-400 transition-colors" />
                 </a>
             </div>
 
             <div className="pt-4 mt-auto border-t border-slate-700/30">
-                <div className="flex items-center justify-between text-[10px] text-slate-500 font-medium">
+                <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium">
                     <div className="flex flex-col">
                         <span>STATUS: AUTOMATIC</span>
                         <span className="text-[8px] text-rose-500/70 font-bold uppercase tracking-tighter">{t('disclaimer_ai')}</span>

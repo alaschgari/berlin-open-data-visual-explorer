@@ -188,12 +188,12 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
                         </div>
                         <div className="flex items-center gap-4 bg-slate-800/40 border border-slate-700/30 rounded-2xl px-4 py-2.5 text-xs text-slate-300">
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-slate-500 uppercase">{t('disabled_parking_locations')}</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase">{t('disabled_parking_locations')}</span>
                                 <span className="text-sm font-black text-white">{stats.locations}</span>
                             </div>
                             <div className="w-px h-8 bg-slate-700/40"></div>
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-slate-500 uppercase">{t('disabled_parking_total')}</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase">{t('disabled_parking_total')}</span>
                                 <span className="text-sm font-black text-white">{stats.totalSpaces}</span>
                             </div>
                         </div>
@@ -274,7 +274,7 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
                                         {selectedSpace.properties.standort}
                                     </h3>
                                     <div className="flex items-center gap-1.5 text-slate-400 text-xs mt-2">
-                                        <MapPin className="w-4 h-4 text-slate-500" />
+                                        <MapPin className="w-4 h-4 text-slate-400" />
                                         <span>{selectedSpace.properties.ortsteil}, {selectedSpace.properties.plz} ({selectedSpace.properties.bezirk})</span>
                                     </div>
                                 </div>
@@ -283,11 +283,11 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="bg-slate-850/50 border border-slate-800/50 rounded-2xl p-4">
-                                        <span className="text-[10px] font-bold text-slate-500 uppercase block mb-1">{t('disabled_parking_spots')}</span>
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">{t('disabled_parking_spots')}</span>
                                         <span className="text-3xl font-black text-white">{selectedSpace.properties.anzahl}</span>
                                     </div>
                                     <div className="bg-slate-850/50 border border-slate-800/50 rounded-2xl p-4">
-                                        <span className="text-[10px] font-bold text-slate-500 uppercase block mb-1">{t('disabled_parking_police')}</span>
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">{t('disabled_parking_police')}</span>
                                         <span className="text-sm font-black text-slate-200 flex items-center gap-1.5 mt-1">
                                             <ShieldAlert className="w-4 h-4 text-amber-500/80" />
                                             {t('disabled_parking_police')} {selectedSpace.properties.polizei || 'N/A'}
@@ -297,7 +297,7 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
 
                                 {selectedSpace.properties.bemerkung && (
                                     <div className="bg-slate-850/30 border border-slate-800/50 rounded-2xl p-4 space-y-2">
-                                        <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1.5">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1.5">
                                             <Clock className="w-3.5 h-3.5" />
                                             {t('disabled_parking_notes')}
                                         </span>
@@ -309,14 +309,14 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
                             </div>
 
                             {selectedSpace.properties.datum && (
-                                <div className="text-[10px] text-slate-500 flex items-center gap-1.5 justify-end mt-4 pt-4 border-t border-slate-800/30">
+                                <div className="text-[10px] text-slate-400 flex items-center gap-1.5 justify-end mt-4 pt-4 border-t border-slate-800/30">
                                     <span>Stand: {new Date(selectedSpace.properties.datum).toLocaleDateString()}</span>
                                 </div>
                             )}
                         </div>
                     ) : (
                         <div className="bg-slate-900/20 border border-dashed border-slate-800 rounded-3xl p-8 flex flex-col items-center justify-center text-center h-full min-h-[300px]">
-                            <Info className="w-10 h-10 text-slate-600 mb-3" />
+                            <Info className="w-10 h-10 text-slate-400 mb-3" />
                             <p className="text-sm text-slate-400 font-medium">{t('disabled_parking_select')}</p>
                         </div>
                     )}
@@ -324,7 +324,7 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
 
                 {/* Right Side: Nearest / All list */}
                 <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-5 space-y-3 h-full flex flex-col max-h-[440px]">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase px-2">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase px-2">
                         {selectedSpace ? t('disabled_parking_list') : 'Standorte'}
                     </span>
                     <div className="space-y-1.5 overflow-y-auto pr-1 flex-1 custom-scrollbar">
@@ -354,7 +354,7 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
                                 >
                                     <div className="truncate pr-2">
                                         <span className="block font-medium truncate">{space.properties.standort}</span>
-                                        <span className={`block text-[10px] mt-0.5 ${isSelected ? 'text-blue-200' : 'text-slate-500'}`}>
+                                        <span className={`block text-[10px] mt-0.5 ${isSelected ? 'text-blue-200' : 'text-slate-400'}`}>
                                             {space.properties.ortsteil} {distanceLabel ? `• ${distanceLabel}` : ''}
                                         </span>
                                     </div>
@@ -365,7 +365,7 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
                             );
                         })}
                         {sortedList.length > 50 && (
-                            <div className="text-[10px] text-slate-500 text-center py-2 italic">
+                            <div className="text-[10px] text-slate-400 text-center py-2 italic">
                                 + {sortedList.length - 50} weitere...
                             </div>
                         )}

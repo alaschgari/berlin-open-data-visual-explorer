@@ -130,7 +130,7 @@ export default function BudgetTreeExplorer({ data, onSelect }: BudgetTreeExplore
                         {hasChildren ? (
                             <button
                                 onClick={(e) => toggleExpand(node.name, e)}
-                                className="p-1 hover:bg-slate-600/50 rounded transition-colors text-slate-500 flex-shrink-0"
+                                className="p-1 hover:bg-slate-600/50 rounded transition-colors text-slate-400 flex-shrink-0"
                             >
                                 {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                             </button>
@@ -159,7 +159,7 @@ export default function BudgetTreeExplorer({ data, onSelect }: BudgetTreeExplore
                                 />
                             </div>
                         </div>
-                        <div className="w-12 text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
+                        <div className="w-12 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
                             {percentage < 0.1 ? '< 0.1%' : `${percentage.toFixed(1)}%`}
                         </div>
                     </div>
@@ -178,13 +178,13 @@ export default function BudgetTreeExplorer({ data, onSelect }: BudgetTreeExplore
         <div className="flex flex-col h-full">
             {/* Search Bar */}
             <div className="relative mb-6">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <input
                     type="text"
                     placeholder="Haushaltstitel suchen..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-slate-900/50 border border-slate-700/50 rounded-2xl py-3 pl-12 pr-4 text-sm text-slate-200 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all placeholder:text-slate-600"
+                    className="w-full bg-slate-900/50 border border-slate-700/50 rounded-2xl py-3 pl-12 pr-4 text-sm text-slate-200 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all placeholder:text-slate-400"
                 />
             </div>
 

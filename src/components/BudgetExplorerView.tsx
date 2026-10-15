@@ -85,7 +85,7 @@ export default function BudgetExplorerView() {
             {loading ? (
                 <div className="h-[500px] flex flex-col items-center justify-center space-y-4 bg-slate-800/20 rounded-3xl border border-slate-700/50">
                     <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-emerald-500"></div>
-                    <p className="text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">{t('loading')}</p>
+                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest animate-pulse">{t('loading')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -97,7 +97,7 @@ export default function BudgetExplorerView() {
                                     <span className="w-1.5 h-6 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50"></span>
                                     {t('budget_hierarchy')}
                                 </h2>
-                                <p className="text-slate-500 text-xs mt-1">{t('budget_subtitle')}</p>
+                                <p className="text-slate-400 text-xs mt-1">{t('budget_subtitle')}</p>
                             </div>
                             <div className="px-3 py-1 bg-slate-900/80 rounded-full border border-slate-700 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
                                 {t('click_to_expand')}
@@ -111,7 +111,7 @@ export default function BudgetExplorerView() {
                                     onSelect={(node) => setSelectedNode(node)}
                                 />
                             ) : (
-                                <div className="h-full flex items-center justify-center text-slate-500">
+                                <div className="h-full flex items-center justify-center text-slate-400">
                                     {t('no_data')}
                                 </div>
                             )}

@@ -96,7 +96,7 @@ export default function TrafficTable({ features, onHighlight, highlightedId }: T
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     <Layers className="w-5 h-5 text-indigo-400" />
                     {t('traffic_segment_data')}
-                    <span className="text-xs font-normal text-slate-500 bg-slate-900/50 px-2 py-0.5 rounded-full border border-slate-700">
+                    <span className="text-xs font-normal text-slate-400 bg-slate-900/50 px-2 py-0.5 rounded-full border border-slate-700">
                         {filteredAndSortedData.length} {t('traffic_active')}
                     </span>
                 </h3>
@@ -104,7 +104,7 @@ export default function TrafficTable({ features, onHighlight, highlightedId }: T
                 <div className="flex items-center gap-3 w-full md:w-auto">
                     {/* Search */}
                     <div className="relative group">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-400 transition-colors" />
                         <input
                             type="text"
                             placeholder={t('traffic_search_placeholder')}
@@ -149,7 +149,7 @@ export default function TrafficTable({ features, onHighlight, highlightedId }: T
                         {groupBy !== 'none' && (
                             <div className="sticky top-0 z-10 bg-slate-900/90 backdrop-blur border-y border-slate-700/50 px-6 py-2 text-xs font-bold text-slate-400 uppercase tracking-widest flex justify-between items-center">
                                 <span>{groupName}</span>
-                                <span className="bg-slate-800 px-2 rounded-full text-slate-500">{(groupFeatures as any[]).length}</span>
+                                <span className="bg-slate-800 px-2 rounded-full text-slate-400">{(groupFeatures as any[]).length}</span>
                             </div>
                         )}
 
@@ -167,7 +167,7 @@ export default function TrafficTable({ features, onHighlight, highlightedId }: T
                                             <TrendingUp className="w-3 h-3" />
                                             {t('traffic_v85')}
                                             <SortIcon field="v85" />
-                                            <div className="ml-1 text-slate-600 hover:text-indigo-400 transition-colors" title={t('traffic_v85_explanation')}>
+                                            <div className="ml-1 text-slate-400 hover:text-indigo-400 transition-colors" title={t('traffic_v85_explanation')}>
                                                 <Info className="w-3 h-3" />
                                             </div>
                                         </div>
@@ -216,7 +216,7 @@ export default function TrafficTable({ features, onHighlight, highlightedId }: T
                                                     <span className={`text-sm font-bold ${props.v85 > 50 ? 'text-rose-400' : 'text-slate-200'}`}>
                                                         {Math.round(props.v85 || 0)}
                                                     </span>
-                                                    <span className="text-[10px] text-slate-500">km/h</span>
+                                                    <span className="text-[10px] text-slate-400">km/h</span>
                                                 </div>
                                             </td>
                                             <td className="p-4 text-sm text-slate-300">{Math.round(props.car || 0)}</td>
@@ -232,7 +232,7 @@ export default function TrafficTable({ features, onHighlight, highlightedId }: T
                 ))}
             </div>
 
-            <div className="p-4 border-t border-slate-700/50 bg-slate-900/30 text-[10px] text-slate-500 text-center">
+            <div className="p-4 border-t border-slate-700/50 bg-slate-900/30 text-[10px] text-slate-400 text-center">
                 {t('traffic_select_row')}
             </div>
         </div>
