@@ -114,7 +114,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 rounded-xl border border-emerald-500/20 w-fit">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                        <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest">
+                        <span className="text-xs font-bold text-emerald-500">
                             {language === 'de' ? 'Datenstand' : 'Data Period'}: {metrics.period}
                         </span>
                     </div>
@@ -122,7 +122,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                     {(metrics.period.includes('2026') || metrics.period.includes('2027')) && (
                         <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 rounded-lg border border-blue-500/20 shadow-sm">
                             <Info size={14} className="text-blue-400" />
-                            <span className="text-[10px] font-black text-blue-400 uppercase tracking-tighter">
+                            <span className="text-xs font-semibold text-blue-400">
                                 {t('tax_planned')}
                             </span>
                         </div>
@@ -166,7 +166,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                             ? `${(activeMetrics.total / 1000000000).toLocaleString(locale, { maximumFractionDigits: 2 })} ${language === 'de' ? 'Mrd. €' : 'B €'}`
                             : formatCurrency(activeMetrics.total)}
                     </p>
-                    <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider mt-1">{metrics.period}</p>
+                    <p className="text-xs text-emerald-500 font-bold mt-1">{metrics.period}</p>
                 </div>
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm">
                     <h3 className="text-slate-400 text-sm font-medium mb-1">Größte Quelle</h3>
@@ -176,11 +176,11 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm">
                     <h3 className="text-slate-400 text-sm font-medium mb-1">{language === 'de' ? 'Anzahl Posten' : 'Items Count'}</h3>
                     <p className="text-3xl font-bold text-blue-400">{filteredData.length}</p>
-                    <p className="text-[10px] text-slate-400 mt-1 uppercase font-bold">{language === 'de' ? 'In dieser Perspektive' : 'In this perspective'}</p>
+                    <p className="text-xs text-slate-400 mt-1 font-bold">{language === 'de' ? 'In dieser Perspektive' : 'In this perspective'}</p>
                 </div>
                 <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm group hover:border-blue-500/50 transition-all">
                     <div className="flex items-center justify-between mb-1">
-                        <h3 className="text-xs text-slate-400 font-bold uppercase tracking-wider">City Tax</h3>
+                        <h3 className="text-xs text-slate-400 font-bold">City Tax</h3>
                         <button
                             onClick={() => handleInfoClick('Übernachtungsteuer')}
                             className="text-slate-400 hover:text-blue-400 transition-colors"
@@ -191,7 +191,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                     <p className="text-3xl font-bold text-blue-400">
                         {formatCurrency(metrics.allData?.find(s => s.type.includes('Übernachtung'))?.monthlyAmount || 0)}
                     </p>
-                    <p className="text-[10px] text-slate-400 mt-1 font-medium">{metrics.period}</p>
+                    <p className="text-xs text-slate-400 mt-1 font-medium">{metrics.period}</p>
                 </div>
             </div>
 
@@ -237,9 +237,9 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                                                 <div className="bg-slate-900 border border-slate-700 p-3 rounded-lg shadow-2xl">
                                                     <p className="text-xs font-bold text-white mb-1">{payload[0].payload.type}</p>
                                                     <p className="text-emerald-400 font-bold text-sm">{formatCurrency(payload[0].value as number)}</p>
-                                                    <p className="text-[10px] text-slate-400 mt-1">{payload[0].payload.category}</p>
+                                                    <p className="text-xs text-slate-400 mt-1">{payload[0].payload.category}</p>
                                                     {getTaxDescription(payload[0].payload.type) && (
-                                                        <p className="text-[10px] text-blue-400 mt-2 italic font-medium">{language === 'de' ? 'Klicke in der Liste für Details' : 'Click in the list for details'}</p>
+                                                        <p className="text-xs text-blue-400 mt-2 italic font-medium">{language === 'de' ? 'Klicke in der Liste für Details' : 'Click in the list for details'}</p>
                                                     )}
                                                 </div>
                                             );
@@ -302,7 +302,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                             <div key={cat.name} className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }}></div>
                                 <div className="min-w-0">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase truncate" title={cat.name}>{cat.name}</p>
+                                    <p className="text-xs font-bold text-slate-400 truncate" title={cat.name}>{cat.name}</p>
                                     <p className="text-xs font-bold text-slate-200">{formatCurrency(cat.value)}</p>
                                 </div>
                             </div>
@@ -319,7 +319,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-700/50">
+                            <tr className="text-xs font-semibold text-slate-400 border-b border-slate-700/50">
                                 <th className="px-6 py-4">{language === 'de' ? 'Steuerart' : 'Tax Type'}</th>
                                 <th className="px-6 py-4">{language === 'de' ? 'Kategorie' : 'Category'}</th>
                                 <th className="px-6 py-4 text-right">{language === 'de' ? 'Einnahmen' : 'Revenue'} ({metrics.period})</th>
@@ -341,7 +341,7 @@ export default function TaxRevenueView({ metrics }: TaxRevenueViewProps) {
                                         )}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${source.type.includes('(Land)') ? 'bg-blue-500/10 text-blue-400' :
+                                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${source.type.includes('(Land)') ? 'bg-blue-500/10 text-blue-400' :
                                             source.type.includes('(Gemeinde)') ? 'bg-purple-500/10 text-purple-400' :
                                                 'bg-slate-900 text-slate-400'
                                             }`}>

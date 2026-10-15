@@ -139,7 +139,7 @@ export default function TrafficHistoryChart({ segmentId }: TrafficHistoryChartPr
         <div className="w-full h-full flex flex-col">
             {/* Controls */}
             <div className="flex justify-between items-center mb-2 px-1">
-                <div className="flex items-center gap-2 text-[10px] text-slate-400 bg-slate-900/30 px-2 py-1 rounded-md border border-slate-800/50">
+                <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-900/30 px-2 py-1 rounded-md border border-slate-800/50">
                     <Info className="w-3 h-3 text-amber-500/70" />
                     <span>{t('traffic_night_gap')}</span>
                 </div>
@@ -147,13 +147,13 @@ export default function TrafficHistoryChart({ segmentId }: TrafficHistoryChartPr
                 <div className="bg-slate-900/50 p-1 rounded-lg border border-slate-700/50 flex gap-1">
                     <button
                         onClick={() => setViewMode('24h')}
-                        className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all flex items-center gap-1 ${viewMode === '24h' ? 'bg-indigo-500 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'}`}
+                        className={`px-3 py-1 text-xs font-bold rounded-md transition-all flex items-center gap-1 ${viewMode === '24h' ? 'bg-indigo-500 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'}`}
                     >
                         <Clock className="w-3 h-3" /> 24h
                     </button>
                     <button
                         onClick={() => setViewMode('7d')}
-                        className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all flex items-center gap-1 ${viewMode === '7d' ? 'bg-indigo-500 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'}`}
+                        className={`px-3 py-1 text-xs font-bold rounded-md transition-all flex items-center gap-1 ${viewMode === '7d' ? 'bg-indigo-500 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'}`}
                     >
                         <BarChart3 className="w-3 h-3" /> 7 Days
                     </button>

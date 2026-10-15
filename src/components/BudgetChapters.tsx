@@ -70,9 +70,9 @@ export default function BudgetChapters({ initialChapters, district }: { initialC
                     {expandedChapter === chapter.name && (
                         <div className="mt-4 pl-4 border-l-2 border-emerald-500/30 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                             {loading === chapter.name ? (
-                                <div className="text-[10px] text-slate-400 animate-pulse">Lade Details...</div>
+                                <div className="text-xs text-slate-400 animate-pulse">Lade Details...</div>
                             ) : details[chapter.name]?.map((detail, idx) => (
-                                <div key={idx} className="text-[10px]">
+                                <div key={idx} className="text-xs">
                                     <div className="flex justify-between text-slate-300 mb-1 leading-tight">
                                         <span className="truncate mr-2 opacity-80" title={detail.title}>{detail.title}</span>
                                         <span className="font-bold">{(detail.budget / 1000000).toLocaleString('de-DE', { maximumFractionDigits: 1 })}M</span>

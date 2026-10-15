@@ -26,6 +26,8 @@ export default function NoiseMapClient() {
     const [source, setSource] = useState<NoiseSource>('total');
     const [showQuietAreas, setShowQuietAreas] = useState(false);
     const [opacity, setOpacity] = useState(0.7);
+    // Remembers which legend URL failed, so switching layers retries automatically
+    const [failedLegend, setFailedLegend] = useState<string | null>(null);
 
     const layer = noiseLayer(source, period);
 
@@ -71,7 +73,7 @@ export default function NoiseMapClient() {
                 {/* Controls */}
                 <div className="w-full lg:w-96 bg-slate-900/50 rounded-3xl border border-slate-700/50 p-6 space-y-6 overflow-y-auto lg:max-h-[600px]">
                     <div>
-                        <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-3">{t('noise_period')}</h3>
+                        <h3 className="text-xs font-bold text-white mb-3">{t('noise_period')}</h3>
                         <div className="grid grid-cols-2 gap-2">
                             {([['den', Sun], ['n', Moon]] as const).map(([p, Icon]) => (
                                 <button
@@ -87,7 +89,7 @@ export default function NoiseMapClient() {
                     </div>
 
                     <div>
-                        <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-3">{t('noise_source')}</h3>
+                        <h3 className="text-xs font-bold text-white mb-3">{t('noise_source')}</h3>
                         <div className="space-y-1.5">
                             {NOISE_SOURCES.map(s => (
                                 <button
@@ -132,10 +134,14 @@ export default function NoiseMapClient() {
                     </div>
 
                     <div>
-                        <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-3">{t('noise_legend')}</h3>
+                        <h3 className="text-xs font-bold text-white mb-3">{t('noise_legend')}</h3>
                         {/* Legend is rendered by the WMS server; white background keeps its dark text readable */}
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={legendUrl(layer)} alt={t('noise_legend')} className="rounded-lg bg-white p-2 max-w-full" loading="lazy" />
+                        {failedLegend === legendUrl(layer) ? (
+                            <p className="text-sm text-slate-400 bg-slate-800/40 rounded-xl p-3">{t('noise_legend_error')}</p>
+                        ) : (
+                            <img src={legendUrl(layer)} alt={t('noise_legend')} className="rounded-lg bg-white p-2 max-w-full" loading="lazy" onError={() => setFailedLegend(legendUrl(layer))} />
+                        )}
                     </div>
 
                     <div className="flex gap-2 text-xs text-slate-400 bg-slate-800/40 rounded-xl p-3">

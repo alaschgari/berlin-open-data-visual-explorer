@@ -109,7 +109,7 @@ export default function WaermeplanungMapClient({ district }: { district?: string
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
                         <Layers className="w-6 h-6 text-emerald-400" />
                         {t('tab_waermeplanung')}
                     </h2>
@@ -125,12 +125,12 @@ export default function WaermeplanungMapClient({ district }: { district?: string
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
                             <Settings className="w-4 h-4 text-emerald-400" />
-                            <h3 className="font-bold text-slate-200 text-sm uppercase tracking-wider">{t('layer')}</h3>
+                            <h3 className="font-bold text-slate-200 text-sm">{t('layer')}</h3>
                         </div>
 
                         {/* Category Versorgungsgebiete */}
                         <div className="space-y-2">
-                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">
+                            <h4 className="text-xs font-bold text-slate-400 mt-2">
                                 {language === 'de' ? 'Wärmeversorgungsgebiete' : 'Heat Supply Areas'}
                             </h4>
                             <div className="space-y-1">
@@ -152,7 +152,7 @@ export default function WaermeplanungMapClient({ district }: { district?: string
 
                         {/* Category Bestand */}
                         <div className="space-y-2">
-                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">
+                            <h4 className="text-xs font-bold text-slate-400 mt-2">
                                 {language === 'de' ? 'Bestandsanalyse' : 'Current State Analysis'}
                             </h4>
                             <div className="space-y-1">
@@ -174,7 +174,7 @@ export default function WaermeplanungMapClient({ district }: { district?: string
 
                         {/* Category Potenzial */}
                         <div className="space-y-2">
-                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">
+                            <h4 className="text-xs font-bold text-slate-400 mt-2">
                                 {language === 'de' ? 'Potenzialanalyse' : 'Potential Analysis'}
                             </h4>
                             <div className="space-y-1">
@@ -198,7 +198,7 @@ export default function WaermeplanungMapClient({ district }: { district?: string
                     {/* Opacity Control */}
                     <div className="space-y-3 pt-4 border-t border-slate-800">
                         <div className="flex items-center justify-between text-xs text-slate-400">
-                            <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
+                            <span className="flex items-center gap-1.5 font-bold">
                                 <Eye className="w-3.5 h-3.5 text-slate-400" />
                                 {t('opacity')}
                             </span>
@@ -217,7 +217,7 @@ export default function WaermeplanungMapClient({ district }: { district?: string
 
                     {/* Legend */}
                     <div className="space-y-3 pt-4 border-t border-slate-800">
-                        <span className="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        <span className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
                             <Info className="w-3.5 h-3.5 text-slate-400" />
                             {t('legend')}
                         </span>

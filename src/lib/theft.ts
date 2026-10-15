@@ -84,13 +84,18 @@ export async function fetchLiveTheftData(type: 'bicycle' | 'car'): Promise<Theft
         return parseResult.data;
     } catch (error) {
         console.error(`Error fetching ${type} theft data:`, error);
-        return cache[type].data || [];
+        // Serve stale data if we have it; otherwise let callers report the outage instead of "0 thefts"
+        if (cache[type].data) return cache[type].data!;
+        throw error;
     }
 }
 
 export async function getTheftCount(): Promise<number> {
     "use cache";
-    const bikeData = await fetchLiveTheftData('bicycle');
-    const carData = await fetchLiveTheftData('car');
-    return (bikeData?.length || 0) + (carData?.length || 0);
+    try {
+        const [bikeData, carData] = await Promise.all([fetchLiveTheftData('bicycle'), fetchLiveTheftData('car')]);
+        return bikeData.length + carData.length;
+    } catch {
+        return 0; // the overview shows "no data" for 0
+    }
 }

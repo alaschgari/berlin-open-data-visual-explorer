@@ -99,7 +99,7 @@ export default function ComparePage() {
                 {/* Selection Bar */}
                 <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl flex flex-col md:flex-row items-center gap-6 relative">
                     <div className="flex-1 w-full space-y-2">
-                        <label className="block text-xs font-black text-emerald-400 uppercase tracking-widest">{language === 'de' ? 'Bezirk A' : 'District A'}</label>
+                        <label className="block text-xs font-semibold text-emerald-400">{language === 'de' ? 'Bezirk A' : 'District A'}</label>
                         <div className="relative">
                             <select
                                 value={district1}
@@ -121,7 +121,7 @@ export default function ComparePage() {
                     </div>
 
                     <div className="flex-1 w-full space-y-2">
-                        <label className="block text-xs font-black text-blue-400 uppercase tracking-widest">{language === 'de' ? 'Bezirk B' : 'District B'}</label>
+                        <label className="block text-xs font-semibold text-blue-400">{language === 'de' ? 'Bezirk B' : 'District B'}</label>
                         <div className="relative">
                             <select
                                 value={district2}
@@ -143,7 +143,7 @@ export default function ComparePage() {
                 {loading || !stats1 || !stats2 ? (
                     <div className="h-96 bg-slate-800/20 rounded-3xl border border-slate-700/50 flex flex-col items-center justify-center gap-4">
                         <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-                        <span className="text-slate-400 font-bold uppercase tracking-widest text-xs">{t('loading')}</span>
+                        <span className="text-slate-400 font-bold text-xs">{t('loading')}</span>
                     </div>
                 ) : (
                     /* Comparison Cards Container */
@@ -155,7 +155,7 @@ export default function ComparePage() {
                             <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl space-y-4">
                                 <div className="flex items-center gap-2 text-slate-400">
                                     <Users className="w-4 h-4 text-emerald-500" />
-                                    <span className="text-xs font-black uppercase tracking-wider">{t('pop_total') || 'Einwohner'}</span>
+                                    <span className="text-xs font-semibold">{t('pop_total') || 'Einwohner'}</span>
                                 </div>
                                 <div className="grid grid-cols-2 text-center md:text-left gap-4">
                                     <div>
@@ -174,7 +174,7 @@ export default function ComparePage() {
                             <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl space-y-4">
                                 <div className="flex items-center gap-2 text-slate-400">
                                     <Landmark className="w-4 h-4 text-emerald-500" />
-                                    <span className="text-xs font-black uppercase tracking-wider">{language === 'de' ? 'Haushalt (Geplant)' : 'Total Budget (Planned)'}</span>
+                                    <span className="text-xs font-semibold">{language === 'de' ? 'Haushalt (Geplant)' : 'Total Budget (Planned)'}</span>
                                 </div>
                                 <div className="grid grid-cols-2 text-center md:text-left gap-4">
                                     <div>
@@ -193,7 +193,7 @@ export default function ComparePage() {
                             <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl space-y-4">
                                 <div className="flex items-center gap-2 text-slate-400">
                                     <Scale className="w-4 h-4 text-emerald-500" />
-                                    <span className="text-xs font-black uppercase tracking-wider">{t('pop_density') || 'Budget pro Kopf'}</span>
+                                    <span className="text-xs font-semibold">{t('pop_density') || 'Budget pro Kopf'}</span>
                                 </div>
                                 <div className="grid grid-cols-2 text-center md:text-left gap-4">
                                     <div>
@@ -212,18 +212,18 @@ export default function ComparePage() {
                             <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl space-y-4">
                                 <div className="flex items-center gap-2 text-slate-400">
                                     <HelpingHand className="w-4 h-4 text-emerald-500" />
-                                    <span className="text-xs font-black uppercase tracking-wider">{language === 'de' ? 'Erhaltene Fördersumme' : 'Total Subsidies Received'}</span>
+                                    <span className="text-xs font-semibold">{language === 'de' ? 'Erhaltene Fördersumme' : 'Total Subsidies Received'}</span>
                                 </div>
                                 <div className="grid grid-cols-2 text-center md:text-left gap-4">
                                     <div>
                                         <p className="text-slate-400 text-xs font-bold">{district1}</p>
                                         <p className="text-2xl font-black text-white">{formatCurrency(stats1.subsidiesAmount)}</p>
-                                        <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-tight">{stats1.subsidiesCount} {language === 'de' ? 'Bescheide' : 'Grants'}</p>
+                                        <p className="text-xs text-slate-400 font-bold mt-1 tracking-tight">{stats1.subsidiesCount} {language === 'de' ? 'Bescheide' : 'Grants'}</p>
                                     </div>
                                     <div className="text-right">
                                         <p className="text-slate-400 text-xs font-bold">{district2}</p>
                                         <p className="text-2xl font-black text-white">{formatCurrency(stats2.subsidiesAmount)}</p>
-                                        <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-tight">{stats2.subsidiesCount} {language === 'de' ? 'Bescheide' : 'Grants'}</p>
+                                        <p className="text-xs text-slate-400 font-bold mt-1 tracking-tight">{stats2.subsidiesCount} {language === 'de' ? 'Bescheide' : 'Grants'}</p>
                                     </div>
                                 </div>
                                 {renderBar(stats1.subsidiesAmount, stats2.subsidiesAmount)}
@@ -233,7 +233,7 @@ export default function ComparePage() {
                             <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl space-y-4">
                                 <div className="flex items-center gap-2 text-slate-400">
                                     <Building2 className="w-4 h-4 text-emerald-500" />
-                                    <span className="text-xs font-black uppercase tracking-wider">{t('biz_operations') || 'Betriebe'}</span>
+                                    <span className="text-xs font-semibold">{t('biz_operations') || 'Betriebe'}</span>
                                 </div>
                                 <div className="grid grid-cols-2 text-center md:text-left gap-4">
                                     <div>

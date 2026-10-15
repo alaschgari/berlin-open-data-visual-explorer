@@ -49,7 +49,7 @@ export function FilterBar({ years, districts }: FilterBarProps) {
     return (
         <div className="bg-slate-900/50 p-6 rounded-2xl shadow-xl border border-slate-800 mb-8 flex flex-wrap gap-6 items-end backdrop-blur-md">
             <div>
-                <label htmlFor="metric-select" className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Ansicht</label>
+                <label htmlFor="metric-select" className="block text-xs font-bold text-slate-400 mb-2 ml-1">Ansicht</label>
                 <select
                     id="metric-select"
                     className="block w-full bg-slate-800 border-slate-700 rounded-xl py-2 pl-3 pr-10 text-sm text-slate-200 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all border font-medium"
@@ -62,7 +62,7 @@ export function FilterBar({ years, districts }: FilterBarProps) {
                 </select>
             </div>
             <div>
-                <label htmlFor="district-select" className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Bezirk</label>
+                <label htmlFor="district-select" className="block text-xs font-bold text-slate-400 mb-2 ml-1">Bezirk</label>
                 <select
                     id="district-select"
                     className="block w-full bg-slate-800 border-slate-700 rounded-xl py-2 pl-3 pr-10 text-sm text-slate-200 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all border font-medium"
@@ -79,7 +79,7 @@ export function FilterBar({ years, districts }: FilterBarProps) {
             </div>
 
             <div>
-                <label htmlFor="year-select" className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Jahr</label>
+                <label htmlFor="year-select" className="block text-xs font-bold text-slate-400 mb-2 ml-1">Jahr</label>
                 <select
                     id="year-select"
                     className="block w-full bg-slate-800 border-slate-700 rounded-xl py-2 pl-3 pr-10 text-sm text-slate-200 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all border font-medium"
@@ -96,7 +96,7 @@ export function FilterBar({ years, districts }: FilterBarProps) {
             </div>
 
             <form onSubmit={handleSearchSubmit} className="flex-1">
-                <label htmlFor="search-input" className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Suchbegriffe</label>
+                <label htmlFor="search-input" className="block text-xs font-bold text-slate-400 mb-2 ml-1">Suchbegriffe</label>
                 <div className="relative">
                     <input
                         type="text"

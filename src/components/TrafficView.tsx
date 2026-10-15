@@ -103,12 +103,12 @@ export default function TrafficView({ district }: TrafficViewProps) {
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <div className="flex flex-col">
                         <div className="flex items-center gap-3">
-                            <h2 className="text-2xl font-bold text-white">
+                            <h2 className="text-xl font-bold text-white">
                                 {t('traffic_title')}
                             </h2>
                             <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-full border border-slate-700/50">
                                 <span className={`w-1.5 h-1.5 rounded-full ${trafficData?.features?.length > 0 ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'} `}></span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                <span className="text-xs font-bold text-slate-400">
                                     {trafficData?.features?.length > 0 ? t('traffic_live_api') : t('traffic_no_data')}
                                 </span>
                             </div>

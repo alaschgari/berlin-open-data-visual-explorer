@@ -41,7 +41,7 @@ const SpotPopupContent = ({ spot, t }: { spot: BadestelleFeature; t: any }) => {
                 </h3>
                 <div className="flex items-center gap-1.5">
                     <MapPin className="w-3 h-3 text-slate-400" />
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <span className="text-xs font-bold text-slate-400">
                         {spot.properties.data.bezirk}
                     </span>
                 </div>
@@ -50,17 +50,17 @@ const SpotPopupContent = ({ spot, t }: { spot: BadestelleFeature; t: any }) => {
             {/* Environmental Data Grid - Compact 2-column */}
             <div className="grid grid-cols-2 gap-2 mb-4">
                 <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 group">
-                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-widest block mb-1 opacity-80">{t('swim_water_temp')}</span>
+                    <span className="text-xs text-slate-400 font-semibold block mb-1 opacity-80">{t('swim_water_temp')}</span>
                     <div className="flex items-baseline gap-1">
                         <span className="text-lg font-black text-white group-hover:text-blue-400 transition-colors tabular-nums">{spot.properties.data.temp}</span>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase">°C</span>
+                        <span className="text-xs font-bold text-slate-400">°C</span>
                     </div>
                 </div>
                 <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 group">
-                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-widest block mb-1 opacity-80">{t('swim_visibility')}</span>
+                    <span className="text-xs text-slate-400 font-semibold block mb-1 opacity-80">{t('swim_visibility')}</span>
                     <div className="flex items-baseline gap-1">
                         <span className="text-lg font-black text-white group-hover:text-emerald-400 transition-colors tabular-nums">{spot.properties.data.sicht}</span>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase">m</span>
+                        <span className="text-xs font-bold text-slate-400">m</span>
                     </div>
                 </div>
             </div>
@@ -80,10 +80,10 @@ const SpotPopupContent = ({ spot, t }: { spot: BadestelleFeature; t: any }) => {
                     </span>
                 </div>
                 <div className="flex flex-col items-end">
-                    <span className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter leading-none mb-0.5">
+                    <span className="text-xs font-bold text-slate-400 leading-none mb-0.5">
                         {t('swim_last_sample')}
                     </span>
-                    <span className="text-[10px] font-black text-slate-400 pr-1">
+                    <span className="text-xs font-semibold text-slate-400 pr-1">
                         {spot.properties.data.dat}
                     </span>
                 </div>
@@ -96,7 +96,7 @@ const SpotPopupContent = ({ spot, t }: { spot: BadestelleFeature; t: any }) => {
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg shadow-emerald-500/20"
             >
-                <span className="text-[10px] uppercase tracking-widest">{t('swim_view_details')}</span>
+                <span className="text-xs">{t('swim_view_details')}</span>
             </a>
         </div>
     );
@@ -280,13 +280,13 @@ export default function BadestellenView({ district }: { district?: string }) {
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-3">
-                            <h2 className="text-2xl font-bold text-white leading-tight">
+                            <h2 className="text-xl font-bold text-white">
                                 {t('swim_title')}
                             </h2>
                             <button
                                 onClick={() => fetchData(true)}
                                 disabled={cooldownRemaining > 0 || refreshing}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all ${cooldownRemaining > 0
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all ${cooldownRemaining > 0
                                     ? 'bg-slate-900/50 border-slate-700/50 text-slate-400 cursor-not-allowed'
                                     : 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/20 active:scale-[0.98]'
                                     }`}
@@ -298,7 +298,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                             {lastUpdated && (
                                 <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900/50 rounded-full border border-slate-700/50 h-fit">
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">{formatLastUpdated(lastUpdated)}</span>
+                                    <span className="text-xs font-bold text-slate-400 leading-none">{formatLastUpdated(lastUpdated)}</span>
                                 </div>
                             )}
                         </div>
@@ -308,7 +308,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                             </p>
 
                             {latestUpdate && (
-                                <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400/80 bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30">
+                                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-400/80 bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30">
                                     <span className="opacity-60">{t('stand')}:</span>
                                     <span className="text-slate-400">{latestUpdate}</span>
                                 </div>
@@ -318,7 +318,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                                 href="https://www.berlin.de/lageso/gesundheit/gesundheitsschutz/badegewaesser/liste-der-badestellen/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400/80 hover:text-emerald-500 transition-all group bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30 active:scale-[0.98]"
+                                className="flex items-center gap-1.5 text-xs font-semibold text-slate-400/80 hover:text-emerald-500 transition-all group bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30 active:scale-[0.98]"
                             >
                                 <span className="opacity-60">{t('source')}:</span>
                                 <span className="text-slate-400 group-hover:text-emerald-400">LAGeSo Berlin</span>
@@ -403,13 +403,13 @@ export default function BadestellenView({ district }: { district?: string }) {
                     <div className="flex gap-2">
                         <button
                             onClick={() => setGroupBy(groupBy === 'district' ? 'none' : 'district')}
-                            className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${groupBy === 'district' ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20' : 'bg-slate-900/50 text-slate-400 border border-slate-700/50 hover:text-white hover:bg-slate-800'}`}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${groupBy === 'district' ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20' : 'bg-slate-900/50 text-slate-400 border border-slate-700/50 hover:text-white hover:bg-slate-800'}`}
                         >
                             {t('by_district')}
                         </button>
                         <button
                             onClick={() => setGroupBy(groupBy === 'status' ? 'none' : 'status')}
-                            className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${groupBy === 'status' ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20' : 'bg-slate-900/50 text-slate-400 border border-slate-700/50 hover:text-white hover:bg-slate-800'}`}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${groupBy === 'status' ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20' : 'bg-slate-900/50 text-slate-400 border border-slate-700/50 hover:text-white hover:bg-slate-800'}`}
                         >
                             {t('by_status')}
                         </button>
@@ -417,7 +417,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm min-w-[640px]">
-                        <thead className="bg-slate-900/50 text-slate-400 uppercase text-[10px] font-black tracking-widest border-b border-slate-700/50">
+                        <thead className="bg-slate-900/50 text-slate-400 text-xs font-semibold border-b border-slate-700/50">
                             <tr>
                                 <th
                                     className="px-6 py-4 cursor-pointer hover:text-white transition-colors group"
@@ -480,11 +480,11 @@ export default function BadestellenView({ district }: { district?: string }) {
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-3">
                                                         <ChevronDown className={`w-4 h-4 text-emerald-500 transition-transform ${isCollapsed ? '-rotate-90' : ''}`} />
-                                                        <span className="font-black text-emerald-400 uppercase tracking-widest text-[11px]">
+                                                        <span className="font-semibold text-emerald-400 text-[11px]">
                                                             {item.groupKey}
                                                         </span>
                                                     </div>
-                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+                                                    <span className="text-xs font-bold text-slate-400">
                                                         {item.count} {t('entries_label')}
                                                     </span>
                                                 </div>
@@ -512,7 +512,7 @@ export default function BadestellenView({ district }: { district?: string }) {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-1.5 mb-2">
                                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: status.color }}></div>
-                                                <span className="text-[10px] font-black tracking-widest uppercase" style={{ color: status.color }}>
+                                                <span className="text-xs font-semibold" style={{ color: status.color }}>
                                                     {t(status.labelKey)}
                                                 </span>
                                             </div>

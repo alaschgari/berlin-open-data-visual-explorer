@@ -188,12 +188,12 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
                         </div>
                         <div className="flex items-center gap-4 bg-slate-800/40 border border-slate-700/30 rounded-2xl px-4 py-2.5 text-xs text-slate-300">
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase">{t('disabled_parking_locations')}</span>
+                                <span className="text-xs font-bold text-slate-400">{t('disabled_parking_locations')}</span>
                                 <span className="text-sm font-black text-white">{stats.locations}</span>
                             </div>
                             <div className="w-px h-8 bg-slate-700/40"></div>
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase">{t('disabled_parking_total')}</span>
+                                <span className="text-xs font-bold text-slate-400">{t('disabled_parking_total')}</span>
                                 <span className="text-sm font-black text-white">{stats.totalSpaces}</span>
                             </div>
                         </div>
@@ -265,7 +265,7 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
                         <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 space-y-5 shadow-xl h-full flex flex-col justify-between">
                             <div className="space-y-4">
                                 <div className="flex items-start justify-between">
-                                    <span className="text-[11px] font-extrabold text-blue-300 uppercase tracking-wider bg-blue-500/20 border border-blue-500/30 px-3 py-1.5 rounded-full">
+                                    <span className="text-[11px] font-extrabold text-blue-300 bg-blue-500/20 border border-blue-500/30 px-3 py-1.5 rounded-full">
                                         {selectedSpace.properties.bezeichnun || 'Behindertenparkplatz'}
                                     </span>
                                 </div>
@@ -283,11 +283,11 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="bg-slate-850/50 border border-slate-800/50 rounded-2xl p-4">
-                                        <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">{t('disabled_parking_spots')}</span>
+                                        <span className="text-xs font-bold text-slate-400 block mb-1">{t('disabled_parking_spots')}</span>
                                         <span className="text-3xl font-black text-white">{selectedSpace.properties.anzahl}</span>
                                     </div>
                                     <div className="bg-slate-850/50 border border-slate-800/50 rounded-2xl p-4">
-                                        <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">{t('disabled_parking_police')}</span>
+                                        <span className="text-xs font-bold text-slate-400 block mb-1">{t('disabled_parking_police')}</span>
                                         <span className="text-sm font-black text-slate-200 flex items-center gap-1.5 mt-1">
                                             <ShieldAlert className="w-4 h-4 text-amber-500/80" />
                                             {t('disabled_parking_police')} {selectedSpace.properties.polizei || 'N/A'}
@@ -297,7 +297,7 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
 
                                 {selectedSpace.properties.bemerkung && (
                                     <div className="bg-slate-850/30 border border-slate-800/50 rounded-2xl p-4 space-y-2">
-                                        <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1.5">
+                                        <span className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
                                             <Clock className="w-3.5 h-3.5" />
                                             {t('disabled_parking_notes')}
                                         </span>
@@ -309,7 +309,7 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
                             </div>
 
                             {selectedSpace.properties.datum && (
-                                <div className="text-[10px] text-slate-400 flex items-center gap-1.5 justify-end mt-4 pt-4 border-t border-slate-800/30">
+                                <div className="text-xs text-slate-400 flex items-center gap-1.5 justify-end mt-4 pt-4 border-t border-slate-800/30">
                                     <span>Stand: {new Date(selectedSpace.properties.datum).toLocaleDateString()}</span>
                                 </div>
                             )}
@@ -324,7 +324,7 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
 
                 {/* Right Side: Nearest / All list */}
                 <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-5 space-y-3 h-full flex flex-col max-h-[440px]">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase px-2">
+                    <span className="text-xs font-bold text-slate-400 px-2">
                         {selectedSpace ? t('disabled_parking_list') : 'Standorte'}
                     </span>
                     <div className="space-y-1.5 overflow-y-auto pr-1 flex-1 custom-scrollbar">
@@ -354,18 +354,18 @@ export default function DisabledParkingMapClient({ district }: { district?: stri
                                 >
                                     <div className="truncate pr-2">
                                         <span className="block font-medium truncate">{space.properties.standort}</span>
-                                        <span className={`block text-[10px] mt-0.5 ${isSelected ? 'text-blue-200' : 'text-slate-400'}`}>
+                                        <span className={`block text-xs mt-0.5 ${isSelected ? 'text-blue-200' : 'text-slate-400'}`}>
                                             {space.properties.ortsteil} {distanceLabel ? `• ${distanceLabel}` : ''}
                                         </span>
                                     </div>
-                                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-black ${isSelected ? 'bg-blue-700 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                                    <span className={`px-2 py-0.5 rounded-md text-xs font-semibold ${isSelected ? 'bg-blue-700 text-white' : 'bg-slate-800 text-slate-400'}`}>
                                         {space.properties.anzahl}
                                     </span>
                                 </button>
                             );
                         })}
                         {sortedList.length > 50 && (
-                            <div className="text-[10px] text-slate-400 text-center py-2 italic">
+                            <div className="text-xs text-slate-400 text-center py-2 italic">
                                 + {sortedList.length - 50} weitere...
                             </div>
                         )}

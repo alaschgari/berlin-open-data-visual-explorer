@@ -241,7 +241,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
       <div style="font-family: sans-serif; padding: 4px; background: #0f172a; color: #e2e8f0; border-radius: 8px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px solid #334155; padding-bottom: 4px;">
             <h3 style="font-weight: bold; margin: 0; color: #f1f5f9;">${feature.properties.PLR_NAME}</h3>
-            <span style="font-size: 9px; color: #94a3b8; margin-left: 8px; text-transform: uppercase;">${districtName}</span>
+            <span style="font-size: 11px; color: #94a3b8; margin-left: 8px;">${districtName}</span>
         </div>
         <div style="display: grid; grid-template-columns: auto auto; gap: 8px; font-size: 12px;">
           <span style="color: #94a3b8;">${themeLabel}:</span>
@@ -334,11 +334,11 @@ export default function PopulationMapClient({ district }: { district: string }) 
                         <Users className="w-5 h-5 text-emerald-500" />
                     </div>
                     <div>
-                        <h2 className="text-sm font-bold text-white uppercase tracking-wider">{t('pop_title')}</h2>
-                        <p className="text-[10px] text-slate-400 font-medium">{t('pop_subtitle')}</p>
+                        <h2 className="text-sm font-bold text-white">{t('pop_title')}</h2>
+                        <p className="text-xs text-slate-400 font-medium">{t('pop_subtitle')}</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                <div className="flex items-center gap-4 text-xs font-bold text-slate-400">
                     <span className="flex items-center gap-2 bg-slate-900/50 px-3 py-1.5 rounded-lg border border-white/5">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         {language === 'de' ? 'Stand' : 'As of'}: 31.12.2024
@@ -389,14 +389,14 @@ export default function PopulationMapClient({ district }: { district: string }) 
                                 className={`p-2.5 rounded-xl transition-all flex items-center gap-2 ${selectedTheme === t.id ? 'bg-emerald-500 text-slate-900 shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
                             >
                                 <t.icon className="w-4 h-4" />
-                                <span className="text-[10px] font-bold uppercase tracking-tight hidden md:inline">{t.label}</span>
+                                <span className="text-xs font-bold tracking-tight hidden md:inline">{t.label}</span>
                             </button>
                         ))}
                     </div>
 
                     {/* Status & Export */}
                     <div className="absolute bottom-6 left-6 flex items-center gap-3 z-[1000]">
-                        <div className="bg-slate-900/90 px-4 py-2 rounded-xl border border-slate-700 backdrop-blur-md text-[10px] text-slate-400 font-bold uppercase tracking-widest shadow-xl">
+                        <div className="bg-slate-900/90 px-4 py-2 rounded-xl border border-slate-700 backdrop-blur-md text-xs text-slate-400 font-bold shadow-xl">
                             {featureCount} {t('pop_districts_loaded')}
                         </div>
                         <button
@@ -404,13 +404,13 @@ export default function PopulationMapClient({ district }: { district: string }) 
                             className="bg-slate-900/90 p-2 rounded-xl border border-slate-700 backdrop-blur-md text-slate-400 hover:text-white transition-all shadow-xl flex items-center gap-2 group"
                         >
                             <Download className="w-4 h-4" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest overflow-hidden max-w-0 group-hover:max-w-[100px] transition-all duration-300">CSV Export</span>
+                            <span className="text-xs font-bold overflow-hidden max-w-0 group-hover:max-w-[100px] transition-all duration-300">CSV Export</span>
                         </button>
                     </div>
 
                     {/* Legend */}
                     <div className="absolute bottom-6 right-6 bg-slate-900/90 p-4 rounded-xl border border-slate-700 backdrop-blur-md shadow-xl z-[1000] min-w-[140px]">
-                        <h4 className="text-[10px] font-black text-slate-400 mb-3 uppercase tracking-[0.2em] border-b border-slate-800 pb-2">
+                        <h4 className="text-xs font-semibold text-slate-400 mb-3 border-b border-slate-800 pb-2">
                             {selectedTheme === 'total' ? t('pop_total') :
                                 selectedTheme === 'density' ? t('pop_density') :
                                     selectedTheme === 'kita' ? t('pop_kita') :
@@ -451,7 +451,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
                                 return labels.map((label, i) => (
                                     <div key={i} className="flex items-center gap-3 group/item">
                                         <span className="w-2.5 h-2.5 rounded-full shadow-sm ring-1 ring-white/10" style={{ backgroundColor: scaleColors[i] }}></span>
-                                        <span className="text-[9px] font-bold text-slate-400 group-hover/item:text-slate-200 transition-colors uppercase tracking-wider">{label}</span>
+                                        <span className="text-xs font-bold text-slate-400 group-hover/item:text-slate-200 transition-colors">{label}</span>
                                     </div>
                                 ));
                             })()}
@@ -465,7 +465,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
                         <div className="flex flex-col h-full animate-in fade-in slide-in-from-right-4 duration-500">
                             <div className="p-6 border-b border-slate-700/50 flex justify-between items-start">
                                 <div>
-                                    <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1 block">
+                                    <span className="text-xs font-semibold text-emerald-500 mb-1 block">
                                         {getDistrictName(selectedFeature.demographics?.BEZ || '')} • {t('pop_area')}
                                     </span>
                                     <h2 className="text-xl font-bold text-white leading-tight">{selectedFeature.properties.PLR_NAME}</h2>
@@ -480,21 +480,21 @@ export default function PopulationMapClient({ district }: { district: string }) 
                                 {/* Key Metrics */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="bg-slate-800/40 p-4 rounded-2xl border border-white/5">
-                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('pop_total')}</p>
+                                        <p className="text-xs font-bold text-slate-400 mb-1">{t('pop_total')}</p>
                                         <p className="text-2xl font-bold text-white">{(selectedFeature.demographics?.E_E || 0).toLocaleString(locale)}</p>
                                     </div>
                                     <div className="bg-slate-800/40 p-4 rounded-2xl border border-white/5">
-                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('pop_density')}</p>
+                                        <p className="text-xs font-bold text-slate-400 mb-1">{t('pop_density')}</p>
                                         <p className="text-2xl font-bold text-emerald-400">
                                             {Math.round((selectedFeature.demographics?.E_E || 0) / (selectedFeature.properties.GROESSE_M2 / 1000000)).toLocaleString(locale)}
-                                            <span className="text-[10px] ml-1 text-slate-400">/km²</span>
+                                            <span className="text-xs ml-1 text-slate-400">/km²</span>
                                         </p>
                                     </div>
                                 </div>
 
                                 {/* Age Distribution Chart */}
                                 <div>
-                                    <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <h3 className="text-xs font-bold text-white mb-4 flex items-center gap-2">
                                         <ChevronRight className="w-3 h-3 text-emerald-500" />
                                         {t('pop_age_groups')}
                                     </h3>
@@ -528,13 +528,13 @@ export default function PopulationMapClient({ district }: { district: string }) 
 
                                 {/* Gender Distribution */}
                                 <div>
-                                    <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <h3 className="text-xs font-bold text-white mb-4 flex items-center gap-2">
                                         <ChevronRight className="w-3 h-3 text-emerald-500" />
                                         {t('pop_gender')}
                                     </h3>
                                     {selectedFeature.demographics && (
                                         <div className="space-y-3">
-                                            <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider">
+                                            <div className="flex justify-between text-xs font-bold">
                                                 <span className="text-pink-400">{t('pop_women')} {Math.round((selectedFeature.demographics.E_EW / selectedFeature.demographics.E_E) * 100)}%</span>
                                                 <span className="text-blue-400">{t('pop_men')} {Math.round((selectedFeature.demographics.E_EM / selectedFeature.demographics.E_E) * 100)}%</span>
                                             </div>
@@ -548,7 +548,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
                             </div>
 
                             <div className="p-6 mt-auto border-t border-slate-700/50 bg-slate-800/20">
-                                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
+                                <p className="text-xs text-slate-400 font-bold leading-relaxed">
                                     {t('pop_source_note')}
                                 </p>
                             </div>
@@ -573,7 +573,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
                             <ChevronRight className="w-4 h-4 text-emerald-500" />
                             {t('pop_top_10')}
                         </h3>
-                        <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-medium">
+                        <p className="text-xs text-slate-400 mt-1 font-medium">
                             {t('sorted_by')} {
                                 selectedTheme === 'total' ? t('pop_total') :
                                     selectedTheme === 'density' ? t('pop_density') :
@@ -588,7 +588,7 @@ export default function PopulationMapClient({ district }: { district: string }) 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-separate border-spacing-y-2">
                         <thead>
-                            <tr className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            <tr className="text-xs font-semibold text-slate-400">
                                 <th className="px-4 py-2">{t('rank')}</th>
                                 <th className="px-4 py-2">{t('pop_neighborhood_district')}</th>
                                 <th className="px-4 py-2 text-right">{t('value')}</th>
@@ -625,20 +625,20 @@ export default function PopulationMapClient({ district }: { district: string }) 
                                         }}
                                         className="group cursor-pointer"
                                     >
-                                        <td className="bg-slate-900/40 rounded-l-xl px-4 py-3 font-mono text-[10px] text-slate-400 group-hover:text-emerald-500 transition-colors">
+                                        <td className="bg-slate-900/40 rounded-l-xl px-4 py-3 font-mono text-xs text-slate-400 group-hover:text-emerald-500 transition-colors">
                                             #{index + 1}
                                         </td>
                                         <td className="bg-slate-900/40 px-4 py-3 font-bold text-slate-200 group-hover:text-white transition-colors">
                                             <div className="flex flex-col">
                                                 <span>{item.name}</span>
-                                                <span className="text-[10px] text-slate-400 font-medium uppercase tracking-tight">
+                                                <span className="text-xs text-slate-400 font-medium tracking-tight">
                                                     {getDistrictName(getPopData(item.id)?.BEZ || '')}
                                                 </span>
                                             </div>
                                         </td>
                                         <td className="bg-slate-900/40 px-4 py-3 text-right font-mono font-bold text-emerald-400">
                                             {selectedTheme === 'women_ratio' ? `${item.val.toFixed(1)}%` : Math.round(item.val).toLocaleString(locale)}
-                                            <span className="text-[10px] ml-1 text-slate-400 font-normal">
+                                            <span className="text-xs ml-1 text-slate-400 font-normal">
                                                 {selectedTheme === 'density' ? '/km²' : ''}
                                             </span>
                                         </td>
@@ -662,12 +662,12 @@ export default function PopulationMapClient({ district }: { district: string }) 
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-slate-700/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div className="flex items-center gap-4 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                    <div className="flex items-center gap-4 text-xs font-bold text-slate-400">
                         <span>© 2024 Land Berlin</span>
                         <span className="w-1 h-1 rounded-full bg-slate-700"></span>
                         <span>{t('pop_source_note')}</span>
                     </div>
-                    <p className="text-[10px] text-slate-400 font-medium italic">
+                    <p className="text-xs text-slate-400 font-medium italic">
                         {t('pop_disclaimer')}
                     </p>
                 </div>

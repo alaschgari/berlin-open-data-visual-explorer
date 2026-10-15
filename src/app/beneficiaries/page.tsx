@@ -58,7 +58,7 @@ export default function BeneficiariesPage() {
                         </h2>
                         <div className="flex items-center gap-1 px-2.5 py-0.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest leading-none">Live DB</span>
+                            <span className="text-xs font-bold text-emerald-500 leading-none">Live DB</span>
                         </div>
                     </div>
                     <p className="text-slate-400 text-xs font-medium">
@@ -72,7 +72,7 @@ export default function BeneficiariesPage() {
                 {/* Quick Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-600">
                     <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl flex flex-col justify-between">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
+                        <span className="text-xs font-bold text-slate-400 mb-2">
                             {language === 'de' ? 'Matching Einträge' : 'Matching Entries'}
                         </span>
                         <div className="flex items-baseline gap-2">
@@ -80,7 +80,7 @@ export default function BeneficiariesPage() {
                                 {loading ? '...' : records.length}
                             </span>
                             {records.length === 100 && (
-                                <span className="text-[10px] text-amber-500 font-bold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                                <span className="text-xs text-amber-500 font-bold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
                                     Limit (100)
                                 </span>
                             )}
@@ -88,7 +88,7 @@ export default function BeneficiariesPage() {
                     </div>
 
                     <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl flex flex-col justify-between">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
+                        <span className="text-xs font-bold text-slate-400 mb-2">
                             {language === 'de' ? 'Gesamtfördersumme (Sichtbar)' : 'Total Sum (Visible)'}
                         </span>
                         <span className="text-3xl font-black text-emerald-400 leading-none">
@@ -97,7 +97,7 @@ export default function BeneficiariesPage() {
                     </div>
 
                     <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl flex flex-col justify-between">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
+                        <span className="text-xs font-bold text-slate-400 mb-2">
                             {language === 'de' ? 'Durchschnittliche Zuwendung' : 'Average Grant'}
                         </span>
                         <span className="text-3xl font-black text-blue-400 leading-none">
@@ -139,7 +139,7 @@ export default function BeneficiariesPage() {
                 <div className="bg-slate-800/40 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm min-w-[700px]">
-                            <thead className="bg-slate-900/50 text-slate-400 uppercase text-[10px] font-black tracking-widest border-b border-slate-700/50">
+                            <thead className="bg-slate-900/50 text-slate-400 text-xs font-semibold border-b border-slate-700/50">
                                 <tr>
                                     <th className="px-6 py-4">{t('recipient_label')}</th>
                                     <th className="px-6 py-4">{t('purpose_label')}</th>
@@ -153,7 +153,7 @@ export default function BeneficiariesPage() {
                                         <td colSpan={4} className="px-6 py-16 text-center">
                                             <div className="flex flex-col items-center gap-3">
                                                 <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-                                                <span className="text-slate-400 font-bold uppercase tracking-widest text-xs">
+                                                <span className="text-slate-400 font-bold text-xs">
                                                     {t('loading')}
                                                 </span>
                                             </div>
@@ -165,7 +165,7 @@ export default function BeneficiariesPage() {
                                             {b.recipient}
                                         </td>
                                         <td className="px-6 py-4 text-slate-400 max-w-[300px] truncate" title={b.purpose}>
-                                            <span className="block text-[10px] text-emerald-400 font-bold uppercase tracking-wide mb-0.5">{b.area}</span>
+                                            <span className="block text-xs text-emerald-400 font-bold tracking-wide mb-0.5">{b.area}</span>
                                             {b.purpose || '-'}
                                         </td>
                                         <td className="px-6 py-4 text-slate-400 text-xs font-bold" title={b.provider}>

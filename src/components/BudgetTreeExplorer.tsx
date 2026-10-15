@@ -159,7 +159,7 @@ export default function BudgetTreeExplorer({ data, onSelect }: BudgetTreeExplore
                                 />
                             </div>
                         </div>
-                        <div className="w-12 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+                        <div className="w-12 text-xs font-bold text-slate-400">
                             {percentage < 0.1 ? '< 0.1%' : `${percentage.toFixed(1)}%`}
                         </div>
                     </div>

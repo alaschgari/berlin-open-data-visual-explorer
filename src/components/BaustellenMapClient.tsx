@@ -122,7 +122,7 @@ const BaustellenPopupContent = ({ site, t }: { site: BaustellenFeature; t: (key:
                 </div>
                 <div className="flex items-center gap-1.5">
                     <MapPin className="w-3 h-3 text-slate-400" />
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <span className="text-xs font-bold text-slate-400">
                         {p.subtype || t('unknown')}
                     </span>
                 </div>
@@ -130,12 +130,12 @@ const BaustellenPopupContent = ({ site, t }: { site: BaustellenFeature; t: (key:
 
             <div className="space-y-3 mb-4">
                 <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50">
-                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-widest block mb-1 opacity-80">{t('baustellen_severity')}</span>
+                    <span className="text-xs text-slate-400 font-semibold block mb-1 opacity-80">{t('baustellen_severity')}</span>
                     <span className={`text-sm font-bold ${isMajor ? 'text-rose-400' : 'text-amber-400'}`}>{p.severity || t('na')}</span>
                 </div>
 
                 <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50">
-                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-widest block mb-1 opacity-80">{t('baustellen_period')}</span>
+                    <span className="text-xs text-slate-400 font-semibold block mb-1 opacity-80">{t('baustellen_period')}</span>
                     <div className="flex items-center gap-2 text-xs text-slate-200 font-bold">
                         <Calendar className="w-3 h-3 text-slate-400" />
                         <span>{(p.validity?.from || '').split(' ')[0]} — {(p.validity?.to || '').split(' ')[0]}</span>
@@ -147,7 +147,7 @@ const BaustellenPopupContent = ({ site, t }: { site: BaustellenFeature; t: (key:
                 </div>
             </div>
 
-            <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-widest px-1">
+            <div className="flex items-center gap-2 text-xs text-slate-400 font-bold px-1">
                 <Info className="w-3 h-3" />
                 <span>{p.direction || '-'}</span>
             </div>
@@ -263,7 +263,7 @@ export default function BaustellenMapClient({ district }: { district?: string })
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-3">
-                            <h2 className="text-2xl font-bold text-white leading-tight">
+                            <h2 className="text-xl font-bold text-white">
                                 {t('baustellen_title')}
                             </h2>
                         </div>
@@ -275,7 +275,7 @@ export default function BaustellenMapClient({ district }: { district?: string })
                                 href="https://viz.berlin.de"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400/80 hover:text-emerald-500 transition-all group bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30 active:scale-[0.98]"
+                                className="flex items-center gap-1.5 text-xs font-semibold text-slate-400/80 hover:text-emerald-500 transition-all group bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30 active:scale-[0.98]"
                             >
                                 <span className="opacity-60">{t('source')}:</span>
                                 <span className="text-slate-400 group-hover:text-emerald-400">VIZ Berlin</span>
@@ -309,7 +309,7 @@ export default function BaustellenMapClient({ district }: { district?: string })
                         <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-900/50 rounded-xl border border-slate-700/50">
                             <HardHat className="w-4 h-4 text-emerald-500" />
                             <span className="text-sm font-black text-white tabular-nums">{filteredSites.length}</span>
-                            <span className="text-[10px] font-bold text-slate-400 uppercase ml-1">{t('baustellen_count')}</span>
+                            <span className="text-xs font-bold text-slate-400 ml-1">{t('baustellen_count')}</span>
                         </div>
                     </div>
                 </div>
@@ -407,11 +407,11 @@ export default function BaustellenMapClient({ district }: { district?: string })
                                         <h3 className="font-bold text-sm text-white truncate mb-0.5">
                                             {p.street}
                                         </h3>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 truncate">
+                                        <p className="text-xs font-semibold text-slate-400 mb-2 truncate">
                                             {p.subtype} • {p.severity}
                                         </p>
                                         <div className="flex flex-col gap-1.5">
-                                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400">
+                                            <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-400">
                                                 <Calendar className="w-3 h-3" />
                                                 {(p.validity?.from || '').split(' ')[0]} — {(p.validity?.to || '').split(' ')[0]}
                                             </span>

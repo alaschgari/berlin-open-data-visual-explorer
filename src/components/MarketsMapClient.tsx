@@ -95,7 +95,7 @@ const MarketPopupContent = ({ market, t }: { market: MarketFeature; t: (key: str
                 </h3>
                 <div className="flex items-center gap-1.5">
                     <MapPin className="w-3 h-3 text-slate-400" />
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <span className="text-xs font-bold text-slate-400">
                         {d.bezirk}
                     </span>
                 </div>
@@ -103,11 +103,11 @@ const MarketPopupContent = ({ market, t }: { market: MarketFeature; t: (key: str
 
             <div className="grid grid-cols-2 gap-2 mb-4 items-start">
                 <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 flex flex-col min-h-full">
-                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-widest block mb-1 opacity-80">{t('markets_days')}</span>
+                    <span className="text-xs text-slate-400 font-semibold block mb-1 opacity-80">{t('markets_days')}</span>
                     <span className="text-sm font-bold text-white leading-tight">{d.tage}</span>
                 </div>
                 <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 flex flex-col min-h-full">
-                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-widest block mb-2 opacity-80">{t('markets_times')}</span>
+                    <span className="text-xs text-slate-400 font-semibold block mb-2 opacity-80">{t('markets_times')}</span>
                     <div className="flex flex-col gap-1.5 min-h-0 flex-1">
                         {d.zeiten.split('\n').map(l => l.trim()).filter(Boolean).map((line, i) => {
                             const isClosed = line.toLowerCase().includes('geschloss');
@@ -157,7 +157,7 @@ const MarketPopupContent = ({ market, t }: { market: MarketFeature; t: (key: str
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg shadow-emerald-500/20"
                 >
-                    <span className="text-[10px] uppercase tracking-widest">{t('markets_website')}</span>
+                    <span className="text-xs">{t('markets_website')}</span>
                     <ExternalLink className="w-3 h-3" />
                 </a>
             )}
@@ -225,7 +225,7 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-3">
-                            <h2 className="text-2xl font-bold text-white leading-tight">
+                            <h2 className="text-xl font-bold text-white">
                                 {t('markets_title')}
                             </h2>
                         </div>
@@ -237,7 +237,7 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                                 href="https://www.berlin.de/sen/web/service/maerkte-feste/wochen-troedelmaerkte/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400/80 hover:text-emerald-500 transition-all group bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30 active:scale-[0.98]"
+                                className="flex items-center gap-1.5 text-xs font-semibold text-slate-400/80 hover:text-emerald-500 transition-all group bg-slate-900/40 px-2 py-1 rounded-md border border-slate-700/30 active:scale-[0.98]"
                             >
                                 <span className="opacity-60">{t('source')}:</span>
                                 <span className="text-slate-400 group-hover:text-emerald-400">berlin.de</span>
@@ -262,7 +262,7 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                         <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-900/50 rounded-xl border border-slate-700/50">
                             <ShoppingBag className="w-4 h-4 text-emerald-500" />
                             <span className="text-sm font-black text-white tabular-nums">{filteredMarkets.length}</span>
-                            <span className="text-[10px] font-bold text-slate-400 uppercase">{t('markets_count')}</span>
+                            <span className="text-xs font-bold text-slate-400">{t('markets_count')}</span>
                         </div>
                     </div>
                 </div>
@@ -361,17 +361,17 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                                         <h3 className="font-bold text-sm text-white truncate mb-0.5">
                                             {d.bezeichnung}
                                         </h3>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                                        <p className="text-xs font-semibold text-slate-400 mb-2">
                                             {d.bezirk}
                                         </p>
                                         <div className="flex flex-col gap-2">
                                             <div className="flex flex-wrap gap-1.5">
-                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-800/60 rounded-md border border-slate-700/50 text-[10px] font-bold text-slate-400">
+                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-800/60 rounded-md border border-slate-700/50 text-xs font-bold text-slate-400">
                                                     <Calendar className="w-2.5 h-2.5" />
                                                     {d.tage}
                                                 </span>
                                                 {d.barrierefreiheit === 'Ja' && (
-                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 rounded-md border border-emerald-500/30 text-[10px] font-bold text-emerald-400">
+                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 rounded-md border border-emerald-500/30 text-xs font-bold text-emerald-400">
                                                         <Accessibility className="w-2.5 h-2.5" />
                                                         ✓
                                                     </span>
@@ -392,8 +392,8 @@ export default function MarketsMapClient({ district }: { district?: string }) {
                                                                     <Clock className="w-3 h-3 mt-[2px] shrink-0 text-slate-400" />
                                                                 )}
                                                                 <span className={`leading-[1.3] break-words ${isClosed
-                                                                    ? 'font-medium text-rose-400/90 text-[10px]'
-                                                                    : 'font-bold text-slate-300 text-[10px]'
+                                                                    ? 'font-medium text-rose-400/90 text-xs'
+                                                                    : 'font-bold text-slate-300 text-xs'
                                                                     }`}>{line}</span>
                                                             </div>
                                                         );

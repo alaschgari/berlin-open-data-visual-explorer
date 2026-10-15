@@ -60,11 +60,11 @@ export default function BudgetComparison({ node2026, node2027, selectedYear }: B
             <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">2026</span>
+                        <span className="text-xs font-bold text-slate-400">2026</span>
                         <div className="text-lg font-mono text-slate-300">{formatCurrency(val26)}</div>
                     </div>
                     <div className="space-y-1">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">2027</span>
+                        <span className="text-xs font-bold text-slate-400">2027</span>
                         <div className="text-lg font-mono text-white">{formatCurrency(val27)}</div>
                     </div>
                 </div>
@@ -83,7 +83,7 @@ export default function BudgetComparison({ node2026, node2027, selectedYear }: B
                                 }`}>
                                 {isNeutral ? t('unchanged') : isIncrease ? t('increase') : t('saving')}
                             </div>
-                            <div className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">{t('vs_prev_year')}</div>
+                            <div className="text-xs text-slate-400 font-medium">{t('vs_prev_year')}</div>
                         </div>
                     </div>
                     <div className="text-right">
@@ -91,7 +91,7 @@ export default function BudgetComparison({ node2026, node2027, selectedYear }: B
                             }`}>
                             {isIncrease ? '+' : ''}{percentDiff.toFixed(1)}%
                         </div>
-                        <div className="text-[10px] text-slate-400 font-medium">{formatCurrency(Math.abs(diff))}</div>
+                        <div className="text-xs text-slate-400 font-medium">{formatCurrency(Math.abs(diff))}</div>
                     </div>
                 </div>
             </div>

@@ -14,6 +14,7 @@ import {
     Area
 } from 'recharts';
 import { WastewaterRecord } from '@/lib/wastewater';
+import { useLanguage } from './LanguageContext';
 
 interface WastewaterViewProps {
     data: WastewaterRecord[];
@@ -28,6 +29,8 @@ interface MetricSummary {
 type PathogenType = 'Influenza A' | 'Influenza B' | 'RSV' | 'All';
 
 export default function WastewaterView({ data }: WastewaterViewProps) {
+    const { t, language } = useLanguage();
+    const locale = language === 'de' ? 'de-DE' : 'en-GB';
     const [selectedPathogen, setSelectedPathogen] = useState<PathogenType>('All');
     const [selectedPlant, setSelectedPlant] = useState<string>('All');
 
@@ -108,31 +111,35 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* Metrics Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm group hover:border-rose-500/50 transition-all">
-                    <h3 className="text-slate-400 text-sm font-medium mb-1">Pathogene</h3>
-                    <p className="text-3xl font-bold text-slate-100">3</p>
-                    <span className="text-[10px] text-rose-500 font-bold uppercase tracking-wider">Influenza A, B, RSV</span>
+            {/* Key facts */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 rounded-2xl border border-slate-700/60 bg-slate-900/60 divide-y sm:divide-y-0 sm:divide-x divide-slate-700/60">
+                <div className="px-5 py-4">
+                    <p className="text-xs font-semibold text-slate-400">{t('ww_pathogens')}</p>
+                    <p className="mt-1 text-lg font-bold text-white">Influenza A, Influenza B, RSV</p>
                 </div>
-                <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm group hover:border-emerald-500/50 transition-all">
-                    <h3 className="text-slate-400 text-sm font-medium mb-1">Klärwerke</h3>
-                    <p className="text-3xl font-bold text-emerald-400">3</p>
-                    <span className="text-[10px] text-slate-400 font-medium">Ruhleben, Schönerlinde, Waßmannsdorf</span>
+                <div className="px-5 py-4">
+                    <p className="text-xs font-semibold text-slate-400">{t('ww_plants')}</p>
+                    <p className="mt-1 text-lg font-bold text-white">{plants.length > 0 ? plants.join(', ') : 'Ruhleben, Schönerlinde, Waßmannsdorf'}</p>
                 </div>
-                <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm group hover:border-blue-500/50 transition-all">
-                    <h3 className="text-slate-400 text-sm font-medium mb-1">Letzte Messung</h3>
-                    <p className="text-3xl font-bold text-blue-400">
-                        {viralData.length > 0 ? new Date(viralData[viralData.length - 1].date as string).toLocaleDateString('de-DE') : 'N/A'}
+                <div className="px-5 py-4">
+                    <p className="text-xs font-semibold text-slate-400">{t('ww_last_sample')}</p>
+                    <p className="mt-1 text-lg font-bold text-white tabular-nums">
+                        {viralData.length > 0 ? new Date(viralData[viralData.length - 1].date as string).toLocaleDateString(locale) : t('hub_no_value')}
                     </p>
-                    <span className="text-[10px] text-blue-500 font-bold uppercase tracking-wider">Aktuellster Stand</span>
                 </div>
             </div>
 
+            {data.length === 0 && (
+                <div role="alert" className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4 text-sm text-amber-100">
+                    {t('ww_empty')}
+                </div>
+            )}
+
+            {data.length > 0 && (<>
             {/* Control Panel */}
             <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl flex flex-col lg:flex-row items-center justify-between gap-6 shadow-2xl">
                 <div className="flex flex-col gap-3 w-full lg:w-auto">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Fokus: Klärwerk wählen</span>
+                    <span className="text-xs font-semibold text-slate-400 ml-1">{t('ww_plant_filter')}</span>
                     <div className="flex bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 shadow-inner overflow-x-auto custom-scrollbar">
                         {['All', ...plants].map((p) => (
                             <button
@@ -140,7 +147,7 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
                                 onClick={() => setSelectedPlant(p)}
                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${selectedPlant === p ? 'bg-emerald-500 text-slate-900 shadow-lg' : 'text-slate-400 hover:text-white'}`}
                             >
-                                {p === 'All' ? 'Berlin Gesamt' : p}
+                                {p === 'All' ? t('ww_all_plants') : p}
                             </button>
                         ))}
                     </div>
@@ -149,7 +156,7 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
                 <div className="h-10 w-px bg-slate-700/50 hidden lg:block"></div>
 
                 <div className="flex flex-col gap-3 w-full lg:w-auto">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Analyse: Erreger filtern</span>
+                    <span className="text-xs font-semibold text-slate-400 ml-1">{t('ww_pathogen_filter')}</span>
                     <div className="flex bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 shadow-inner overflow-x-auto custom-scrollbar">
                         {(['All', 'Influenza A', 'Influenza B', 'RSV'] as PathogenType[]).map((p) => (
                             <button
@@ -157,7 +164,7 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
                                 onClick={() => setSelectedPathogen(p)}
                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${selectedPathogen === p ? 'bg-emerald-500 text-slate-900 shadow-lg' : 'text-slate-400 hover:text-white'}`}
                             >
-                                {p}
+                                {p === 'All' ? t('ww_all_pathogens') : p}
                             </button>
                         ))}
                     </div>
@@ -294,6 +301,7 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
                     </div>
                 </div>
             </div>
+            </>)}
 
             <div className="bg-emerald-500/10 p-6 rounded-3xl border border-emerald-500/20">
                 <div className="flex items-start gap-4">
@@ -303,12 +311,8 @@ export default function WastewaterView({ data }: WastewaterViewProps) {
                         </svg>
                     </div>
                     <div>
-                        <h4 className="text-sm font-bold text-emerald-400 uppercase tracking-wider mb-1">Frühwarnsystem</h4>
-                        <p className="text-slate-400 text-sm leading-relaxed">
-                            Das Abwassermonitoring (BEWAC) dient als wichtiger Indikator für das Infektionsgeschehen in Berlin.
-                            Da Erreger oft Tage vor den ersten klinischen Symptomen im Abwasser nachweisbar sind, können Trends
-                            frühzeitig erkannt werden. Die Durchflussmenge (z.B. bei Starkregen) kann die Konzentration beeinflussen.
-                        </p>
+                        <h4 className="text-sm font-semibold text-emerald-300 mb-1">{t('ww_info_title')}</h4>
+                        <p className="text-slate-300 text-sm leading-relaxed">{t('ww_info_text')}</p>
                     </div>
                 </div>
             </div>

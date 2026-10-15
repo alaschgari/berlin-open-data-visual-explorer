@@ -446,7 +446,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
             <div style="font-family: sans-serif; padding: 4px;">
                 <div style="display: flex; justify-between; align-items: center; margin-bottom: 4px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">
                     <h3 style="font-weight: bold; margin: 0; color: #1e293b;">${feature.properties.PLR_NAME}</h3>
-                    <span style="font-size: 9px; color: #94a3b8; margin-left: 8px; text-transform: uppercase;">${districtName}</span>
+                    <span style="font-size: 11px; color: #94a3b8; margin-left: 8px;">${districtName}</span>
                 </div>
                 <div style="display: grid; grid-template-columns: auto auto; gap: 8px; font-size: 12px; color: #334155;">
                     <span style="color: #94a3b8;">${searchResult ? t('biz_hits') : t('biz_industry')}:</span>
@@ -528,11 +528,11 @@ export default function BusinessMapClient({ district }: { district: string }) {
                         <Briefcase className="w-5 h-5 text-amber-500" />
                     </div>
                     <div>
-                        <h2 className="text-sm font-bold text-white uppercase tracking-wider">Gewerbe-Analyse</h2>
-                        <p className="text-[10px] text-slate-400 font-medium">IHK Berlin Unternehmensdaten nach Planungsräumen</p>
+                        <h2 className="text-sm font-bold text-white">Gewerbe-Analyse</h2>
+                        <p className="text-xs text-slate-400 font-medium">IHK Berlin Unternehmensdaten nach Planungsräumen</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                <div className="flex items-center gap-4 text-xs font-bold text-slate-400">
                     <span className="flex items-center gap-2 bg-slate-900/50 px-3 py-1.5 rounded-lg border border-white/5">
                         <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                         {language === 'de' ? 'Stand' : 'Status'}: 13.09.2025
@@ -600,7 +600,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                             >
                                                 <Tooltip sticky>
                                                     <div className="text-xs font-bold">{b.branch}</div>
-                                                    <div className="text-[10px] opacity-70">{b.employees}</div>
+                                                    <div className="text-xs opacity-70">{b.employees}</div>
                                                 </Tooltip>
                                                 <Popup>
                                                     <div className="text-white text-xs font-sans p-1 min-w-[200px]">
@@ -697,7 +697,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                     className={`p-2.5 rounded-xl transition-all flex items-center gap-2 ${selectedTheme === t.id ? 'bg-amber-500 text-slate-900 shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
                                 >
                                     <t.icon className="w-4 h-4" />
-                                    <span className="text-[10px] font-bold uppercase tracking-tight hidden md:inline">{t.label}</span>
+                                    <span className="text-xs font-bold tracking-tight hidden md:inline">{t.label}</span>
                                 </button>
                             ))}
                         </div>
@@ -709,7 +709,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                             className={`p-2.5 rounded-xl transition-all flex items-center gap-2 border ${isCompareMode ? 'bg-emerald-500 border-emerald-500 text-slate-900 shadow-lg' : 'bg-slate-800 border-white/5 text-slate-400 hover:text-white'}`}
                         >
                             <Scale className="w-4 h-4" />
-                            <span className="text-[10px] font-bold uppercase tracking-tight hidden sm:inline">{t('biz_compare')}</span>
+                            <span className="text-xs font-bold tracking-tight hidden sm:inline">{t('biz_compare')}</span>
                         </button>
 
                         <div className="h-6 w-[1px] bg-slate-700 mx-1" />
@@ -721,7 +721,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                 <input
                                     type="text"
                                     placeholder={t('biz_search_placeholder')}
-                                    className="bg-slate-800/50 border border-slate-700 rounded-xl py-2 pl-9 pr-8 text-[10px] text-white w-full focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all placeholder:text-slate-400"
+                                    className="bg-slate-800/50 border border-slate-700 rounded-xl py-2 pl-9 pr-8 text-xs text-white w-full focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all placeholder:text-slate-400"
                                     value={globalBranchSearch}
                                     onChange={(e) => setGlobalBranchSearch(e.target.value)}
                                 />
@@ -749,7 +749,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
 
                     {/* Map Legend */}
                     <div className="absolute bottom-6 left-6 bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-700 shadow-2xl z-[1000] min-w-[160px]">
-                        <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-700 pb-2">
+                        <h4 className="text-xs font-bold text-slate-400 mb-3 border-b border-slate-700 pb-2">
                             {searchResult ? t('biz_hit_count') : t('biz_industry_count')}
                         </h4>
                         <div className="flex flex-col gap-1.5">
@@ -766,7 +766,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                     return items.map((item, i) => (
                                         <div key={i} className="flex items-center gap-2">
                                             <div className="w-3 h-3 rounded-full border border-white/10" style={{ backgroundColor: item.color }}></div>
-                                            <span className="text-[10px] font-medium text-slate-300">{item.label}</span>
+                                            <span className="text-xs font-medium text-slate-300">{item.label}</span>
                                         </div>
                                     ));
                                 } else {
@@ -790,7 +790,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                     return items.map((item, i) => (
                                         <div key={i} className="flex items-center gap-2">
                                             <div className="w-3 h-3 rounded-md border border-white/10" style={{ backgroundColor: item.color }}></div>
-                                            <span className="text-[10px] font-medium text-slate-300">{item.label}</span>
+                                            <span className="text-xs font-medium text-slate-300">{item.label}</span>
                                         </div>
                                     ));
                                 }
@@ -804,7 +804,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                         <div className="flex flex-col h-full animate-in fade-in slide-in-from-right-4 duration-500">
                             <div className="p-6 border-b border-slate-700/50 flex justify-between items-start">
                                 <div>
-                                    <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1 block">
+                                    <span className="text-xs font-semibold text-amber-500 mb-1 block">
                                         {t('biz_kiez_analysis')}
                                     </span>
                                     <h2 className="text-xl font-bold text-white leading-tight">{selectedFeature.properties.PLR_NAME}</h2>
@@ -832,7 +832,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                             'text-slate-400'
                                                 }`} />
                                         </div>
-                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">{t('biz_stability_label')}</p>
+                                        <p className="text-xs font-bold text-slate-400 mb-1.5">{t('biz_stability_label')}</p>
                                         <div className="flex flex-col gap-0.5 relative z-10">
                                             <p className={`text-xl font-black leading-tight ${!stats ? 'text-slate-400' :
                                                 stats.stability === t('biz_stability_high') ? 'text-emerald-400' :
@@ -843,7 +843,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                 {stats?.stability || '-'}
                                             </p>
                                             {stats && stats.stability !== t('biz_no_info') && (
-                                                <span className="text-[10px] text-slate-400 font-bold whitespace-nowrap">
+                                                <span className="text-xs text-slate-400 font-bold whitespace-nowrap">
                                                     {stats.avgAge} {t('biz_years_old')}
                                                 </span>
                                             )}
@@ -856,7 +856,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                             <Zap className={`w-16 h-16 ${stats?.isStartupHub ? 'text-blue-500' : 'text-slate-400'}`} />
                                         </div>
                                         <div className="flex items-center gap-1.5 mb-1.5">
-                                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{t('biz_startup_label')}</p>
+                                            <p className="text-xs font-bold text-slate-400">{t('biz_startup_label')}</p>
                                             {stats?.isStartupHub && <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />}
                                         </div>
                                         <div className="flex flex-col gap-0.5 relative z-10">
@@ -864,7 +864,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                 {stats?.isStartupHub ? t('yes') : t('no')}
                                             </p>
                                             {stats && (
-                                                <span className="text-[10px] text-slate-400 font-bold">
+                                                <span className="text-xs text-slate-400 font-bold">
                                                     {stats.startupDensity}% IT-Anteil
                                                 </span>
                                             )}
@@ -879,7 +879,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                 <div className="p-1.5 bg-amber-500/20 rounded">
                                                     <Scale className="w-3 h-3 text-amber-500" />
                                                 </div>
-                                                <p className="text-[10px] font-bold text-amber-500 uppercase tracking-wider">{t('biz_benchmark_label')} {compareFeature.properties.PLR_NAME}</p>
+                                                <p className="text-xs font-bold text-amber-500">{t('biz_benchmark_label')} {compareFeature.properties.PLR_NAME}</p>
                                             </div>
                                             <button onClick={() => setCompareFeature(null)} className="text-amber-500/50 hover:text-amber-500">
                                                 <CloseIcon className="w-3 h-3" />
@@ -892,7 +892,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                 { label: t('biz_avg_age'), val1: parseFloat(stats?.avgAge || '0'), val2: parseFloat(compareStats?.avgAge || '0') }
                                             ].map((row, i) => (
                                                 <div key={i} className="flex flex-col gap-1">
-                                                    <div className="flex justify-between text-[10px] items-center">
+                                                    <div className="flex justify-between text-xs items-center">
                                                         <span className="text-slate-400 font-medium">{row.label}</span>
                                                         <div className="flex gap-3">
                                                             <span className="text-white font-bold">
@@ -915,7 +915,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
 
 
                                 <div>
-                                    <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <h3 className="text-xs font-bold text-white mb-4 flex items-center gap-2">
                                         <ChevronRight className="w-3 h-3 text-amber-500" />
                                         {t('biz_top_industries')}
                                     </h3>
@@ -929,7 +929,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                         onClick={() => setChartFilter(chartFilter === name ? null : name)}
                                                         className={`flex-1 space-y-1 cursor-pointer group/item transition-all ${chartFilter && chartFilter !== name ? 'opacity-30 grayscale' : 'opacity-100'}`}
                                                     >
-                                                        <div className="flex justify-between text-[10px] font-bold">
+                                                        <div className="flex justify-between text-xs font-bold">
                                                             <span className="text-slate-400 truncate max-w-[180px] group-hover/item:text-white transition-colors">{name}</span>
                                                             <span className="text-white">{val}</span>
                                                         </div>
@@ -981,8 +981,8 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                     <Info className="w-5 h-5 text-emerald-500" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">Gewerbe-Verzeichnis</h3>
-                                    <p className="text-[10px] text-slate-400 font-medium">
+                                    <h3 className="text-sm font-bold text-white">Gewerbe-Verzeichnis</h3>
+                                    <p className="text-xs text-slate-400 font-medium">
                                         {selectedFeature
                                             ? `Unternehmen in ${selectedFeature.properties.PLR_NAME}`
                                             : `Suchergebnisse für "${globalBranchSearch}"${(district && district !== 'Berlin' && district !== 'All') ? ` in ${district}` : ''}`
@@ -991,18 +991,18 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
+                                <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
                                     {processedBusinesses.length} Treffer
                                 </span>
                                 {selectedFeature ? (
                                     businessDetails.length > processedBusinesses.length && (
-                                        <span className="text-[10px] font-bold text-slate-400">
+                                        <span className="text-xs font-bold text-slate-400">
                                             von {businessDetails.length}
                                         </span>
                                     )
                                 ) : (
                                     searchResult && searchResult.totalMatched > processedBusinesses.length && (
-                                        <span className="text-[10px] font-bold text-slate-400">
+                                        <span className="text-xs font-bold text-slate-400">
                                             von {searchResult.totalMatched} (Gesamt)
                                         </span>
                                     )
@@ -1060,7 +1060,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
 
                                 <button
                                     onClick={exportToCSV}
-                                    className="flex items-center gap-2 px-4 py-2 bg-slate-800 border border-white/5 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700 transition-all uppercase tracking-tight"
+                                    className="flex items-center gap-2 px-4 py-2 bg-slate-800 border border-white/5 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700 transition-all tracking-tight"
                                 >
                                     <Download className="w-4 h-4" />
                                     <span>Export</span>
@@ -1072,7 +1072,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                     <div className="overflow-x-auto custom-scrollbar">
                         <table className="w-full text-left border-collapse min-w-[800px]">
                             <thead>
-                                <tr className="bg-slate-800/40 border-b border-slate-700/50 text-slate-400 font-black uppercase tracking-widest text-[10px]">
+                                <tr className="bg-slate-800/40 border-b border-slate-700/50 text-slate-400 font-semibold text-xs">
                                     <th className="px-6 py-4 cursor-pointer hover:text-white transition-colors" onClick={() => toggleSort('postcode')}>
                                         <div className="flex items-center gap-2">
                                             {t('biz_postcode')}
@@ -1120,7 +1120,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                                                             {groupBy === 'branch' ? t('biz_branch') : groupBy === 'postcode' ? t('biz_postcode') : groupBy === 'type' ? t('biz_type') : t('size')}:
                                                         </span>
                                                         <span className="text-sm font-bold text-white">{groupKey}</span>
-                                                        <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-[10px] text-emerald-400 border border-emerald-500/20 ml-auto">
+                                                        <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-xs text-emerald-400 border border-emerald-500/20 ml-auto">
                                                             {items.length} {t('biz_companies_count')}
                                                         </span>
                                                     </div>
@@ -1147,7 +1147,7 @@ export default function BusinessMapClient({ district }: { district: string }) {
                     </div>
                     {!groupBy && processedBusinesses.length > 10000 && (
                         <div className="p-4 bg-slate-800/20 border-t border-slate-700/50 text-center">
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                            <p className="text-xs text-slate-400 font-bold">
                                 {t('biz_show_hits_limit').replace('{count}', processedBusinesses.length.toString())}
                             </p>
                         </div>
@@ -1184,7 +1184,7 @@ function BusinessRow({ biz, isGrouped }: { biz: Business, isGrouped?: boolean })
                 </div>
             </td>
             <td className="px-6 py-4">
-                <span className="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] font-bold text-slate-400 uppercase tracking-tight border border-white/5">
+                <span className="px-2 py-0.5 rounded-md bg-slate-800 text-xs font-bold text-slate-400 tracking-tight border border-white/5">
                     {biz.type}
                 </span>
             </td>

@@ -116,7 +116,7 @@ export default function BudgetExplanation({ node, year }: BudgetExplanationProps
                 <div className="space-y-3">
                     <div className="flex items-center gap-2">
                         <Lightbulb className="text-amber-400" size={16} />
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Beispiele</span>
+                        <span className="text-xs font-bold text-slate-400">Beispiele</span>
                     </div>
                     <ul className="space-y-2">
                         {examples.map((example, i) => (
@@ -145,12 +145,12 @@ export default function BudgetExplanation({ node, year }: BudgetExplanationProps
             </div>
 
             <div className="pt-4 mt-auto border-t border-slate-700/30">
-                <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium">
+                <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
                     <div className="flex flex-col">
                         <span>STATUS: AUTOMATIC</span>
-                        <span className="text-[8px] text-rose-500/70 font-bold uppercase tracking-tighter">{t('disclaimer_ai')}</span>
+                        <span className="text-xs text-rose-500/70 font-bold">{t('disclaimer_ai')}</span>
                     </div>
-                    <span className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[9px] uppercase tracking-widest font-bold">Smart Info</span>
+                    <span className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-xs font-bold">Smart Info</span>
                 </div>
             </div>
 

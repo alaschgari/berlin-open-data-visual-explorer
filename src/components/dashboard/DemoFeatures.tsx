@@ -10,7 +10,7 @@ export default function DemoFeatures() {
                     <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg">
                         <Users className="w-5 h-5" />
                     </div>
-                    <h3 className="font-semibold text-slate-100 uppercase tracking-tight">Zuwendungsempfänger</h3>
+                    <h3 className="font-semibold text-slate-100">Zuwendungsempfänger</h3>
                 </div>
                 <ul className="space-y-3">
                     <li className="flex justify-between text-sm">
@@ -35,7 +35,7 @@ export default function DemoFeatures() {
                     <div className="p-2 bg-amber-500/10 text-amber-400 rounded-lg">
                         <Building className="w-5 h-5" />
                     </div>
-                    <h3 className="font-semibold text-slate-100 uppercase tracking-tight">Investitionsplanung</h3>
+                    <h3 className="font-semibold text-slate-100">Investitionsplanung</h3>
                 </div>
                 <div className="space-y-4">
                     <div className="border-l-2 border-green-500 pl-3">
@@ -56,7 +56,7 @@ export default function DemoFeatures() {
                     <div className="p-2 bg-purple-500/10 text-purple-400 rounded-lg">
                         <Briefcase className="w-5 h-5" />
                     </div>
-                    <h3 className="font-semibold text-slate-100 uppercase tracking-tight">Stellenplan (VZÄ)</h3>
+                    <h3 className="font-semibold text-slate-100">Stellenplan (VZÄ)</h3>
                 </div>
                 <div className="flex items-end gap-2 h-32 mt-2">
                     {[2020, 2021, 2022, 2023, 2024].map((y, i) => (
@@ -69,7 +69,7 @@ export default function DemoFeatures() {
                                     {1400 + i * 50}
                                 </span>
                             </div>
-                            <span className="text-[10px] text-slate-400">{y}</span>
+                            <span className="text-xs text-slate-400">{y}</span>
                         </div>
                     ))}
                 </div>

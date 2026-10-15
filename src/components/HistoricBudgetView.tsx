@@ -24,7 +24,7 @@ export default function HistoricBudgetView({ enrichedData, timeline, topChapters
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Budget Basis */}
                 <div className="bg-slate-800/50 p-6 rounded-3xl border border-white/5 flex flex-col shadow-inner backdrop-blur-sm">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Budget (Geplant)</p>
+                    <p className="text-xs font-bold text-slate-400 mb-2">Budget (Geplant)</p>
                     <div className="flex items-baseline gap-2">
                         <span className="text-3xl font-black text-white tracking-tight whitespace-nowrap">
                             {(enrichedData.budget / 1000000000).toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Mrd. €
@@ -34,7 +34,7 @@ export default function HistoricBudgetView({ enrichedData, timeline, topChapters
 
                 {/* Actual Spending */}
                 <div className="bg-slate-800/50 p-6 rounded-3xl border border-white/5 flex flex-col shadow-inner backdrop-blur-sm">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Ist-Ausgaben</p>
+                    <p className="text-xs font-bold text-slate-400 mb-2">Ist-Ausgaben</p>
                     <div className="flex items-baseline gap-2">
                         <span className="text-3xl font-black text-emerald-400 tracking-tight whitespace-nowrap">
                             {(enrichedData.actual / 1000000000).toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Mrd. €
@@ -44,7 +44,7 @@ export default function HistoricBudgetView({ enrichedData, timeline, topChapters
 
                 {/* Difference */}
                 <div className="bg-slate-800/50 p-6 rounded-3xl border border-white/5 flex flex-col shadow-inner backdrop-blur-sm">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Differenz</p>
+                    <p className="text-xs font-bold text-slate-400 mb-2">Differenz</p>
                     <div className="flex items-baseline gap-2">
                         <span className={`text-3xl font-black tracking-tight whitespace-nowrap ${enrichedData.diff < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
                             {(enrichedData.diff / 1000000000).toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1, signDisplay: 'always' })} Mrd. €
@@ -57,13 +57,13 @@ export default function HistoricBudgetView({ enrichedData, timeline, topChapters
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <svg className="w-12 h-12 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z" /></svg>
                     </div>
-                    <p className="text-xs font-bold text-emerald-500/80 uppercase tracking-widest mb-2">BUDGET PRO KOPF</p>
+                    <p className="text-xs font-bold text-emerald-500/80 mb-2">BUDGET PRO KOPF</p>
                     <div className="flex items-baseline gap-2">
                         <span className="text-3xl font-black text-emerald-400 tracking-tight whitespace-nowrap">
                             {Math.round(enrichedData.budget / getPopulation(district)).toLocaleString('de-DE')} €
                         </span>
                     </div>
-                    <p className="text-[10px] text-slate-400 font-bold mt-2 uppercase tracking-tighter">Bei {getPopulation(district).toLocaleString('de-DE')} Einwohnern</p>
+                    <p className="text-xs text-slate-400 font-bold mt-2">Bei {getPopulation(district).toLocaleString('de-DE')} Einwohnern</p>
                 </div>
             </div>
 
@@ -73,7 +73,7 @@ export default function HistoricBudgetView({ enrichedData, timeline, topChapters
                 <div className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 shadow-inner backdrop-blur-md">
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                            <h2 className="text-2xl font-black text-white tracking-tight">Budgetentwicklung</h2>
+                            <h2 className="text-xl font-bold text-white">Budgetentwicklung</h2>
                             <p className="text-sm text-slate-400 font-medium">Vergleich Planung vs. tatsächliche Ausgaben</p>
                         </div>
                     </div>
@@ -91,17 +91,17 @@ export default function HistoricBudgetView({ enrichedData, timeline, topChapters
                                         <p className="text-xs font-black text-white mb-2 pb-2 border-b border-slate-700">{item.year}</p>
                                         <div className="space-y-1.5">
                                             <div className="flex justify-between gap-4">
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase">Soll</span>
-                                                <span className="text-[10px] font-black text-white">{(item.budget / 1000000000).toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Mrd. €</span>
+                                                <span className="text-xs font-bold text-slate-400">Soll</span>
+                                                <span className="text-xs font-semibold text-white">{(item.budget / 1000000000).toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Mrd. €</span>
                                             </div>
                                             <div className="flex justify-between gap-4">
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase">Ist</span>
-                                                <span className="text-[10px] font-black text-emerald-400">{(item.actual / 1000000000).toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Mrd. €</span>
+                                                <span className="text-xs font-bold text-slate-400">Ist</span>
+                                                <span className="text-xs font-semibold text-emerald-400">{(item.actual / 1000000000).toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Mrd. €</span>
                                             </div>
                                         </div>
                                         {item.isEstimated && (
                                             <div className="mt-2 pt-2 border-t border-slate-700/50">
-                                                <span className="text-[8px] font-black text-amber-500/80 uppercase tracking-widest">Historische Daten</span>
+                                                <span className="text-xs font-semibold text-amber-500/80">Historische Daten</span>
                                             </div>
                                         )}
                                     </div>
@@ -119,7 +119,7 @@ export default function HistoricBudgetView({ enrichedData, timeline, topChapters
                                         style={{ height: `${(item.actual / maxBudget) * 100}%` }}
                                     ></div>
                                 </div>
-                                <span className="text-[10px] font-bold text-slate-400 mt-4 group-hover:text-white transition-colors">{item.year.toString().slice(-2)}</span>
+                                <span className="text-xs font-bold text-slate-400 mt-4 group-hover:text-white transition-colors">{item.year.toString().slice(-2)}</span>
                             </div>
                         ))}
                     </div>
@@ -138,7 +138,7 @@ export default function HistoricBudgetView({ enrichedData, timeline, topChapters
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 mb-2">
                                 <Database className="w-3.5 h-3.5 text-emerald-500/70" />
-                                <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                <h3 className="text-[11px] font-semibold text-slate-400">
                                     {t('data_foundation')}
                                 </h3>
                             </div>
@@ -173,11 +173,11 @@ export default function HistoricBudgetView({ enrichedData, timeline, topChapters
                             <div className="md:text-right space-y-2">
                                 <div className="flex items-center md:justify-end gap-2 mb-2">
                                     <Clock className="w-3.5 h-3.5 text-emerald-500/70" />
-                                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                    <p className="text-[11px] font-semibold text-slate-400">
                                         {t('data_as_of')}
                                     </p>
                                 </div>
-                                <p className="text-[11px] font-black text-emerald-500/60 uppercase tracking-widest">
+                                <p className="text-[11px] font-semibold text-emerald-500/60">
                                     {lastSync.toLocaleString(language === 'de' ? 'de-DE' : 'en-GB', {
                                         day: '2-digit',
                                         month: '2-digit',
@@ -192,7 +192,7 @@ export default function HistoricBudgetView({ enrichedData, timeline, topChapters
                     </div>
 
                     <div className="mt-8 text-center bg-slate-900/40 py-3 rounded-xl border border-white/5">
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                        <p className="text-xs text-slate-400 font-bold">
                             Basierend auf Haushaltsplänen 2012-2027
                         </p>
                     </div>

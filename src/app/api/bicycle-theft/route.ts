@@ -73,6 +73,6 @@ export async function GET(request: Request) {
 
     } catch (error) {
         console.error('Error reading/parsing theft data:', error);
-        return NextResponse.json({ error: 'Failed to load theft data' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to load theft data' }, { status: 502 });
     }
 }

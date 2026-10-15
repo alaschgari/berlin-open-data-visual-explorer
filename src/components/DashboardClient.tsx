@@ -87,7 +87,11 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 // Client-side persistent cache for resolved promises (module level singleton)
-export const SESSION_CACHE: Record<string, any> = {};
+// On the server this module lives across requests, so the cache must not keep anything there:
+// sharing it would leak data between visitors and break hydration (server hit vs. client Suspense)
+export const SESSION_CACHE: Record<string, any> = typeof window === 'undefined'
+    ? new Proxy({}, { set: () => true })
+    : {};
 
 // Internal component to resolve promises with Suspense and client-side caching
 function AsyncView({ promise, cacheKey, children }: {
@@ -157,15 +161,17 @@ export default function DashboardClient({
         <main className={`min-h-screen bg-[#0f172a] text-slate-200 p-4 md:p-8 font-[family-name:var(--font-geist-sans)] transition-opacity duration-300 ${isPending ? 'opacity-70' : 'opacity-100'}`} aria-label={t('brand_name')}>
             <div className="max-w-7xl mx-auto space-y-6">
                 {/* Shared Navigation Header */}
-                <Header
-                    showDistrictSelector={TABS_WITHOUT_DISTRICT.has(activeTab) ? undefined : (
+                <Header />
+
+                {/* Module bar: where you are, where you can go, and the district filter where it applies */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-h-[44px]">
+                    {activeTab !== 'hub' ? (
+                        <ModuleSwitcher items={NAV_ITEMS} activeTab={activeTab} onNavigate={navigate} />
+                    ) : <span className="hidden sm:block" />}
+                    {!TABS_WITHOUT_DISTRICT.has(activeTab) && (
                         <DistrictSelector currentDistrict={district} districts={districts} activeTab={activeTab} />
                     )}
-                />
-
-                {activeTab !== 'hub' && (
-                    <ModuleSwitcher items={NAV_ITEMS} activeTab={activeTab} onNavigate={navigate} />
-                )}
+                </div>
 
                 <div className="min-h-[600px]">
                     {
@@ -177,7 +183,7 @@ export default function DashboardClient({
                                         onClick={() => startTransition(() => {
                                             router.push(`/?tab=budget&district=${district}&budgetMode=explorer`);
                                         })}
-                                        className={`text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${budgetMode === 'explorer' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-400 hover:text-white'}`}
+                                        className={`text-xs font-bold px-4 py-2 rounded-lg transition-all ${budgetMode === 'explorer' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-400 hover:text-white'}`}
                                         disabled={isPending}
                                     >
                                         {t('budget_mode_explorer')}
@@ -186,7 +192,7 @@ export default function DashboardClient({
                                         onClick={() => startTransition(() => {
                                             router.push(`/?tab=budget&district=${district}&budgetMode=historic`);
                                         })}
-                                        className={`text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${budgetMode === 'historic' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-400 hover:text-white'}`}
+                                        className={`text-xs font-bold px-4 py-2 rounded-lg transition-all ${budgetMode === 'historic' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-400 hover:text-white'}`}
                                         disabled={isPending}
                                     >
                                         {t('budget_mode_historic')}

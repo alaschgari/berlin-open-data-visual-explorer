@@ -35,7 +35,7 @@ export default function DistrictSelector({ currentDistrict, districts, activeTab
                 value={currentDistrict}
                 onChange={handleChange}
                 aria-label={t('district_selector') || 'District selector'}
-                className="w-full bg-slate-900/80 border border-slate-700 rounded-xl pl-4 pr-10 py-3 text-slate-100 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/50 appearance-none cursor-pointer transition-all hover:bg-slate-900"
+                className="w-full bg-slate-900/80 border border-slate-700 rounded-xl pl-4 pr-10 py-2 text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/50 appearance-none cursor-pointer transition-all hover:bg-slate-900"
             >
                 {districts.map(d => (
                     <option key={d} value={d}>{d === 'Berlin' ? t('all_districts') : d}</option>
