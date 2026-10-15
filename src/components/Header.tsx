@@ -22,20 +22,20 @@ export default function Header({ showDistrictSelector }: HeaderProps) {
     ];
 
     return (
-        <header className="relative z-[2000] flex flex-col xl:flex-row xl:items-center justify-between gap-6 bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-2xl overflow-visible">
+        <header className="relative z-[2000] flex flex-col xl:flex-row xl:items-center justify-between gap-3 sm:gap-6 bg-slate-800/40 p-4 sm:p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-2xl overflow-visible">
             {/* Left side: Logo */}
             <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
                     <svg className="w-7 h-7 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
                     </svg>
                 </div>
                 <div>
-                    <h1 className="text-2xl font-black text-white tracking-tight leading-none mb-1.5">
+                    <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-none sm:mb-1.5">
                         {t('brand_name')}
                     </h1>
-                    <p className="text-slate-400 font-bold text-[10px] uppercase tracking-wider">{t('brand_sub')}</p>
+                    <p className="hidden sm:block text-slate-400 font-bold text-[10px] uppercase tracking-wider">{t('brand_sub')}</p>
                 </div>
             </div>
 
@@ -47,7 +47,7 @@ export default function Header({ showDistrictSelector }: HeaderProps) {
                         <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                            className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold transition-all ${
                                 isActive
                                     ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20'
                                     : 'text-slate-400 hover:text-white hover:bg-slate-800/50'

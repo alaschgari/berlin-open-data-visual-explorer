@@ -24,6 +24,7 @@ import AirQualityWrapper from '@/components/AirQualityWrapper';
 import NoiseMapWrapper from '@/components/NoiseMapWrapper';
 import EducationMapWrapper from '@/components/EducationMapWrapper';
 import HubView from '@/components/HubView';
+import ModuleSwitcher from '@/components/ModuleSwitcher';
 import { WastewaterRecord } from '@/lib/wastewater';
 import { ChevronDown, BarChart3, Shield, Waves, PieChart, Users, Building2, Droplets, ShoppingBag, LayoutGrid, Accessibility, Flame, Wind, Volume2, GraduationCap } from 'lucide-react';
 
@@ -62,6 +63,9 @@ interface NavItem {
     category: 'finance' | 'infrastructure' | 'society';
     priority: number;
 }
+
+// Modules whose data is city-wide or has its own district filter; the header selector would do nothing there
+const TABS_WITHOUT_DISTRICT = new Set(['wastewater', 'air_quality', 'noise', 'education']);
 
 const NAV_ITEMS: NavItem[] = [
     { id: 'subsidies', labelKey: 'tab_subsidies', icon: <BarChart3 className="w-3.5 h-3.5" />, category: 'finance', priority: 1 },
@@ -145,15 +149,23 @@ export default function DashboardClient({
         Object.keys(SESSION_CACHE).forEach(key => delete SESSION_CACHE[key]);
     }, [district]);
 
+    const navigate = (tab: string) => startTransition(() => {
+        router.push(tab === 'hub' ? `/?district=${district}` : `/?tab=${tab}&district=${district}`);
+    });
+
     return (
         <main className={`min-h-screen bg-[#0f172a] text-slate-200 p-4 md:p-8 font-[family-name:var(--font-geist-sans)] transition-opacity duration-300 ${isPending ? 'opacity-70' : 'opacity-100'}`} aria-label={t('brand_name')}>
-            <div className="max-w-7xl mx-auto space-y-8">
+            <div className="max-w-7xl mx-auto space-y-6">
                 {/* Shared Navigation Header */}
                 <Header
-                    showDistrictSelector={
+                    showDistrictSelector={TABS_WITHOUT_DISTRICT.has(activeTab) ? undefined : (
                         <DistrictSelector currentDistrict={district} districts={districts} activeTab={activeTab} />
-                    }
+                    )}
                 />
+
+                {activeTab !== 'hub' && (
+                    <ModuleSwitcher items={NAV_ITEMS} activeTab={activeTab} onNavigate={navigate} />
+                )}
 
                 <div className="min-h-[600px]">
                     {
@@ -258,9 +270,7 @@ export default function DashboardClient({
                                 subsidiesMetricsPromise={subsidiesMetricsPromise}
                                 taxRevenuePromise={taxMetricsPromise}
                                 theftCountPromise={theftCountPromise}
-                                onNavigate={(tab) => startTransition(() => {
-                                    router.push(`/?tab=${tab}&district=${district}`);
-                                })}
+                                onNavigate={navigate}
                                 isNavigating={isPending}
                             />
                         )

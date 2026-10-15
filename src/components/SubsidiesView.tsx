@@ -324,7 +324,7 @@ export default function SubsidiesView({ initialMetrics, initialList, district }:
                     <div className="w-px h-10 bg-slate-700/50 hidden lg:block"></div>
                     <div className="flex flex-col">
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{t('count_recipients')}</span>
-                        <span className="text-xl sm:text-2xl font-black text-purple-400 tracking-tighter">
+                        <span className="text-xl sm:text-2xl font-black text-white tracking-tighter">
                             {Number(activeMetrics?.recipientCount || metrics?.recipientCount || 0).toLocaleString(locale)}
                         </span>
                     </div>

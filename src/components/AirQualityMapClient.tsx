@@ -99,7 +99,12 @@ export default function AirQualityMapClient() {
     }
 
     if (error || stations.length === 0) {
-        return <div className="h-[600px] flex items-center justify-center text-rose-400 bg-slate-800/50 rounded-3xl border border-slate-700">{t('air_error')}</div>;
+        return (
+            <div className="h-[600px] flex flex-col items-center justify-center gap-4 px-6 text-center bg-slate-800/50 rounded-3xl border border-slate-700">
+                <p className="text-rose-300 max-w-md">{t('air_error')}</p>
+                <button onClick={() => window.location.reload()} className="px-4 py-2 rounded-xl bg-slate-700 text-white text-sm font-semibold hover:bg-slate-600 transition-colors">{t('reload')}</button>
+            </div>
+        );
     }
 
     const worstLevel = lqiLevel(stats.worst?.lqi ?? null);

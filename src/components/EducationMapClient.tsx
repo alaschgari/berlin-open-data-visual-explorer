@@ -97,7 +97,12 @@ export default function EducationMapClient() {
     }
 
     if (error || facilities.length === 0) {
-        return <div className="h-[600px] flex items-center justify-center text-rose-400 bg-slate-800/50 rounded-3xl border border-slate-700">{t('edu_error')}</div>;
+        return (
+            <div className="h-[600px] flex flex-col items-center justify-center gap-4 px-6 text-center bg-slate-800/50 rounded-3xl border border-slate-700">
+                <p className="text-rose-300 max-w-md">{t('edu_error')}</p>
+                <button onClick={() => window.location.reload()} className="px-4 py-2 rounded-xl bg-slate-700 text-white text-sm font-semibold hover:bg-slate-600 transition-colors">{t('reload')}</button>
+            </div>
+        );
     }
 
     const selectClass = 'bg-slate-800/50 border border-slate-700/50 rounded-2xl px-3 py-2 text-xs font-bold text-slate-200 focus:outline-none focus:border-emerald-500';

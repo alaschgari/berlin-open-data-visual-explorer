@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useMemo, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLanguage } from '@/components/LanguageContext';
-import { Search, TrendingUp, Star, Loader2 } from 'lucide-react';
-
+import { Search, ChevronRight, Wind, Waves, Construction } from 'lucide-react';
 import type { SubsidyMetrics } from '@/lib/subsidies-proxy';
 import { TaxMetrics } from '@/lib/taxes';
-
+import { getStatusFromImage, type BadestelleFeature } from '@/lib/badestellen';
+import type { AirStation } from '@/lib/air-quality';
 import { SESSION_CACHE } from './DashboardClient';
 
 export interface NavItem {
@@ -29,40 +28,123 @@ interface HubViewProps {
     isNavigating: boolean;
 }
 
-// Internal component to resolve individual metrics with Suspense
-function MetricValue({ promise, field, cacheKey, format, label }: {
+type Format = (val?: number) => string;
+
+// Resolves one district metric with Suspense; a missing value says so instead of showing dashes
+function MetricValue({ promise, field, cacheKey, format }: {
     promise?: Promise<any>,
     field: string,
     cacheKey?: string,
-    format: (val: any) => string,
-    label: string
+    format: Format,
 }) {
-    if (!promise) return <span className="text-slate-400">---</span>;
-
-    // Check global session cache first for instant Hub values
+    if (!promise) return null;
     if (cacheKey && SESSION_CACHE[cacheKey]) {
-        const value = SESSION_CACHE[cacheKey][field];
-        return <span>{format(value)}</span>;
+        return <MetricText value={SESSION_CACHE[cacheKey][field]} format={format} />;
     }
-
     return (
-        <React.Suspense fallback={<span className="w-16 h-4 bg-slate-700/50 animate-pulse rounded block"></span>}>
+        <React.Suspense fallback={<span className="inline-block w-14 h-3.5 bg-slate-700/50 animate-pulse rounded align-middle" aria-hidden="true"></span>}>
             <MetricValueInner promise={promise} field={field} cacheKey={cacheKey} format={format} />
         </React.Suspense>
     );
 }
 
-function MetricValueInner({ promise, field, cacheKey, format }: { promise: Promise<any>, field: string, cacheKey?: string, format: (val: any) => string }) {
+function MetricValueInner({ promise, field, cacheKey, format }: { promise: Promise<any>, field: string, cacheKey?: string, format: Format }) {
     const data = React.use(promise);
-
-    // Also save to cache if we pulled it via Hub
-    if (cacheKey) {
-        SESSION_CACHE[cacheKey] = data;
-    }
-
-    const value = data ? data[field] : null;
-    return <span>{format(value)}</span>;
+    if (cacheKey) SESSION_CACHE[cacheKey] = data;
+    return <MetricText value={data ? data[field] : undefined} format={format} />;
 }
+
+function MetricText({ value, format }: { value?: number, format: Format }) {
+    const { t } = useLanguage();
+    return value ? <span className="text-slate-200">{format(value)}</span> : <span className="text-slate-400">{t('hub_no_value')}</span>;
+}
+
+/** Air quality index wording, 1 = very good … 6 = very poor. */
+const LQI_COLORS = ['#10b981', '#84cc16', '#eab308', '#f97316', '#ef4444', '#a21caf'];
+
+interface LiveFacts {
+    air?: { average: number; worst: string } | null;
+    swim?: { good: number; total: number } | null;
+    works?: number | null;
+}
+
+// Three city-wide readings that change while you watch; each links into its module
+function LiveStrip({ onNavigate }: { onNavigate: (tab: string) => void }) {
+    const { t, language } = useLanguage();
+    const [facts, setFacts] = useState<LiveFacts>({});
+
+    useEffect(() => {
+        const load = <T,>(url: string, pick: (json: any) => T, key: keyof LiveFacts) =>
+            fetch(url)
+                .then(res => (res.ok ? res.json() : Promise.reject(res.status)))
+                .then(json => setFacts(f => ({ ...f, [key]: pick(json) })))
+                .catch(() => setFacts(f => ({ ...f, [key]: null })));
+
+        load('/api/air-quality', (json: { stations: AirStation[] }) => {
+            const rated = json.stations.filter(s => s.lqi !== null) as (AirStation & { lqi: number })[];
+            if (rated.length === 0) return null;
+            const worst = rated.reduce((w, s) => (s.lqi > w.lqi ? s : w));
+            return { average: rated.reduce((sum, s) => sum + s.lqi, 0) / rated.length, worst: worst.name.replace(/^\d+\s*/, '') };
+        }, 'air');
+        load('/api/badestellen', (json: { data: BadestelleFeature[] }) => {
+            const spots = Array.isArray(json.data) ? json.data : [];
+            if (spots.length === 0) return null;
+            const good = spots.filter(s => getStatusFromImage(s.properties.data.farbe).labelKey === 'swim_status_good').length;
+            return { good, total: spots.length };
+        }, 'swim');
+        load('/api/baustellen', (json: { features?: unknown[] }) => json.features?.length || null, 'works');
+    }, []);
+
+    const fmt = (n: number) => n.toLocaleString(language === 'de' ? 'de-DE' : 'en-GB');
+    const lqi = facts.air ? Math.min(6, Math.max(1, Math.round(facts.air.average))) : null;
+
+    const tiles = [
+        {
+            tab: 'air_quality', icon: <Wind className="w-4 h-4" />, label: t('hub_live_air'), state: facts.air,
+            value: facts.air && lqi ? <><span style={{ color: LQI_COLORS[lqi - 1] }}>{t(`air_lqi_${lqi}`)}</span></> : null,
+            detail: facts.air ? `${t('hub_live_air_worst')} ${facts.air.worst}` : '',
+        },
+        {
+            tab: 'badestellen', icon: <Waves className="w-4 h-4" />, label: t('hub_live_swim'), state: facts.swim,
+            value: facts.swim ? `${fmt(facts.swim.good)} / ${fmt(facts.swim.total)}` : null,
+            detail: t('hub_live_swim_detail'),
+        },
+        {
+            tab: 'baustellen', icon: <Construction className="w-4 h-4" />, label: t('hub_live_works'), state: facts.works,
+            value: facts.works ? fmt(facts.works) : null,
+            detail: t('hub_live_works_detail'),
+        },
+    ];
+
+    return (
+        <section aria-label={t('hub_live_title')} className="grid grid-cols-1 sm:grid-cols-3 rounded-2xl border border-slate-700/60 bg-slate-900/60 divide-y sm:divide-y-0 sm:divide-x divide-slate-700/60 overflow-hidden">
+            {tiles.map(tile => (
+                <button
+                    key={tile.tab}
+                    onClick={() => onNavigate(tile.tab)}
+                    className="group text-left px-5 py-4 hover:bg-slate-800/60 transition-colors"
+                >
+                    <span className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+                        {tile.icon}{tile.label}
+                        <ChevronRight className="w-3.5 h-3.5 ml-auto text-slate-500 group-hover:text-emerald-400 transition-colors" />
+                    </span>
+                    <span className="block mt-1.5 text-xl font-bold text-white tabular-nums">
+                        {tile.state === undefined
+                            ? <span className="inline-block w-24 h-5 bg-slate-700/50 animate-pulse rounded align-middle" aria-label={t('loading')}></span>
+                            : tile.value ?? <span className="text-base font-medium text-slate-400">{t('hub_no_value')}</span>}
+                    </span>
+                    {tile.state && <span className="block mt-0.5 text-xs text-slate-400 truncate">{tile.detail}</span>}
+                </button>
+            ))}
+        </section>
+    );
+}
+
+const CATEGORY_ACCENT: Record<NavItem['category'], string> = {
+    finance: 'text-emerald-400',
+    society: 'text-sky-400',
+    infrastructure: 'text-amber-400',
+};
 
 export default function HubView({
     district,
@@ -72,203 +154,95 @@ export default function HubView({
     taxRevenuePromise,
     theftCountPromise,
     onNavigate,
-    isNavigating
 }: HubViewProps) {
     const { t, language } = useLanguage();
     const [searchQuery, setSearchQuery] = useState('');
+    const locale = language === 'de' ? 'de-DE' : 'en-GB';
 
-    const categories = [
-        { id: 'finance', title: t('cat_finance'), color: 'emerald' },
-        { id: 'society', title: t('cat_society'), color: 'blue' },
-        { id: 'infrastructure', title: t('cat_infrastructure'), color: 'amber' }
+    const categories: { id: NavItem['category']; title: string }[] = [
+        { id: 'society', title: t('cat_society') },
+        { id: 'infrastructure', title: t('cat_infrastructure') },
+        { id: 'finance', title: t('cat_finance') },
     ];
 
-    // Formatters for micro-stats
-    const formatCurrency = (val?: number) => val ? new Intl.NumberFormat(language === 'de' ? 'de-DE' : 'en-GB', { style: 'currency', currency: 'EUR', maximumFractionDigits: 1, notation: 'compact' }).format(val) : '';
-    const formatNumber = (val?: number) => val ? new Intl.NumberFormat(language === 'de' ? 'de-DE' : 'en-GB').format(val) : '';
+    const formatCurrency: Format = val => (val ? new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 1, notation: 'compact' }).format(val) : '');
+    const formatNumber: Format = val => (val ? new Intl.NumberFormat(locale).format(val) : '');
 
-    // Data Mapping for micro-metrics
+    // District-specific figures shown next to the modules that have one
     const metricsMap: Record<string, { label: string, value: React.ReactNode }> = {
-        'budget': {
-            label: 'Gesamtvolumen',
-            value: <MetricValue promise={budgetVolumePromise} field="budget" cacheKey={`budget-${district}`} format={formatCurrency} label="Budget" />
-        },
-        'subsidies': {
-            label: 'Einträge',
-            value: <MetricValue promise={subsidiesMetricsPromise} field="totalCount" cacheKey={`subsidies-${district}`} format={formatNumber} label="Subsidies" />
-        },
-        'taxes': {
-            label: 'Gesamteinnahmen',
-            value: <MetricValue promise={taxRevenuePromise} field="totalMonthly" cacheKey={`taxes-${district}`} format={formatCurrency} label="Taxes" />
-        },
-        'theft': {
-            label: 'Erfasste Diebstähle',
-            value: <MetricValue promise={theftCountPromise} field="count" format={formatNumber} label="Theft" />
-        },
+        budget: { label: t('hub_metric_budget'), value: <MetricValue promise={budgetVolumePromise} field="budget" cacheKey={`budget-${district}`} format={formatCurrency} /> },
+        subsidies: { label: t('hub_metric_subsidies'), value: <MetricValue promise={subsidiesMetricsPromise} field="totalCount" cacheKey={`subsidies-${district}`} format={formatNumber} /> },
+        taxes: { label: t('hub_metric_taxes'), value: <MetricValue promise={taxRevenuePromise} field="totalMonthly" cacheKey={`taxes-${district}`} format={formatCurrency} /> },
+        theft: { label: t('hub_metric_theft'), value: <MetricValue promise={theftCountPromise} field="count" format={formatNumber} /> },
     };
 
-    // Filter Logic
     const filteredItems = useMemo(() => {
-        if (!searchQuery) return navItems;
-        const lowerQuery = searchQuery.toLowerCase();
+        const q = searchQuery.trim().toLowerCase();
+        if (!q) return navItems;
         return navItems.filter(item =>
-            t(item.labelKey).toLowerCase().includes(lowerQuery) ||
-            t(`desc_${item.id}`).toLowerCase().includes(lowerQuery)
+            t(item.labelKey).toLowerCase().includes(q) ||
+            t(`desc_${item.id}`).toLowerCase().includes(q)
         );
     }, [navItems, searchQuery, t]);
 
-    // Highlights Logic (Top 2 Modules)
-    const highlightIds = ['budget', 'theft']; // Hardcoded for demo, could be dynamic
-    const highlights = navItems.filter(i => highlightIds.includes(i.id));
-
     return (
-        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 mt-8 relative">
-
-            {/* Background Blob */}
-
-            <div className="text-center space-y-8 max-w-3xl mx-auto relative z-10">
-                <div className="space-y-4">
-                    <h2 className="text-4xl md:text-6xl font-black text-emerald-400 tracking-tight leading-tight">
-                        {t('hub_title')}
-                    </h2>
-                    <p className="text-slate-400 text-lg md:text-xl font-medium tracking-wide">
-                        {t('hub_subtitle')}
-                    </p>
+        <div className="space-y-8 mt-2">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+                <div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">{t('hub_heading')}</h2>
+                    <p className="text-slate-400 mt-1">{t('hub_subtitle')}</p>
                 </div>
-
-                {/* Command Center Search */}
-                <div className="relative max-w-2xl mx-auto group">
-                    <div className="absolute inset-y-0 left-4 z-10 flex items-center pointer-events-none">
-                        <Search className="h-5 w-5 text-slate-400 group-focus-within:text-emerald-400 transition-colors" />
-                    </div>
+                <div className="relative w-full lg:w-96">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 z-10 pointer-events-none" />
                     <input
-                        type="text"
+                        type="search"
                         placeholder={t('hub_search_placeholder')}
                         aria-label={t('hub_search_placeholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-slate-900/80 backdrop-blur-md border border-slate-700/50 text-slate-200 text-lg rounded-2xl pl-12 pr-4 py-4 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all placeholder:text-slate-400 shadow-xl shadow-black/20"
+                        className="w-full bg-slate-900/80 border border-slate-700/60 text-slate-200 rounded-xl pl-10 pr-4 py-2.5 focus:border-emerald-500/60 focus:outline-none transition-colors placeholder:text-slate-400"
                     />
                 </div>
             </div>
 
-            {/* Highlights Section */}
-            {!searchQuery && (
-                <section className="space-y-6">
-                    <div className="flex items-center gap-3">
-                        <Star className="w-5 h-5 text-amber-400 fill-amber-400/20" />
-                        <h3 className="text-sm font-black text-slate-300 uppercase tracking-[0.2em]">
-                            {t('hub_highlight_tag')}
-                        </h3>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {highlights.map(item => (
-                            <button
-                                key={item.id}
-                                onClick={() => onNavigate(item.id)}
-                                className="group relative bg-slate-800/40 backdrop-blur-md rounded-3xl p-6 border border-emerald-500/20 hover:bg-slate-800/60 hover:border-emerald-500/50 transition-all duration-300 overflow-hidden shadow-2xl shadow-emerald-900/20 hover:-translate-y-1 text-left w-full disabled:opacity-50"
-                            >
-                                {/* Highlight noise pattern overlay */}
-                                <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
+            {!searchQuery && <LiveStrip onNavigate={onNavigate} />}
 
-                                <div className="flex flex-col h-full gap-4 relative z-10">
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-slate-900 group-hover:scale-110 transition-all duration-300 shadow-lg">
-                                                {item.icon}
-                                            </div>
-                                            <div>
-                                                <h4 className="text-xl font-bold text-white group-hover:text-emerald-300 transition-colors">
-                                                    {t(item.labelKey)}
-                                                </h4>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <TrendingUp className="w-3 h-3 text-emerald-500" />
-                                                    <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Trending</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <p className="text-sm text-slate-300 font-medium leading-relaxed">
-                                        {t(`desc_${item.id}`)}
-                                    </p>
-
-                                    {/* Micro-metric */}
-                                    {metricsMap[item.id] && metricsMap[item.id].value && (
-                                        <div className="mt-auto pt-4 border-t border-slate-700/50 flex items-center justify-between">
-                                            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">{metricsMap[item.id].label}</span>
-                                            <span className="text-sm font-black text-white bg-slate-900/50 px-3 py-1 rounded-lg border border-slate-700/50">{metricsMap[item.id].value}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                </section>
-            )}
-
-            {/* Standard Grid Categories */}
-            <div className="space-y-12">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                 {categories.map(category => {
-                    const categoryItems = filteredItems.filter(item => item.category === category.id);
-                    if (categoryItems.length === 0) return null;
-
-                    // Color Maps based on Category
-                    const colorMap = {
-                        emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20', hoverBg: 'group-hover:bg-emerald-500', shadow: 'shadow-emerald-500/5' },
-                        blue: { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20', hoverBg: 'group-hover:bg-blue-500', shadow: 'shadow-blue-500/5' },
-                        amber: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', hoverBg: 'group-hover:bg-amber-500', shadow: 'shadow-amber-500/5' },
-                    }[category.color] || { bg: 'bg-slate-800', text: 'text-slate-400', border: 'border-slate-700', hoverBg: 'group-hover:bg-slate-500', shadow: 'shadow-white/5' };
-
+                    const items = filteredItems.filter(item => item.category === category.id);
+                    if (items.length === 0) return null;
                     return (
-                        <section key={category.id} className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                    {category.title}
-                                </h3>
-                                <div className="h-px flex-1 bg-gradient-to-r from-slate-700/50 to-transparent"></div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {categoryItems.map(item => (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => onNavigate(item.id)}
-                                        className={`group relative bg-slate-800/20 backdrop-blur-sm rounded-3xl p-6 border border-slate-700/50 hover:bg-slate-800/40 hover:border-slate-600/50 transition-all duration-300 overflow-hidden hover:shadow-2xl hover:-translate-y-1 text-left w-full disabled:opacity-50 ${colorMap.shadow}`}
-                                    >
-                                        <div className="flex flex-col h-full gap-4 relative z-10">
-                                            <div className="flex items-center gap-4">
-                                                <div className={`w-12 h-12 ${colorMap.bg} rounded-2xl flex items-center justify-center ${colorMap.text} ${colorMap.border} border ${colorMap.hoverBg} group-hover:text-slate-900 group-hover:scale-110 transition-all duration-300 shadow-lg`}>
-                                                    {item.icon}
-                                                </div>
-                                                <h4 className="text-lg font-bold text-slate-200 group-hover:text-white transition-colors">
-                                                    {t(item.labelKey)}
-                                                </h4>
-                                            </div>
-                                            <p className="text-sm text-slate-400 font-medium leading-relaxed group-hover:text-slate-300 transition-colors">
-                                                {t(`desc_${item.id}`)}
-                                            </p>
-
-                                            {/* Micro-metric */}
-                                            {metricsMap[item.id] && metricsMap[item.id].value && (
-                                                <div className="mt-auto pt-4 border-t border-slate-700/30 flex items-center justify-between opacity-70 group-hover:opacity-100 transition-opacity">
-                                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{metricsMap[item.id].label}</span>
-                                                    <span className="text-xs font-bold text-slate-300">{metricsMap[item.id].value}</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </button>
+                        <section key={category.id} className="rounded-2xl border border-slate-700/60 bg-slate-900/40">
+                            <h3 className="px-5 pt-4 pb-2 text-base font-semibold text-white">{category.title}</h3>
+                            <ul className="pb-2">
+                                {items.map(item => (
+                                    <li key={item.id}>
+                                        <button
+                                            onClick={() => onNavigate(item.id)}
+                                            className="group w-full flex items-start gap-3 px-5 py-3 text-left hover:bg-slate-800/60 transition-colors"
+                                        >
+                                            <span className={`mt-0.5 shrink-0 ${CATEGORY_ACCENT[item.category]} [&>svg]:w-5 [&>svg]:h-5`}>{item.icon}</span>
+                                            <span className="min-w-0 flex-1">
+                                                <span className="flex items-baseline justify-between gap-3">
+                                                    <span className="font-semibold text-slate-100 group-hover:text-white">{t(item.labelKey)}</span>
+                                                    {metricsMap[item.id] && (
+                                                        <span className="text-xs tabular-nums shrink-0" title={metricsMap[item.id].label}>{metricsMap[item.id].value}</span>
+                                                    )}
+                                                </span>
+                                                <span className="block text-sm text-slate-400 leading-snug mt-0.5">{t(`desc_${item.id}`)}</span>
+                                            </span>
+                                        </button>
+                                    </li>
                                 ))}
-                            </div>
+                            </ul>
                         </section>
                     );
                 })}
-
-                {filteredItems.length === 0 && (
-                    <div className="text-center py-12">
-                        <p className="text-slate-400 text-lg font-medium">{t('no_data')}</p>
-                    </div>
-                )}
             </div>
+
+            {filteredItems.length === 0 && (
+                <p className="text-center py-12 text-slate-400">{t('hub_no_match')}</p>
+            )}
         </div>
     );
 }
